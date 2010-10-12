@@ -1,0 +1,22 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    columnize (0.3.1)
+    linecache (0.43)
+    mocha (0.9.8)
+      rake
+    net-ssh (2.0.23)
+    rake (0.8.7)
+    ruby-debug (0.10.3)
+      columnize (>= 0.1)
+      ruby-debug-base (~> 0.10.3.0)
+    ruby-debug-base (0.10.3)
+      linecache (>= 0.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  mocha
+  net-ssh
+  ruby-debug

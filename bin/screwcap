@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+# screw OptionParser. 
+if ARGV == []
+  $stdout << "Usage: screwcap [-f task_file] [task_to_run] [args]\n\n" and exit(0) 
+  $stdout << "By default, screwcap will look for a file called ./config/screwcap_tasks.rb."
+end
+
+if ARGV.first == "-f"
+  options[:task_file] = ARGV[1]
+  @deployer = Deployer.new(ARGV[2], options.merge(:params => ARGV[3..ARGV.size]))
+else
+  @deployer = Deployer.new(ARGV.first, options.merge(:params => ARGV[1..ARGV.size]))
+end
+
