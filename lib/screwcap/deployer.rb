@@ -23,23 +23,12 @@ class Deployer < Screwcap::Base
     instance_eval(data)
   end
 
-  def run!(*tasks)
-    # sanity check each task
-    self.__tasks.each do |t| 
-      raise(Screwcap::TaskNotFound, "Could not find task '#{t}' in recipe file #{self.__options[:recipe_file]}") unless self.__tasks.map(&:name).include? t
-    end
-    tasks.each { |t| self.__tasks.select {|task| task.name.to_s == t.to_s }.first.execute! }
-  end
 
   # create a task.  Minimally, a task needs a :server specified to run the task on.
   def task_for name, options = {}, &block
-    server = self.__servers.select {|s| s.name.to_sym == options[:server]}.first
-    raise ArgumentError, "Please specify a server for the task named #{args}!" if server.nil?
-
     t = Task.new(options.merge(:name => name), &block)
     clone_table_for(t)
     t.instance_eval(&block)
-
     self.__tasks << t
   end
 
@@ -56,11 +45,21 @@ class Deployer < Screwcap::Base
     self.__servers << server
   end
 
+  def run!(*tasks)
+    # sanity check each task
+    self.__tasks.each do |task| 
+      tasks.each do |task_to_run|
+        raise(Screwcap::TaskNotFound, "Could not find task '#{task_to_run}' in recipe file #{self.__options[:recipe_file]}") unless self.__tasks.map(&:name).include? task_to_run
+      end
+    end
+    tasks.each { |t| self.__tasks.select {|task| task.name.to_s == t.to_s }.first.execute! }
+  end
+
   private
 
   def clone_table_for(object)
     self.table.each do |k,v|
-      object.set(k, v) unless [:__tasks, :__servers].include?(k)
+      object.set(k, v) unless [:__options, :__tasks, :__servers].include?(k)
     end
   end
 end

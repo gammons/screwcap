@@ -1,6 +1,6 @@
 class CommandSet < Screwcap::Base
   def initialize(opts = {}, &block)
-    super(opts)
+    super
     self.__name = opts[:name]
     self.__options = opts
     self.__commands = []

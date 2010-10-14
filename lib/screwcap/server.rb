@@ -1,6 +1,6 @@
 class Server < Screwcap::Base
   def initialize(opts = {})
-    super(opts)
+    super
     self.__options = opts
     self.__name = opts[:name]
     self.__options[:keys] = [self.__options.delete(:key)] if self.__options[:key]

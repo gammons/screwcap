@@ -38,16 +38,18 @@ class TestDeployer < Test::Unit::TestCase
   end
 
   def test_no_server
-    assert_raise(ArgumentError) { Deployer.new(:recipe_file => "./test/config/no_server.rb", :silent => true) }
+    assert_raise(Screwcap::ConfigurationError) { Deployer.new(:recipe_file => "./test/config/no_server.rb", :silent => true) }
   end
 
   def test_undefined_item_in_task
     assert_raise(NoMethodError) { Deployer.new(:recipe_file => "./test/config/undefined_item.rb", :silent => true) }
   end
 
-
   def test_cannot_find_task
-    #assert_raise(Screwcap::TaskNotFound) { Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => false).run! :task }
+    assert_raise(Screwcap::TaskNotFound) { Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => false).run! :task }
   end
 
+  def test_run_task
+    Deployer.new(:recipe_file => "./test/config/simple_recipe.rb").run! :task1
+  end
 end
