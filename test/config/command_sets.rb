@@ -11,6 +11,7 @@ end
 
 command_set :set_var do
   set :deploy_var, "dingle"
+  run :deploy_var
 end
 
 task_for :use_command_set_no_override, :server => :test do

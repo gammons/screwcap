@@ -20,5 +20,9 @@ class TestDeployer < Test::Unit::TestCase
     assert task
 
     assert_equal ["shasta","run with shasta", "bongo"], task.__commands
+
+    task = deployer.__tasks.find {|t| t.name == :use_command_set_complex_override }
+    assert task
+    assert_equal ["dingle"], task.__commands
   end
 end
