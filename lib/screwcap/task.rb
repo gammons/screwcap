@@ -1,68 +1,81 @@
-require 'net/ssh'
 class Task < Screwcap::Base
-  attr_accessor :options, :commands, :command_order, :deployer, :loaded_command_sets
-
-  def initialize(name,options)
-    @options = options[:options].merge(:name => name, :continue_on_errors => true)
-    @deployer = options[:deployer]
-    @commands = {}
-    @loaded_command_sets = []
-    @command_order = []
+  def initialize(opts = {}, &block)
+    super(opts)
+    self.options = opts
+    self.command = {}
+    self.loaded_command_sets = []
+    self.command_order = []
+    self.commands = []
+    #$stdout << "BEFORE YIELD\n"
+    #yield
+    #$stdout << "AFTER YIELD\n"
   end
 
-  def method_missing(m, *args, &block)
-    # first try our command sets.
-    if cs = @options[:command_sets].select {|cs| cs.name == m}.first
+  #  # first try our command sets.
+  #  if cs = self.command_sets.select {|cs| cs.name == m}.first
 
-      # check for dependencies
-      if cs.options[:depends]
-        unless @loaded_command_sets.find {|lcs| lcs == cs.options[:depends] }
-          raise Screwcap::CommandSetDependencyError, "Command :#{cs.name} depends on command :#{cs.options[:depends]} to be run first!"
-        end
-      end
-      
-      @loaded_command_sets << cs.name
+  #    # check for dependencies
+  #    if cs.options[:depends]
+  #      unless @loaded_command_sets.find {|lcs| lcs == cs.options[:depends] }
+  #        raise Screwcap::CommandSetDependencyError, "Command :#{cs.name} depends on command :#{cs.options[:depends]} to be run first!"
+  #      end
+  #    end
+  #    
+  #    @loaded_command_sets << cs.name
 
-      # the correct way to do it is to merge in our options and let the cs options override ours, while the task options override the default.
-      commands = cs.compile_commands_with(@options)
+  #    # the correct way to do it is to merge in our options and let the cs options override ours, while the task options override the default.
+  #    commands = cs.compile_commands_with(self.options)
 
-      commands.each {|c| run c[:compiled_command] }
-      return
-    end
+  #    commands.each {|c| run c[:compiled_command] }
+  #    return
+  #  end
 
-    # otherwise comb the options
-    return @options[m.to_sym] = args.first if args and args.size == 1
-    return @options[m.to_sym] = args if args and args != []
-    @options[m.to_sym]
-  end
+  #  # otherwise comb the options
+  #  #return @options[m.to_sym] = args.first if args and args.size == 1
+  #  #return @options[m.to_sym] = args if args and args != []
+  #  #@options[m.to_sym]
+  #end
 
   # run a command. basically just pass it a string containing the command you want to run.
   def run arg, options = {}
-    increment = 0
-    @command_order.each { |command| increment += 1 if command[:command].to_s[0..2] == "run" }
+    self.commands << arg.first
+    #increment = 0
+    #self.command_order.each { |command| increment += 1 if command[:command].to_s[0..2] == "run" }
+    #debugger
 
-    run_name = "run#{increment}".to_sym
+    #run_name = "run#{increment}".to_sym
 
-    command_details = options.merge({:command => run_name})
+    #command_details = options.merge({:command => run_name})
 
-    @command_order << command_details
-    @commands[run_name] ||= []
-    if arg.is_a?(Array)
-      @commands[run_name] += arg
-    else
-      @commands[run_name] << arg
+    #self.command_order << command_details
+    #self.commands[run_name] ||= []
+    #if arg.is_a?(Array)
+    #  self.commands[run_name] += arg
+    #else
+    #  self.commands[run_name] << arg
+    #end
+  end
+
+  def method_missing(m, *args, &block)
+    begin
+      super(m, args.first)
+    rescue NoMethodError
+      super((m.to_s + "=").to_sym, args.first)
     end
   end
+
+
+  protected
 
   # execute the task.  This is automagically called by the deployer.
   def execute!
     threads = []
-    raise Screwcap::NoServersDefined, "No Servers Defined! Please define a server in the global section of your task file, or in a specific task." if @deployer.options[:servers].nil?
+    #raise Screwcap::NoServersDefined, "No Servers Defined! Please define a server in the global section of your task file, or in a specific task." if @deployer.options[:servers].nil?
 
     # select the server to use
-    server = @deployer.options[:servers].select {|s| s.name == options[:server] }.first
+    #server = @deployer.options[:servers].select {|s| s.name == options[:server] }.first
 
-    raise Screwcap::NoServerSelected, "Please tell the task which server you want to run the task on." if server.nil?
+    #raise Screwcap::NoServerSelected, "Please tell the task which server you want to run the task on." if server.nil?
 
     server.server_options[:addresses].each do |address|
       threads << Thread.new(server) do |server|
@@ -87,7 +100,7 @@ class Task < Screwcap::Base
               end
 
               @commands[command[:command]].each do |c|
-                next if error and !@options[:continue_on_errors]
+                next if error and !self.options[:continue_on_errors]
                 $stdout <<  "    I:  #{c}\n" unless options[:silent] == true
                 command[:input] = c
                 ssh.exec! c do |ch,stream,data|

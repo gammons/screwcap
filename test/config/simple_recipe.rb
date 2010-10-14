@@ -1,22 +1,16 @@
-  # default deploy directory
-  deploy :dir => "/mnt/app"
+deploy_dir = "/mnt/app"
+git = {:url => "http://dev.myapp.com/svn/pipeline_deals/trunk", :user => "grant", :password => "bargains"}
+#
+server :test, :addresses => ["slashdot.org","google.com"], :user => "root", :key => "id_rsa"
 
-  deploy_dir = "/mnt/app"
+task_for :task1, :server => :test do
+  deploy_dir "/home/rails"
+  bango "bongo"
+  run "deploy dir = #{deploy_dir}"
+  run "command 2"
+end
 
-  # svn address
-  svn :url => "http://dev.myapp.com/svn/pipeline_deals/trunk", :user => "grant", :password => "bargains"
-
-  # mongrel options
-  mongrel :pid_dir => "/home/rails/my_app/shared/pids"
-
-  server :test, :addresses => ["slashdot.org","digg.com"], :user => "root", :key => "id_rsa"
-
-  task_for :no_override, :server => :test do |r|
-    r.run "hostname"
-  end
-
-  task_for :override, :server => :test do |r|
-    r.deploy_dir "/home/rails"
-    r.mongrel :pid_dir => "/home/rails/my_app2/shared/pids"
-    r.svn  :url => "my.svn.com", :user => "grant", :password => "bingo"
-  end
+#task_for :task2, :server => :test do
+#  deploy_dir = "/home/rails"
+#  run "ls -l"
+#end
