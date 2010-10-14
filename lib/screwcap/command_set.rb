@@ -17,20 +17,30 @@ class CommandSet < Screwcap::Base
     end
   end
 
-  def compile!
-  end
-
   protected
 
   def method_missing(m, *args)
     if m.to_s[0..1] == "__" or [:run].include?(m) or m.to_s.reverse[0..0] == "="
       super(m, args.first) 
     else
-      if self.__command_sets.map(&:name).include?(m)
-        self.__commands += self.__command_sets.find {|cs| cs.name == m }.__commands
+      if cs = self.__command_sets.find {|cs| cs.name == m }
+        # eval what is in the block
+        clone_table_for(cs)
+        cs.__commands = []
+        cs.instance_eval(&cs.__block)
+        self.__commands += cs.__commands
       else
-        raise NoMethodError, "Undefined method '#{m.to_s}' for task :#{self.name.to_s}"
+        raise NoMethodError, "Undefined method '#{m.to_s}' for Command Set :#{self.name.to_s}"
       end
     end
   end
+
+  private
+
+  def clone_table_for(object)
+    self.table.each do |k,v|
+      object.set(k, v) unless [:__command_sets, :name, :__commands, :__options, :__block].include?(k)
+    end
+  end
+
 end

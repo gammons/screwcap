@@ -25,4 +25,16 @@ class TestDeployer < Test::Unit::TestCase
     assert task
     assert_equal ["dingle"], task.__commands
   end
+
+  def test_nested_command_sets
+    deployer = Deployer.new(:recipe_file => "./test/config/command_sets.rb", :silent => true)
+
+    task = deployer.__tasks.find {|t| t.name == :nested_command_set }
+    assert task
+    assert_equal %w(1 2 3 4), task.__commands
+  end
+
+  def test_undefined_value_in_command_set
+    assert_raise(NoMethodError) { Deployer.new(:recipe_file => "./test/config/undefined_command_set.rb", :silent => true) }
+  end
 end
