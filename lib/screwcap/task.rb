@@ -6,64 +6,16 @@ class Task < Screwcap::Base
     self.loaded_command_sets = []
     self.command_order = []
     self.commands = []
-    #$stdout << "BEFORE YIELD\n"
-    #yield
-    #$stdout << "AFTER YIELD\n"
   end
-
-  #  # first try our command sets.
-  #  if cs = self.command_sets.select {|cs| cs.name == m}.first
-
-  #    # check for dependencies
-  #    if cs.options[:depends]
-  #      unless @loaded_command_sets.find {|lcs| lcs == cs.options[:depends] }
-  #        raise Screwcap::CommandSetDependencyError, "Command :#{cs.name} depends on command :#{cs.options[:depends]} to be run first!"
-  #      end
-  #    end
-  #    
-  #    @loaded_command_sets << cs.name
-
-  #    # the correct way to do it is to merge in our options and let the cs options override ours, while the task options override the default.
-  #    commands = cs.compile_commands_with(self.options)
-
-  #    commands.each {|c| run c[:compiled_command] }
-  #    return
-  #  end
-
-  #  # otherwise comb the options
-  #  #return @options[m.to_sym] = args.first if args and args.size == 1
-  #  #return @options[m.to_sym] = args if args and args != []
-  #  #@options[m.to_sym]
-  #end
 
   # run a command. basically just pass it a string containing the command you want to run.
   def run arg, options = {}
-    self.commands << arg.first
-    #increment = 0
-    #self.command_order.each { |command| increment += 1 if command[:command].to_s[0..2] == "run" }
-    #debugger
-
-    #run_name = "run#{increment}".to_sym
-
-    #command_details = options.merge({:command => run_name})
-
-    #self.command_order << command_details
-    #self.commands[run_name] ||= []
-    #if arg.is_a?(Array)
-    #  self.commands[run_name] += arg
-    #else
-    #  self.commands[run_name] << arg
-    #end
-  end
-
-  def method_missing(m, *args, &block)
-    begin
-      super(m, args.first)
-    rescue NoMethodError
-      super((m.to_s + "=").to_sym, args.first)
+    if arg.class == Symbol
+      self.commands << self.send(arg)
+    else
+      self.commands << arg
     end
   end
-
 
   protected
 

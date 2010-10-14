@@ -4,45 +4,50 @@
 class Deployer < Screwcap::Base
 
   # create a new deployer.
-  def initialize(options = {})
-    super(options)
-    self.options = {:tasks => [], :command_sets => [], :from_rake => true, :recipe_file => File.expand_path("./config/recipe.rb")}.merge(options)
+  def initialize(opts = {})
+    opts = {:recipe_file => File.expand_path("./config/recipe.rb")}.merge opts
+    super(opts)
+    self.options = opts
+    self.tasks = []
+    self.servers = []
+    self.command_sets = []
 
     $stdout << "Attempting to read #{self.options[:recipe_file]}\n" unless self.options[:silent] == true
+
     file = File.open(File.expand_path("./#{self.options[:recipe_file]}"))
     data = file.read
 
     instance_eval(data)
   end
 
-  def run!(*tasks)
-    # sanity check each task
-    tasks.each do |t| 
-      raise(Screwcap::TaskNotFound, "Could not find task '#{t}' in recipe file #{self.options[:recipe_file]}") unless self.options[:tasks].map(&:name).include? t
-    end
-    tasks.each { |t| self.options[:tasks].select {|task| task.name.to_s == t.to_s }.first.execute! }
-  end
+  #def run!(*tasks)
+  #  # sanity check each task
+  #  tasks.each do |t| 
+  #    raise(Screwcap::TaskNotFound, "Could not find task '#{t}' in recipe file #{self.options[:recipe_file]}") unless self.tasks.map(&:name).include? t
+  #  end
+  #  tasks.each { |t| self.tasks.select {|task| task.name.to_s == t.to_s }.first.execute! }
+  #end
 
   # dynamically include another file into an existing configuration file.
   # by default, it looks for the include file in the same path as your tasks file you specified.
-  def use arg
-    if arg.is_a? Symbol
-      begin
-        dirname = File.dirname(@options[:task_file])
-        instance_eval(File.open(File.dirname(File.expand_path(@options[:task_file])) + "/" + arg.to_s + ".rb").read)
-      rescue Errno::ENOENT => e
-        raise IncludeFileNotFound, "Could not find #{File.expand_path("./"+arg.to_s + ".rb")}! If the file is elsewhere, call it by using 'use '/path/to/file.rb'"
-        exit(1)
-      end
-    else
-      begin
-        instance_eval(File.open(File.dirname(File.expand_path(@options[:task_file])) + "/" + arg).read)
-      rescue Errno::ENOENT => e
-        raise IncludeFileNotFound, "Could not find #{File.expand_path(arg)}! If the file is elsewhere, call it by using 'use '/path/to/file.rb'"
-        exit(1)
-      end
-    end
-  end
+  #def use arg
+  #  if arg.is_a? Symbol
+  #    begin
+  #      dirname = File.dirname(@options[:task_file])
+  #      instance_eval(File.open(File.dirname(File.expand_path(@options[:task_file])) + "/" + arg.to_s + ".rb").read)
+  #    rescue Errno::ENOENT => e
+  #      raise IncludeFileNotFound, "Could not find #{File.expand_path("./"+arg.to_s + ".rb")}! If the file is elsewhere, call it by using 'use '/path/to/file.rb'"
+  #      exit(1)
+  #    end
+  #  else
+  #    begin
+  #      instance_eval(File.open(File.dirname(File.expand_path(@options[:task_file])) + "/" + arg).read)
+  #    rescue Errno::ENOENT => e
+  #      raise IncludeFileNotFound, "Could not find #{File.expand_path(arg)}! If the file is elsewhere, call it by using 'use '/path/to/file.rb'"
+  #      exit(1)
+  #    end
+  #  end
+  #end
 
   # create a task.  Minimally, a task needs a :server specified to run the task on.
   #
@@ -67,13 +72,13 @@ class Deployer < Screwcap::Base
 
     # make the server options immediately available on the task,
     # as if the task defined the options itself
-    server = self.options[:servers].select {|s| s.name.to_sym == options[:server]}.first
+    server = self.servers.select {|s| s.name.to_sym == options[:server]}.first
     raise ArgumentError, "Please specify a server for the task named #{args}!" if server.nil?
 
     t = Task.new(options, &block)
+    clone_table_for(t)
     t.instance_eval(&block)
 
-    self.tasks = [] if not self.respond_to?(:tasks) or not self.tasks.class == Array
     self.tasks << t
   end
 
@@ -96,10 +101,17 @@ class Deployer < Screwcap::Base
 
   def server(name, options = {}, &block)
     server = Server.new(options.merge(:name => name))
-    yield server if block_given?
+    server.instance_eval(&block) if block_given?
 
-    self.options[:servers] ||= []
-    self.options[:servers] << server
+    self.servers << server
     server
+  end
+
+  private
+
+  def clone_table_for(object)
+    self.table.each do |k,v|
+      object.set(k, v) unless [:tasks, :servers, :command_sets].include?(k)
+    end
   end
 end
