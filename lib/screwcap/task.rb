@@ -1,23 +1,38 @@
 class Task < Screwcap::Base
   def initialize(opts = {}, &block)
     super(opts)
-    self.options = opts
-    self.command = {}
-    self.loaded_command_sets = []
-    self.command_order = []
-    self.commands = []
+    self.__name = opts[:name]
+    self.__options = opts
+    self.__commands = []
+    self.__command_sets = []
   end
 
   # run a command. basically just pass it a string containing the command you want to run.
   def run arg, options = {}
     if arg.class == Symbol
-      self.commands << self.send(arg)
+      self.__commands << self.send(arg)
     else
-      self.commands << arg
+      self.__commands << arg
     end
   end
 
   protected
+
+  def method_missing(m, *args)
+    if m.to_s[0..1] == "__" or [:run].include?(m) or m.to_s.reverse[0..0] == "="
+      super(m, args.first) 
+    else
+      if cs = self.__command_sets.find {|cs| cs.name == m }
+        # eval what is in the block
+        cs.__commands = []
+        cs.instance_eval(&cs.__block)
+        self.__commands += cs.__commands
+      else
+        raise NoMethodError, "Undefined method '#{m.to_s}' for task :#{self.name.to_s}"
+      end
+    end
+  end
+
 
   # execute the task.  This is automagically called by the deployer.
   def execute!

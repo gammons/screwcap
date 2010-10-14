@@ -1,10 +1,10 @@
 class Server < Screwcap::Base
   def initialize(opts = {})
     super(opts)
-    self.options = opts
-    self.name = opts[:name]
-    self.options[:keys] = [self.options.delete(:key)] if self.options[:key]
-    self.options[:addresses] = [self.options.delete(:address)] if self.options[:address] and self.options[:addresses].nil?
+    self.__options = opts
+    self.__name = opts[:name]
+    self.__options[:keys] = [self.__options.delete(:key)] if self.__options[:key]
+    self.__options[:addresses] = [self.__options.delete(:address)] if self.__options[:address] and self.__options[:addresses].nil?
     validate
     self
   end
@@ -12,7 +12,7 @@ class Server < Screwcap::Base
   protected
 
   def validate
-    raise Screwcap::InvalidServer, "Please specify an address for the server #{self.options[:name]}." if self.options[:addresses].nil? or self.options[:addresses] == [nil]
-    raise Screwcap::InvalidServer, "Please specify a username to use for the server #{options[:name]}." if self.options[:user].nil?
+    raise Screwcap::InvalidServer, "Please specify an address for the server #{self.__options[:name]}." if self.__options[:addresses].nil? or self.__options[:addresses] == [nil]
+    raise Screwcap::InvalidServer, "Please specify a username to use for the server #{self.__options[:name]}." if self.__options[:user].nil?
   end
 end

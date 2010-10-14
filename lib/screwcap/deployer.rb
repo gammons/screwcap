@@ -6,112 +6,61 @@ class Deployer < Screwcap::Base
   # create a new deployer.
   def initialize(opts = {})
     opts = {:recipe_file => File.expand_path("./config/recipe.rb")}.merge opts
-    super(opts)
-    self.options = opts
-    self.tasks = []
-    self.servers = []
-    self.command_sets = []
+    super
+    self.__options = opts
+    self.__tasks = []
+    self.__servers = []
+    self.__command_sets = []
 
-    $stdout << "Attempting to read #{self.options[:recipe_file]}\n" unless self.options[:silent] == true
+    # ensure that deployer options will not be passed to tasks
+    opts.each_key {|k| self.delete_field(k) }
 
-    file = File.open(File.expand_path("./#{self.options[:recipe_file]}"))
+    $stdout << "Attempting to read #{self.__options[:recipe_file]}\n" unless self.__options[:silent] == true
+
+    file = File.open(File.expand_path("./#{self.__options[:recipe_file]}"))
     data = file.read
 
     instance_eval(data)
   end
 
-  #def run!(*tasks)
-  #  # sanity check each task
-  #  tasks.each do |t| 
-  #    raise(Screwcap::TaskNotFound, "Could not find task '#{t}' in recipe file #{self.options[:recipe_file]}") unless self.tasks.map(&:name).include? t
-  #  end
-  #  tasks.each { |t| self.tasks.select {|task| task.name.to_s == t.to_s }.first.execute! }
-  #end
-
-  # dynamically include another file into an existing configuration file.
-  # by default, it looks for the include file in the same path as your tasks file you specified.
-  #def use arg
-  #  if arg.is_a? Symbol
-  #    begin
-  #      dirname = File.dirname(@options[:task_file])
-  #      instance_eval(File.open(File.dirname(File.expand_path(@options[:task_file])) + "/" + arg.to_s + ".rb").read)
-  #    rescue Errno::ENOENT => e
-  #      raise IncludeFileNotFound, "Could not find #{File.expand_path("./"+arg.to_s + ".rb")}! If the file is elsewhere, call it by using 'use '/path/to/file.rb'"
-  #      exit(1)
-  #    end
-  #  else
-  #    begin
-  #      instance_eval(File.open(File.dirname(File.expand_path(@options[:task_file])) + "/" + arg).read)
-  #    rescue Errno::ENOENT => e
-  #      raise IncludeFileNotFound, "Could not find #{File.expand_path(arg)}! If the file is elsewhere, call it by using 'use '/path/to/file.rb'"
-  #      exit(1)
-  #    end
-  #  end
-  #end
+  def run!(*tasks)
+    # sanity check each task
+    self.__tasks.each do |t| 
+      raise(Screwcap::TaskNotFound, "Could not find task '#{t}' in recipe file #{self.__options[:recipe_file]}") unless self.__tasks.map(&:name).include? t
+    end
+    tasks.each { |t| self.__tasks.select {|task| task.name.to_s == t.to_s }.first.execute! }
+  end
 
   # create a task.  Minimally, a task needs a :server specified to run the task on.
-  #
-  # The only special command in a task block is the "run" command, which will actually run the command
-  # you specify on the server.  All others are stored in the options hash for later use.
-  #
-  # task_for :quick_push, :servers => :prod_servers do |r|
-  #   # define a variable which you can use in other parts of your task, or a command set
-  #   r.apache_binary "/usr/bin/apache2ctl"
-  #
-  #   # run a command set defined in the file. 
-  #   r.command_set_name
-  #
-  #   # run other tasks.
-  #   r.run "hostname"
-  #
-  #   r.run "#{r.apache_binary} restart"
-  # end
-  def task_for args, options = {}, &block
-    # create a new task with the default options
-
-
-    # make the server options immediately available on the task,
-    # as if the task defined the options itself
-    server = self.servers.select {|s| s.name.to_sym == options[:server]}.first
+  def task_for name, options = {}, &block
+    server = self.__servers.select {|s| s.name.to_sym == options[:server]}.first
     raise ArgumentError, "Please specify a server for the task named #{args}!" if server.nil?
 
-    t = Task.new(options, &block)
+    t = Task.new(options.merge(:name => name), &block)
     clone_table_for(t)
     t.instance_eval(&block)
 
-    self.tasks << t
+    self.__tasks << t
   end
 
-  # define a command set.
-  # command_set :symlink, :depends => :svn_check_out do |c|
-  #   c.run "rm -f _var_/current", "deploy[:dir]"
-  #   c.run "ln -s _var_ _var_/current", :release_directory, "deploy[:dir]"
-  # end
-  #
-  # The command set will look for the special token <tt>_var_</tt>, and replace it with the current value given as a param.
-  # The first command will use the current value of <tt>deploy[:dir]</tt>, which may be defined globally or locally by the task.  
-  # The second command uses two variables, <tt>release_directory</tt> and also <tt>deploy[:dir]</tt>.  For variables that are non-hashes, you can use a symbol to reference the variable.  
-  #
-  # The <tt>_var_</tt> token will be replaced by the variables given in order.  
   def command_set(name,options = {},&block)
-    cs = CommandSet.new(name, @options.merge(options))
-    yield cs
-    @options[:command_sets] << cs
+    t = CommandSet.new(options.merge(:name => name), &block)
+    clone_table_for(t)
+    self.__command_sets << t
   end
 
   def server(name, options = {}, &block)
     server = Server.new(options.merge(:name => name))
     server.instance_eval(&block) if block_given?
 
-    self.servers << server
-    server
+    self.__servers << server
   end
 
   private
 
   def clone_table_for(object)
     self.table.each do |k,v|
-      object.set(k, v) unless [:tasks, :servers, :command_sets].include?(k)
+      object.set(k, v) unless [:__tasks, :__servers].include?(k)
     end
   end
 end
