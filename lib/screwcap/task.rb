@@ -5,6 +5,7 @@ class Task < Screwcap::Base
     self.__options = opts
     self.__commands = []
     self.__command_sets = []
+    #self.instance_eval(&block)
   end
 
   # run a command. basically just pass it a string containing the command you want to run.
@@ -24,6 +25,7 @@ class Task < Screwcap::Base
     else
       if cs = self.__command_sets.find {|cs| cs.name == m }
         # eval what is in the block
+        clone_table_for(cs)
         cs.__commands = []
         cs.instance_eval(&cs.__block)
         self.__commands += cs.__commands
@@ -109,4 +111,13 @@ class Task < Screwcap::Base
     end
     threads.each {|t| t.join }
   end
+
+  private
+
+  def clone_table_for(object)
+    self.table.each do |k,v|
+      object.set(k, v) unless [:__command_sets, :name, :__commands, :__options].include?(k)
+    end
+  end
+
 end

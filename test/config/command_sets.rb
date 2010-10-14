@@ -9,6 +9,10 @@ command_set :push_to_thang do
   run :deploy_var_2
 end
 
+command_set :set_var do
+  set :deploy_var, "dingle"
+end
+
 task_for :use_command_set_no_override, :server => :test do
   push_to_thang
 end
@@ -16,4 +20,9 @@ end
 task_for :use_command_set_with_override, :server => :test do
   set :deploy_var, "shasta"
   push_to_thang
+end
+
+task_for :use_command_set_complex_override, :server => :test do
+  set :deploy_var, "bango"
+  set_var
 end
