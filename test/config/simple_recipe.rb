@@ -1,7 +1,8 @@
 set :deploy_var, "tester"
 set :deploy_var_2, "bongo"
 set :deploy_var_3, ["one","two"]
-server :test, :addresses => ["slashdot.org","google.com"], :user => "root", :key => "id_rsa"
+server :test, :addresses => ["slashdot.org","google.com"], :user => "root"
+server :test2, :addresses => ["bongo.org","bangler.com"], :user => "root"
 
 task_for :task1, :server => :test do
   set :deploy_var_2, "shasta"
@@ -18,4 +19,7 @@ task_for :task2, :server => :test do
   set :deploy_var_3, "mountain dew"
 end
 
+task_for :task3, :servers => [:test, :test2] do
+  run "ls"
+end
 

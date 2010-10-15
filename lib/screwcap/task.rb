@@ -21,72 +21,36 @@ class Task < Screwcap::Base
   def execute!
     threads = []
 
-    self.__options[:servers].each do |server_def|
-      debugger
-      server_def.__options[:addresses].each do |address|
-        threads << Thread.new(server) do |server|
+    addresses = self.__servers.select {|s| self.__options[:servers].include?(s.name)}.map {|s| s.__options[:addresses] }.flatten
+    addresses.each do |address|
+      threads << Thread.new(address) do |address|
+        server = self.__servers.find {|s| s.__options[:addresses].include?(address) }
+        begin
+          $stdout << "\n*** BEGIN deployment Recipe for #{address}\n" unless self.__options[:silent] == true
 
-          output = []
-          begin
-            $stdout << "\n*** BEGIN deployment Recipe for #{address}\n" unless options[:silent] == true
+          Net::SSH.start(address, server.__options[:user], server.__options.reject {|k,v| [:user,:addresses].include?(k)}) do |ssh|
+            error = false
+            self.__commands.each do |command|
+              next if error and !self.__options[:continue_on_errors]
+              $stdout <<  "    I:  #{command}\n" unless self.__options[:silent] == true
 
-            Net::SSH.start(address, server.server_options[:user], server.server_options.reject {|k,v| [:user,:addresses].include?(k)}) do |ssh|
-              error = false
-              @command_order.each do |command|
-
-                # callbacks.
-                if command[:before]
-                  if command[:before].is_a?(Array)
-                    command[:before].each do |bc|
-                      @deployer.send(bc,command) if @deployer.respond_to?(bc)
-                    end
-                  else
-                    @deployer.send(command[:before],command) if @deployer.respond_to?(command[:before])
-                  end
+              ssh.exec! command do |ch,stream,data|
+                if stream == :stderr
+                  error = true
+                  $stderr << "    E: #{data}"
+                else
+                  $stdout <<  "    O:  #{data}" unless self.__options[:silent] == true
                 end
-
-                @commands[command[:command]].each do |c|
-                  next if error and !self.options[:continue_on_errors]
-                  $stdout <<  "    I:  #{c}\n" unless options[:silent] == true
-                  command[:input] = c
-                  ssh.exec! c do |ch,stream,data|
-
-                    # store the command's output
-                    command[:output] ||= []
-                    command[:output] << data
-
-                    if stream == :stderr
-                      command[:status] = :error
-                      error = true
-                      $stderr << "    E: #{data}"
-                    else
-                      command[:status] = :success
-                      $stdout <<  "    O:  #{data}" unless options[:silent] == true
-                    end
-
-                  end # ssh.exec
-                end # @commands.each
-
-                # handle the after callback
-                if command[:after]
-                  if command[:after].is_a?(Array)
-                    command[:after].each do |ac|
-                      @deployer.send(ac,command) if @deployer.respond_to?(ac)
-                    end
-                  else
-                    @deployer.send(command[:after],command) if @deployer.respond_to?(command[:after])
-                  end
-                end
-
-              end # command order.each
-            end # net.ssh start
-          rescue Exception => e
-            $stderr << "    F: #{e}"
-          end # begin
-            $stdout << "*** END deployment Recipe for #{address}\n" unless options[:silent] == true
-        end # thread.new
-      end
-    end
+              end # ssh.exec
+            end # commands.each
+          end # net.ssh start
+        rescue Exception => e
+          $stderr << "    F: #{e}"
+        ensure
+          $stdout << "\n*** END deployment Recipe for #{address}\n" unless self.__options[:silent] == true
+        end
+      end # threads << 
+    end #addresses.each
     threads.each {|t| t.join }
   end
 

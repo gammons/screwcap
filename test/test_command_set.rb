@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
-class TestDeployer < Test::Unit::TestCase
+class TestCommandSet < Test::Unit::TestCase
 
   def setup
     Net::SSH.stubs(:start).yields(SSHObject.new(:return_stream => :stdout, :return_data => "hostname = asdf\n"))

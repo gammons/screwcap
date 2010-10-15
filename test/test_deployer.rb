@@ -46,10 +46,12 @@ class TestDeployer < Test::Unit::TestCase
   end
 
   def test_cannot_find_task
-    assert_raise(Screwcap::TaskNotFound) { Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => false).run! :task }
+    assert_raise(Screwcap::TaskNotFound) { Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => true).run! :task }
   end
 
   def test_run_task
-    Deployer.new(:recipe_file => "./test/config/simple_recipe.rb").run! :task1
+    assert_nothing_raised { Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => true).run! :task1 }
+    assert_nothing_raised { Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => true).run! :task1, :task2 }
+    assert_nothing_raised { Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => true).run! :task1, :task2, :task3 }
   end
 end
