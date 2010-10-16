@@ -5,7 +5,16 @@ class Task < Screwcap::Base
     self.__options = opts
     self.__commands = []
     self.__command_sets = []
-    validate
+    self.__server_names = []
+
+
+    if opts[:server] and opts[:servers].nil?
+      self.__server_names << opts[:server]
+    else
+      self.__server_names = opts[:servers]
+    end
+
+    validate(opts[:deployment_servers])
   end
 
   # run a command. basically just pass it a string containing the command you want to run.
@@ -21,22 +30,20 @@ class Task < Screwcap::Base
   def execute!
     threads = []
 
-    addresses = self.__servers.select {|s| self.__options[:servers].include?(s.name)}.map {|s| s.__options[:addresses] }.flatten
-    addresses.each do |address|
-      threads << Thread.new(address) do |address|
-        server = self.__servers.find {|s| s.__options[:addresses].include?(address) }
+    self.__servers.each do |_server|
+      threads << Thread.new(_server) do |server|
         begin
-          $stdout << "\n*** BEGIN deployment Recipe for #{address}\n" unless self.__options[:silent] == true
+          $stdout << "\n*** BEGIN deployment Recipe for #{server.name}\n" unless self.__options[:silent] == true
 
-          Net::SSH.start(address, server.__options[:user], server.__options.reject {|k,v| [:user,:addresses].include?(k)}) do |ssh|
+          server.__with_connection do |ssh|
             error = false
             self.__commands.each do |command|
               next if error and !self.__options[:continue_on_errors]
               $stdout <<  "    I:  #{command}\n" unless self.__options[:silent] == true
 
-              ssh.exec! command do |ch,stream,data|
-                if stream == :stderr
-                  error = true
+                ssh.exec! command do |ch,stream,data|
+                  if stream == :stderr
+                    error = true
                   $stderr << "    E: #{data}"
                 else
                   $stdout <<  "    O:  #{data}" unless self.__options[:silent] == true
@@ -47,7 +54,7 @@ class Task < Screwcap::Base
         rescue Exception => e
           $stderr << "    F: #{e}"
         ensure
-          $stdout << "\n*** END deployment Recipe for #{address}\n" unless self.__options[:silent] == true
+          $stdout << "\n*** END deployment Recipe for #{server.name}\n" unless self.__options[:silent] == true
         end
       end # threads << 
     end #addresses.each
@@ -80,14 +87,14 @@ class Task < Screwcap::Base
     end
   end
 
-  def validate
-    raise Screwcap::ConfigurationError, "Could not find a server to run this task on.  Please specify :server => :servername or :servers => [:server1, :server2] in the task_for directive." if (self.__options[:servers].nil? or self.__options[:servers] == []) and self.__options[:server].nil?
-    self.__options[:servers] = [self.__options[:servers]] unless self.__options[:servers].class == Array
-    self.__options[:servers] = [self.__options[:server]] if self.__options[:server]
-    self.__options[:servers].each do |server|
-      # ensure we find this server declared
-      raise Screwcap::ConfigurationError, "Could not find a server to run this task on.  Please specify :server => :servername or :servers => [:server1, :server2] in the task_for directive." unless self.__options[:servers].include?(server)
+  def validate(servers)
+    raise Screwcap::ConfigurationError, "Could not find a server to run this task on.  Please specify :server => :servername or :servers => [:server1, :server2] in the task_for directive." if self.__server_names.blank?
 
+    self.__server_names.each do |server_name|
+      raise Screwcap::ConfigurationError, "Could not find a server to run this task on.  Please specify :server => :servername or :servers => [:server1, :server2] in the task_for directive." unless servers.map(&:name).include?(server_name)
     end
+
+    # finally map the actual server objects via name
+    self.__servers = self.__server_names.map {|name| servers.find {|s| s.name == name } }
   end
 end

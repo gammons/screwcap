@@ -26,7 +26,7 @@ class Deployer < Screwcap::Base
 
   # create a task.  Minimally, a task needs a :server specified to run the task on.
   def task_for name, options = {}, &block
-    t = Task.new(options.merge(:name => name, :silent => self.__options[:silent]), &block)
+    t = Task.new(options.merge(:name => name, :silent => self.__options[:silent], :deployment_servers => self.__servers), &block)
     clone_table_for(t)
     t.instance_eval(&block)
     self.__tasks << t
@@ -40,10 +40,14 @@ class Deployer < Screwcap::Base
 
   def server(name, options = {}, &block)
     server = Server.new(options.merge(:name => name))
-    server.instance_eval(&block) if block_given?
-
     self.__servers << server
   end
+
+  def gateway(name, options = {}, &block)
+    server = Server.new(options.merge(:name => name, :is_gateway => true))
+    self.__servers << server
+  end
+
 
   def run!(*tasks)
     # sanity check each task
@@ -59,7 +63,7 @@ class Deployer < Screwcap::Base
 
   def clone_table_for(object)
     self.table.each do |k,v|
-      object.set(k, v) unless [:__options, :__tasks].include?(k)
+      object.set(k, v) unless [:__options, :__tasks, :__servers].include?(k)
     end
   end
 end

@@ -10,7 +10,9 @@ class TestServer < Test::Unit::TestCase
     assert_raise(Screwcap::InvalidServer) { Server.new(:name => :test) }
     assert_raise(Screwcap::InvalidServer) { Server.new(:name => :test, :address => "abc.com") }
     assert_raise(Screwcap::InvalidServer) { Server.new(:name => :test, :user => "root") }
+    assert_raise(Screwcap::InvalidServer) { Server.new(:name => :test, :user => "root", :addresses => ["1","2"], :gateway => true) }
     assert_nothing_raised { Server.new(:name => :test, :user => :root, :address => "abc.com") }
+    assert_nothing_raised { Server.new(:name => :test, :user => :root, :address => "abc.com", :gateway => true) }
   end
 
 end

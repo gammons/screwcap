@@ -5,6 +5,7 @@ require 'net/ssh'
 require 'net/ssh/gateway'
 require 'ostruct'
 
+require 'exts'
 require 'screwcap/base'
 require 'screwcap/command_set'
 require 'screwcap/task'
