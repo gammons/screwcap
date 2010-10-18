@@ -15,12 +15,11 @@ $hoe = Hoe.spec 'screwcap' do
   self.developer 'Grant Ammons', 'grant@pipelinedeals.com'
   self.rubyforge_name       = self.name # TODO this is default value
   self.extra_deps         = [['net-ssh','>= 2.0.23'],['net-ssh-gateway','>=1.0.1']]
-
 end
 
 require 'newgem/tasks'
 Dir['tasks/**/*.rake'].each { |t| load t }
 
 # TODO - want other tests/tasks run by default? Add them to the list
-# remove_task :default
-# task :default => [:spec, :features]
+remove_task :default
+task :default => :spec

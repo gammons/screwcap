@@ -1,25 +1,46 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    RedCloth (4.2.3)
+    activesupport (2.3.9)
     columnize (0.3.1)
+    hoe (2.6.2)
+      rake (>= 0.8.7)
+      rubyforge (>= 2.0.4)
+    json_pure (1.4.6)
     linecache (0.43)
     mocha (0.9.8)
       rake
     net-ssh (2.0.23)
     net-ssh-gateway (1.0.1)
       net-ssh (>= 1.99.1)
+    newgem (1.5.3)
+      RedCloth (>= 4.1.1)
+      activesupport (~> 2.3.4)
+      hoe (>= 2.4.0)
+      rubigen (>= 1.5.3)
+      syntax (>= 1.0.0)
     rake (0.8.7)
+    rspec (1.3.1)
+    rubigen (1.5.5)
+      activesupport (~> 2.3.5)
     ruby-debug (0.10.3)
       columnize (>= 0.1)
       ruby-debug-base (~> 0.10.3.0)
     ruby-debug-base (0.10.3)
       linecache (>= 0.3)
+    rubyforge (2.0.4)
+      json_pure (>= 1.1.7)
+    syntax (1.0.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  hoe
   mocha
   net-ssh
   net-ssh-gateway
+  newgem
+  rspec (= 1.3.1)
   ruby-debug
