@@ -51,8 +51,8 @@ class Task < Screwcap::Base
               end # ssh.exec
             end # commands.each
           end # net.ssh start
-        rescue Exception => e
-          $stderr << "    F: #{e}"
+        #rescue Exception => e
+        #  $stderr << "    F: #{e}"
         ensure
           $stdout << "\n*** END deployment Recipe for #{server.name}\n" unless self.__options[:silent] == true
         end

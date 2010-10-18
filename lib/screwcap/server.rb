@@ -24,7 +24,7 @@ class Server < Screwcap::Base
           yield ssh
         end
       else
-        Net::SSH.start(address, self.__options[:user], self.__options.reject {|k,v| [:user,:addresses].include?(k)}) do |ssh|
+        Net::SSH.start(address, self.__options[:user], self.__options.reject {|k,v| [:user,:addresses, :name].include?(k)}) do |ssh|
           yield ssh
         end
       end
