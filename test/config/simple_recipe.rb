@@ -16,6 +16,7 @@ task_for :task1, :server => :test do
 end
 
 task_for :task2, :server => :test do
+  set :deploy_var_2, "purple"
   set :deploy_var_3, "mountain dew"
 end
 

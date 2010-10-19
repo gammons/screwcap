@@ -3,6 +3,8 @@ class Server < Screwcap::Base
     super
     self.__options = opts
     self.__name = opts[:name]
+    self.__servers = opts[:servers]
+    self.__user = opts[:user]
     self.__options[:keys] = [self.__options.delete(:key)] if self.__options[:key]
 
     if self.__options[:address] and self.__options[:addresses].nil?
@@ -19,8 +21,8 @@ class Server < Screwcap::Base
   def __with_connection(&block)
     self.__addresses.each do |address|  
       if self.__options[:gateway]
-        gateway = self.__servers.select {|s| s.__options[:is_gateway] == true }.find {|s| s.__name == s.__options[:gateway] }
-        gateway.__get_connection.ssh(address, self.__options[:user]) do |ssh|
+        gateway = self.__servers.select {|s| s.__options[:is_gateway] == true }.find {|s| s.__name == self.__options[:gateway] }
+        gateway.__get_gateway_connection.ssh(address, self.__options[:user]) do |ssh|
           yield ssh
         end
       else
@@ -33,9 +35,15 @@ class Server < Screwcap::Base
 
   protected
 
+  def __get_gateway_connection
+    self.__connection ||= Net::SSH::Gateway.new(self.__addresses.first, self.__user)
+  end
+
+  private
+
   def validate
     raise Screwcap::InvalidServer, "Please specify an address for the server #{self.__options[:name]}." if self.__addresses.blank?
-    raise Screwcap::InvalidServer, "Please specify a username to use for the server #{self.__options[:name]}." if self.__options[:user].nil?
-    raise Screwcap::InvalidServer, "A gateway can have only one address" if self.__addresses.size > 1 and self.__options[:gateway] == true
+    raise Screwcap::InvalidServer, "Please specify a username to use for the server #{self.__name}." if self.__user.nil?
+    raise Screwcap::InvalidServer, "A gateway can have only one address" if self.__addresses.size > 1 and self.__options[:is_gateway] == true
   end
 end

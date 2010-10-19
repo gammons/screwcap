@@ -15,7 +15,7 @@ class Deployer < Screwcap::Base
     # ensure that deployer options will not be passed to tasks
     opts.each_key {|k| self.delete_field(k) }
 
-    $stdout << "Attempting to read #{self.__options[:recipe_file]}\n" unless self.__options[:silent] == true
+    log "Attempting to read #{self.__options[:recipe_file]}\n" unless self.__options[:silent] == true
 
     file = File.open(File.expand_path("./#{self.__options[:recipe_file]}"))
     data = file.read
@@ -39,7 +39,7 @@ class Deployer < Screwcap::Base
   end
 
   def server(name, options = {}, &block)
-    server = Server.new(options.merge(:name => name))
+    server = Server.new(options.merge(:name => name, :servers => self.__servers))
     self.__servers << server
   end
 

@@ -33,28 +33,28 @@ class Task < Screwcap::Base
     self.__servers.each do |_server|
       threads << Thread.new(_server) do |server|
         begin
-          $stdout << "\n*** BEGIN deployment Recipe for #{server.name}\n" unless self.__options[:silent] == true
+          log "\n*** BEGIN deployment Recipe for #{server.name}\n" unless self.__options[:silent] == true
 
           server.__with_connection do |ssh|
             error = false
             self.__commands.each do |command|
               next if error and !self.__options[:continue_on_errors]
-              $stdout <<  "    I:  #{command}\n" unless self.__options[:silent] == true
+              log "    I:  #{command}\n" unless self.__options[:silent] == true
 
                 ssh.exec! command do |ch,stream,data|
                   if stream == :stderr
                     error = true
-                  $stderr << "    E: #{data}"
+                  errorlog "    E: #{data}"
                 else
-                  $stdout <<  "    O:  #{data}" unless self.__options[:silent] == true
+                  log "    O:  #{data}" unless self.__options[:silent] == true
                 end
               end # ssh.exec
             end # commands.each
           end # net.ssh start
-        #rescue Exception => e
-        #  $stderr << "    F: #{e}"
+        rescue Exception => e
+          errorlog "    F: #{e}"
         ensure
-          $stdout << "\n*** END deployment Recipe for #{server.name}\n" unless self.__options[:silent] == true
+          log "\n*** END deployment Recipe for #{server.name}\n" unless self.__options[:silent] == true
         end
       end # threads << 
     end #addresses.each

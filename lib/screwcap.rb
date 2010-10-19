@@ -4,6 +4,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 require 'net/ssh'
 require 'net/ssh/gateway'
 require 'ostruct'
+require 'logger'
 
 require 'exts'
 require 'screwcap/base'

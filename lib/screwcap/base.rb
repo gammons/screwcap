@@ -10,5 +10,10 @@ module Screwcap
     def set(var, *args)
       method_missing((var.to_s + "=").to_sym, args.first)
     end
+
+    def log(msg, options = {})
+      $logger ||= Logger.new(STDOUT)
+      $logger.info msg
+    end
   end
 end
