@@ -38,7 +38,7 @@ class Task < Screwcap::Base
           server.__with_connection do |ssh|
             error = false
             self.__commands.each do |command|
-              next if error and !self.__options[:continue_on_errors]
+              next if error and self.__options[:stop_on_errors]
               log "    I:  #{command}\n" unless self.__options[:silent] == true
 
                 ssh.exec! command do |ch,stream,data|
