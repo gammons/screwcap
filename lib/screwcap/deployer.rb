@@ -15,7 +15,7 @@ class Deployer < Screwcap::Base
     # ensure that deployer options will not be passed to tasks
     opts.each_key {|k| self.delete_field(k) }
 
-    log "Attempting to read #{self.__options[:recipe_file]}\n" unless self.__options[:silent] == true
+    log "Reading #{self.__options[:recipe_file]}\n" unless self.__options[:silent] == true
 
     file = File.open(File.expand_path("./#{self.__options[:recipe_file]}"))
     data = file.read
@@ -50,6 +50,7 @@ class Deployer < Screwcap::Base
 
 
   def run!(*tasks)
+    tasks.flatten!
     # sanity check each task
     self.__tasks.each do |task| 
       tasks.each do |task_to_run|

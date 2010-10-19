@@ -12,8 +12,11 @@ module Screwcap
     end
 
     def log(msg, options = {})
-      $logger ||= Logger.new(STDOUT)
-      $logger.info msg
+      $stdout << msg
+    end
+
+    def errorlog(msg)
+      $stderr << msg
     end
   end
 end

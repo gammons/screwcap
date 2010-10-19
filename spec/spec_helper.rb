@@ -19,7 +19,7 @@ class SSHObject
     yield nil, @options[:return_stream], @options[:return_data]
   end
 
-  def ssh(cmd, options = {}, &block)
+  def ssh(address, user, options = {}, &block)
     yield nil
   end
 end

@@ -51,10 +51,10 @@ class Task < Screwcap::Base
               end # ssh.exec
             end # commands.each
           end # net.ssh start
-        rescue Exception => e
-          errorlog "    F: #{e}"
+        #rescue Exception => e
+        #  errorlog "    F: #{e}"
         ensure
-          log "\n*** END deployment Recipe for #{server.name}\n" unless self.__options[:silent] == true
+          log "\n*** END deployment Recipe for #{server.name}\n\n" unless self.__options[:silent] == true
         end
       end # threads << 
     end #addresses.each

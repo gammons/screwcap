@@ -5,13 +5,30 @@ require File.expand_path(File.dirname(__FILE__) + '/../lib/screwcap')
 require File.expand_path(File.dirname(__FILE__) + '/../lib/trollop')
 
 
-options = Trollop::options do
-  opt :trollip, "Use trollop code"
-  banner "thsi is the bnaner"
+p = Trollop::Parser.new do
+  opt :silent, "Be silent"
+  opt :debug, "Turn on debugger.  Will print full stacktrace if an exeception was raised"
+  opt :help, "Show this message"
+  banner <<-EOF 
+
+    Usage: screwcap [options] file task_name [[task_name2], [task_name3], ...]
+    Example: screwcap config/deploy.rb deploy_to_staging
+  EOF
 end
 
-parser = Trollop::Parser.new do
-  opt :monkey, "Use monkey code"
+opts = Trollop::with_standard_exception_handling p do
+  opts = p.parse ARGV
+  if opts[:debug] == true
+    require 'ruby-debug'
+    Debugger.start
+  end
+  raise Trollop::HelpNeeded if ARGV.size < 2
+  recipe_file = ARGV.shift
+  begin
+    Deployer.new(opts.merge(:recipe_file => recipe_file)).run! ARGV.map {|a| a.to_sym }
+  rescue Exception => e
+    raise e if opts[:debug] == true
+    $stderr << e
+    $stderr << "\n"
+  end
 end
-
-parser.parse
