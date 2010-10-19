@@ -60,6 +60,26 @@ class Deployer < Screwcap::Base
     tasks.each { |t| self.__tasks.select {|task| task.name.to_s == t.to_s }.first.execute! }
   end
 
+  # dynamically include another file into an existing configuration file.
+  # by default, it looks for the include file in the same path as your tasks file you specified.
+  def use arg
+    if arg.is_a? Symbol
+      begin
+        dirname = File.dirname(self.__options[:recipe_file])
+        instance_eval(File.open(File.dirname(File.expand_path(self.__options[:recipe_file])) + "/" + arg.to_s + ".rb").read)
+      rescue Errno::ENOENT => e
+        raise Screwcap::IncludeFileNotFound, "Could not find #{File.expand_path("./"+arg.to_s + ".rb")}! If the file is elsewhere, call it by using 'use '/path/to/file.rb'"
+      end
+    else
+      begin
+        instance_eval(File.open(File.dirname(File.expand_path(self.__options[:recipe_file])) + "/" + arg).read)
+      rescue Errno::ENOENT => e
+        raise Screwcap::IncludeFileNotFound, "Could not find #{File.expand_path(arg)}! If the file is elsewhere, call it by using 'use '/path/to/file.rb'"
+      end
+    end
+  end
+
+
   private
 
   def clone_table_for(object)

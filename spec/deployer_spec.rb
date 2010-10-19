@@ -58,4 +58,14 @@ describe "Deployers" do
     deployer = Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => true)
     lambda { deployer.run! :task1, :task2 }.should_not raise_error
   end
+
+  it "should be able to include other task files with the use keyword" do
+    deployer = Deployer.new(:recipe_file => "./test/config/use.rb", :silent => true)
+    deployer.should have(3).__tasks
+    deployer.deploy_var.should == "tester"
+  end
+
+  it "should complain if we attempt to use an unknown file" do
+    lambda {Deployer.new(:recipe_file => "./test/config/unknown_use.rb", :silent => true) }.should raise_error(Screwcap::IncludeFileNotFound)
+  end
 end
