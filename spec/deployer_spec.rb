@@ -40,7 +40,7 @@ describe "Deployers" do
 
   it "should be able to define command sets" do
     deployer = Deployer.new(:recipe_file => "./test/config/command_sets.rb", :silent => true)
-    deployer.should have(4).__command_sets
+    deployer.should have(8).__command_sets
   end
 
   it "should be able to define gateways" do
