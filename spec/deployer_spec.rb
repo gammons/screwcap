@@ -23,7 +23,7 @@ describe "Deployers" do
   it "should be able to define tasks and servers" do
     deployer = Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => true)
 
-    deployer.should have(3).__tasks
+    deployer.should have(5).__tasks
     deployer.should have(2).__servers
   end
 
@@ -49,6 +49,11 @@ describe "Deployers" do
     deployer.__servers.select {|s| s.__options[:is_gateway] == true }.size.should == 1
   end
 
+  it "should be able to define sequences" do
+    deployer = Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => true)
+    deployer.should have (1).__sequences
+  end
+
   it "should be able to run a single task" do
     deployer = Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => true)
     lambda { deployer.run! :task1 }.should_not raise_error
@@ -61,7 +66,7 @@ describe "Deployers" do
 
   it "should be able to include other task files with the use keyword" do
     deployer = Deployer.new(:recipe_file => "./test/config/use.rb", :silent => true)
-    deployer.should have(3).__tasks
+    deployer.should have(5).__tasks
     deployer.deploy_var.should == "tester"
   end
 

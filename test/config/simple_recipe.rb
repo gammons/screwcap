@@ -24,3 +24,13 @@ task_for :task3, :servers => [:test, :test2] do
   run "ls"
 end
 
+task_for :seq1, :server => :test do
+  run "1"
+end
+
+task_for :seq2, :server => :test do
+  run "2"
+end
+
+
+sequence :deploy, :tasks => [:seq1, :seq2]

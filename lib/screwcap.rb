@@ -11,6 +11,7 @@ require 'screwcap/base'
 require 'screwcap/command_set'
 require 'screwcap/task'
 require 'screwcap/server'
+require 'screwcap/sequence'
 require 'screwcap/deployer'
 
 module Screwcap

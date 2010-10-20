@@ -11,6 +11,7 @@ class Deployer < Screwcap::Base
     self.__tasks = []
     self.__servers = []
     self.__command_sets = []
+    self.__sequences = []
 
     # ensure that deployer options will not be passed to tasks
     opts.each_key {|k| self.delete_field(k) }
@@ -48,16 +49,28 @@ class Deployer < Screwcap::Base
     self.__servers << server
   end
 
+  def sequence(name, options = {}, &block)
+    self.__sequences << Sequence.new(options.merge(:name => name, :deployment_task_names => self.__tasks.map(&:name)))
+  end
+
 
   def run!(*tasks)
     tasks.flatten!
     # sanity check each task
-    self.__tasks.each do |task| 
-      tasks.each do |task_to_run|
-        raise(Screwcap::TaskNotFound, "Could not find task '#{task_to_run}' in recipe file #{self.__options[:recipe_file]}") unless self.__tasks.map(&:name).include? task_to_run
+
+    tasks_and_sequences = (self.__sequences.map(&:__name) + self.__tasks.map(&:__name))
+    tasks.each do |task_to_run|
+      raise(Screwcap::TaskNotFound, "Could not find task or sequence '#{task_to_run}' in recipe file #{self.__options[:recipe_file]}") unless tasks_and_sequences.include? task_to_run
+    end
+
+    tasks.each do |t| 
+      sequence = self.__sequences.find {|s| s.__name == t }
+      if sequence
+        sequence.__task_names.each {|task_name| self.__tasks.find {|task| task.__name == task_name }.execute!}
+      else
+        self.__tasks.select {|task| task.name.to_s == t.to_s }.first.execute! 
       end
     end
-    tasks.each { |t| self.__tasks.select {|task| task.name.to_s == t.to_s }.first.execute! }
   end
 
   # dynamically include another file into an existing configuration file.
