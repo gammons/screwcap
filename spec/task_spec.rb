@@ -50,6 +50,11 @@ describe "Tasks" do
     task.deploy_var_3.should == "mountain dew"
   end
 
+  it "should be able to call other tasks" do
+    task = @deployer.__tasks.find {|t| t.name == :multitask }
+    task.__commands.should == %w(purple task3 bongo)
+  end
+
   it "should complain if you do not pass the task a server argument" do
     lambda { Deployer.new(:recipe_file => "./test/config/no_server.rb", :silent => false)}.should raise_error(Screwcap::ConfigurationError)
   end

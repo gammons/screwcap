@@ -18,9 +18,15 @@ end
 task_for :task2, :server => :test do
   set :deploy_var_2, "purple"
   set :deploy_var_3, "mountain dew"
+  run :deploy_var_2
 end
 
 task_for :task3, :servers => [:test, :test2] do
-  run "ls"
+  run "task3"
+  run :deploy_var_2
 end
 
+task_for :multitask, :server => :test do
+  task2
+  task3
+end

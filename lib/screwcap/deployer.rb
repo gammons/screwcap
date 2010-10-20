@@ -26,7 +26,7 @@ class Deployer < Screwcap::Base
 
   # create a task.  Minimally, a task needs a :server specified to run the task on.
   def task_for name, options = {}, &block
-    t = Task.new(options.merge(:name => name, :silent => self.__options[:silent], :deployment_servers => self.__servers), &block)
+    t = Task.new(options.merge(:name => name, :silent => self.__options[:silent], :tasks => self.__tasks, :deployment_servers => self.__servers), &block)
     clone_table_for(t)
     t.instance_eval(&block)
     self.__tasks << t
