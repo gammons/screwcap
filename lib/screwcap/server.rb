@@ -22,9 +22,11 @@ class Server < Screwcap::Base
     self.__addresses.each do |address|  
       if self.__options[:gateway]
         gateway = self.__servers.select {|s| s.__options[:is_gateway] == true }.find {|s| s.__name == self.__options[:gateway] }
+        log "  *** BEGIN execute on #{address}\n" unless self.__options[:silent] == true
         gateway.__get_gateway_connection.ssh(address, self.__user, self.__options.reject {|k,v| [:user, :gateway, :is_gateway, :addresses, :name, :servers].include?(k)}) do |ssh|
           yield ssh
         end
+        log "  *** END execute on #{address}\n"
       else
         Net::SSH.start(address, self.__user, self.__options.reject {|k,v| [:user,:addresses, :gateway, :is_gateway, :name, :servers].include?(k)}) do |ssh|
           yield ssh

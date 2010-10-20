@@ -40,7 +40,7 @@ class Deployer < Screwcap::Base
   end
 
   def server(name, options = {}, &block)
-    server = Server.new(options.merge(:name => name, :servers => self.__servers))
+    server = Server.new(options.merge(:name => name, :servers => self.__servers, :silent => self.__options[:silent]))
     self.__servers << server
   end
 

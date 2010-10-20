@@ -33,7 +33,7 @@ class Task < Screwcap::Base
     self.__servers.each do |_server|
       threads << Thread.new(_server) do |server|
         begin
-          log "\n*** BEGIN deployment Recipe for #{server.name}\n" unless self.__options[:silent] == true
+          log "\n*** BEGIN executing task #{self.__name} on server #{server.name}\n" unless self.__options[:silent] == true
 
           server.__with_connection do |ssh|
             error = false
@@ -56,7 +56,7 @@ class Task < Screwcap::Base
         rescue Exception => e
           errorlog "    F: #{e}"
         ensure
-          log "\n*** END deployment Recipe for #{server.name}\n\n" unless self.__options[:silent] == true
+          log "\n*** END executing task #{self.__name} for #{server.name}\n\n" unless self.__options[:silent] == true
         end
       end # threads << 
     end #addresses.each

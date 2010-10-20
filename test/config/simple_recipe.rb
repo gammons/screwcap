@@ -32,5 +32,4 @@ task_for :seq2, :server => :test do
   run "2"
 end
 
-
 sequence :deploy, :tasks => [:seq1, :seq2]

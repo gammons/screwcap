@@ -11,12 +11,14 @@ lib/screwcap.rb
 lib/screwcap/base.rb
 lib/screwcap/command_set.rb
 lib/screwcap/deployer.rb
+lib/screwcap/sequence.rb
 lib/screwcap/server.rb
 lib/screwcap/task.rb
 lib/trollop.rb
 screwcap.gemspec
 spec/command_set_spec.rb
 spec/deployer_spec.rb
+spec/sequence_spec.rb
 spec/server_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
