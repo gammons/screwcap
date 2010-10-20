@@ -30,13 +30,7 @@ describe "Servers" do
 
   it "should provide a connection to the server" do
     server = Server.new(:name => :test, :user => :root, :address => "abc.com")
-    output = []
-    server.__with_connection  { output << "one" }
-    output.should == ["one"]
-    output = []
-    server = Server.new(:name => :test, :user => :root, :addresses => ["abc.com","def.com"])
-    server.__with_connection  { output << "one" }
-    output.should == ["one","one"]
+    server.should respond_to(:__with_connection_for)
   end
 
   it "should provide a connection to the server with a gateway" do

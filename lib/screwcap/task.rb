@@ -18,7 +18,7 @@ class Task < Screwcap::Base
   end
 
   # run a command. basically just pass it a string containing the command you want to run.
-  def run arg, options = {}
+  def run arg, options = {}, &block
     if arg.class == Symbol
       self.__commands << self.send(arg)
     else
@@ -26,40 +26,17 @@ class Task < Screwcap::Base
     end
   end
 
-  # execute the task.  This is automagically called by the deployer.
   def execute!
     threads = []
-
     self.__servers.each do |_server|
-      threads << Thread.new(_server) do |server|
-        begin
-          log "\n*** BEGIN executing task #{self.__name} on server #{server.name}\n" unless self.__options[:silent] == true
-
-          server.__with_connection do |ssh|
-            error = false
-            self.__commands.each do |command|
-              next if error and self.__options[:stop_on_errors]
-              log "    I:  #{command}\n" unless self.__options[:silent] == true
-
-                ssh.exec! command do |ch,stream,data|
-                  if stream == :stderr
-                    error = true
-                  errorlog "    E: #{data}"
-                else
-                  log "    O:  #{data}" unless self.__options[:silent] == true
-                end
-              end # ssh.exec
-            end # commands.each
-          end # net.ssh start
-        rescue Net::SSH::AuthenticationFailed => e
-          raise Net::SSH::AuthenticationFailed, "Authentication failed for server named #{server.name}.  Please check your authentication credentials."
-        rescue Exception => e
-          errorlog "    F: #{e}"
-        ensure
-          log "\n*** END executing task #{self.__name} for #{server.name}\n\n" unless self.__options[:silent] == true
+      _server.__addresses.each do |_address|
+        if self.__options[:parallel] == false
+          execute_on(_server, _address)
+        else
+          threads << Thread.new(_server, _address) { |server, address| execute_on(server, address) }
         end
-      end # threads << 
-    end #addresses.each
+      end
+    end
     threads.each {|t| t.join }
   end
 
@@ -99,4 +76,34 @@ class Task < Screwcap::Base
     # finally map the actual server objects via name
     self.__servers = self.__server_names.map {|name| servers.find {|s| s.name == name } }
   end
+
+  def execute_on(server, address) 
+    begin
+      log "\n*** BEGIN executing task #{self.__name} on server #{server.name} with address #{address}\n" unless self.__options[:silent] == true
+
+      server.__with_connection_for(address) do |ssh|
+        error = false
+        self.__commands.each do |command|
+          next if error and self.__options[:stop_on_errors]
+          log "    I: (#{address}):  #{command}\n" unless self.__options[:silent] == true
+
+            ssh.exec! command do |ch,stream,data|
+              if stream == :stderr
+                error = true
+              errorlog "    E: #{data}"
+            else
+              log "    O: (#{address}):  #{data}" unless self.__options[:silent] == true
+            end
+          end # ssh.exec
+        end # commands.each
+      end # net.ssh start
+    rescue Net::SSH::AuthenticationFailed => e
+      raise Net::SSH::AuthenticationFailed, "Authentication failed for server named #{server.name}.  Please check your authentication credentials."
+    rescue Exception => e
+      errorlog "    F: #{e}"
+    ensure
+      log "\n*** END executing task #{self.__name} on server #{server.name} with address #{address}\n\n" unless self.__options[:silent] == true
+    end
+  end
+
 end

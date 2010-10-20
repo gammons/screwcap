@@ -32,4 +32,8 @@ task_for :seq2, :server => :test do
   run "2"
 end
 
+task_for :non_parallel, :server => :test, :parallel => false do
+  run "ls"
+end
+
 sequence :deploy, :tasks => [:seq1, :seq2]

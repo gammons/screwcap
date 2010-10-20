@@ -23,7 +23,7 @@ describe "Deployers" do
   it "should be able to define tasks and servers" do
     deployer = Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => true)
 
-    deployer.should have(5).__tasks
+    deployer.should have(6).__tasks
     deployer.should have(2).__servers
   end
 
@@ -66,7 +66,7 @@ describe "Deployers" do
 
   it "should be able to include other task files with the use keyword" do
     deployer = Deployer.new(:recipe_file => "./test/config/use.rb", :silent => true)
-    deployer.should have(5).__tasks
+    deployer.should have(6).__tasks
     deployer.deploy_var.should == "tester"
   end
 

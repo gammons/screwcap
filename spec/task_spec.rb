@@ -29,7 +29,7 @@ describe "Tasks" do
     task = @deployer.__tasks.find {|t| t.name == :task1 }
     task.execute!
     @stderr.should == []
-    @stdout.size.should == 27
+    @stdout.size.should == 29
   end
 
   it "should be able to use variables in the run statement" do
@@ -56,5 +56,10 @@ describe "Tasks" do
 
   it "should complain if you pass a server that is not defined" do
     lambda { Deployer.new(:recipe_file => "./test/config/undefined_server.rb", :silent => false)}.should raise_error(Screwcap::ConfigurationError)
+  end
+
+  it "should be able to disable parallel running" do
+    # this is hard to test.  with threads and stuff
+    lambda { @deployer.run! :non_parallel }.should_not raise_error
   end
 end
