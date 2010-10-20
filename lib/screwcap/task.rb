@@ -52,8 +52,10 @@ class Task < Screwcap::Base
               end # ssh.exec
             end # commands.each
           end # net.ssh start
-        #rescue Exception => e
-        #  errorlog "    F: #{e}"
+        rescue Net::SSH::AuthenticationFailed => e
+          raise Net::SSH::AuthenticationFailed, "Authentication failed for server named #{server.name}.  Please check your authentication credentials."
+        rescue Exception => e
+          errorlog "    F: #{e}"
         ensure
           log "\n*** END deployment Recipe for #{server.name}\n\n" unless self.__options[:silent] == true
         end
