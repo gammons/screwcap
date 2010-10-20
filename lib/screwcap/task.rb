@@ -5,7 +5,6 @@ class Task < Screwcap::Base
     self.__options = opts
     self.__commands = []
     self.__command_sets = []
-    self.__tasks = opts[:tasks]
     self.__server_names = []
 
 
@@ -76,8 +75,6 @@ class Task < Screwcap::Base
         cs.__commands = []
         cs.instance_eval(&cs.__block)
         self.__commands += cs.__commands
-      elsif t = self.__tasks.find {|t| t.name == m }
-        self.__commands += t.__commands
       else
         raise NoMethodError, "Undefined method '#{m.to_s}' for task :#{self.name.to_s}"
       end
