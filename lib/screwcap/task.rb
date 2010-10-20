@@ -79,20 +79,20 @@ class Task < Screwcap::Base
 
   def execute_on(server, address) 
     begin
-      log "\n*** BEGIN executing task #{self.__name} on server #{server.name} with address #{address}\n" unless self.__options[:silent] == true
+      log blue("\n*** BEGIN executing task #{self.__name} on server #{server.name} with address #{address}\n") unless self.__options[:silent] == true
 
       server.__with_connection_for(address) do |ssh|
         error = false
         self.__commands.each do |command|
           next if error and self.__options[:stop_on_errors]
-          log "    I: (#{address}):  #{command}\n" unless self.__options[:silent] == true
+          log green("    I: (#{address}):  #{command}\n") unless self.__options[:silent] == true
 
             ssh.exec! command do |ch,stream,data|
               if stream == :stderr
                 error = true
-              errorlog "    E: #{data}"
+              errorlog red("    E: #{data}")
             else
-              log "    O: (#{address}):  #{data}" unless self.__options[:silent] == true
+              log green("    O: (#{address}):  #{data}") unless self.__options[:silent] == true
             end
           end # ssh.exec
         end # commands.each
@@ -100,9 +100,9 @@ class Task < Screwcap::Base
     rescue Net::SSH::AuthenticationFailed => e
       raise Net::SSH::AuthenticationFailed, "Authentication failed for server named #{server.name}.  Please check your authentication credentials."
     rescue Exception => e
-      errorlog "    F: #{e}"
+      errorlog red("    F: #{e}")
     ensure
-      log "\n*** END executing task #{self.__name} on server #{server.name} with address #{address}\n\n" unless self.__options[:silent] == true
+      log blue("*** END executing task #{self.__name} on server #{server.name} with address #{address}\n\n") unless self.__options[:silent] == true
     end
   end
 

@@ -18,5 +18,39 @@ module Screwcap
     def errorlog(msg)
       $stderr << msg
     end
+
+    def bluebold(msg, options = {:clear => true})
+      if self.__options[:nocolor] == true
+        msg
+      else
+        "\033[1;36m#{msg}#{"\033[0m" if options[:clear]}"
+      end
+    end
+
+    def blue(msg, options = {:clear => true})
+      if self.__options[:nocolor] == true
+        msg
+      else
+        "\033[0;36m#{msg}#{"\033[0m" if options[:clear]}"
+      end
+    end
+
+
+    def red(msg)
+      if self.__options[:nocolor] == true
+        msg
+      else
+        "\033[0;31m#{msg}\033[0m"
+      end
+    end
+
+    def green(msg)
+      if self.__options[:nocolor] == true
+        msg
+      else
+        "\033[0;32m#{msg}\033[0m"
+      end
+    end
+
   end
 end

@@ -27,7 +27,7 @@ class Deployer < Screwcap::Base
 
   # create a task.  Minimally, a task needs a :server specified to run the task on.
   def task_for name, options = {}, &block
-    t = Task.new(options.merge(:name => name, :silent => self.__options[:silent], :deployment_servers => self.__servers), &block)
+    t = Task.new(options.merge(:name => name, :nocolor => self.__options[:nocolor], :silent => self.__options[:silent], :deployment_servers => self.__servers), &block)
     clone_table_for(t)
     t.instance_eval(&block)
     self.__tasks << t
@@ -71,6 +71,7 @@ class Deployer < Screwcap::Base
         self.__tasks.select {|task| task.name.to_s == t.to_s }.first.execute! 
       end
     end
+    $stdout << "\033[0m"
   end
 
   # dynamically include another file into an existing configuration file.

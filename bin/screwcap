@@ -7,6 +7,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../lib/trollop')
 
 p = Trollop::Parser.new do
   opt :silent, "Be silent"
+  opt :nocolor, "Do not color output"
   opt :debug, "Turn on debugger.  Will print full stacktrace if an exeception was raised"
   opt :help, "Show this message"
   banner <<-EOF 
