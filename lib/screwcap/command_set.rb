@@ -11,11 +11,21 @@ class CommandSet < Screwcap::Base
   # run a command. basically just pass it a string containing the command you want to run.
   def run arg, options = {}
     if arg.class == Symbol
-      self.__commands << self.send(arg)
+      self.__commands << {:command => self.send(arg), :type => :remote}
     else
-      self.__commands << arg
+      self.__commands << {:command => arg, :type => :remote}
     end
   end
+
+  # run a command. basically just pass it a string containing the command you want to run.
+  def local arg, options = {}
+    if arg.class == Symbol
+      self.__commands << {:command => self.send(arg), :type => :local}
+    else
+      self.__commands << {:command => arg, :type => :local}
+    end
+  end
+
 
   protected
 

@@ -34,7 +34,7 @@ describe "Tasks" do
 
   it "should be able to use variables in the run statement" do
     task = @deployer.__tasks.find {|t| t.name == :task1 }
-    command = task.__commands.find {|c| c.index "deploy dir" }
+    command = task.__commands.map{|c| c[:command] }.find {|c| c.index "deploy dir" }
     command.should == "deploy dir = tester"
   end
 
@@ -61,5 +61,9 @@ describe "Tasks" do
   it "should be able to disable parallel running" do
     # this is hard to test.  with threads and stuff
     lambda { @deployer.run! :non_parallel }.should_not raise_error
+  end
+
+  it "should be able to run local commands" do 
+    lambda { @deployer.run! :task3 }.should_not raise_error
   end
 end

@@ -18,13 +18,23 @@ class Task < Screwcap::Base
   end
 
   # run a command. basically just pass it a string containing the command you want to run.
-  def run arg, options = {}, &block
+  def run arg, options = {}
     if arg.class == Symbol
-      self.__commands << self.send(arg)
+      self.__commands << {:command => self.send(arg), :type => :remote}
     else
-      self.__commands << arg
+      self.__commands << {:command => arg, :type => :remote}
     end
   end
+
+  # run a command. basically just pass it a string containing the command you want to run.
+  def local arg, options = {}
+    if arg.class == Symbol
+      self.__commands << {:command => self.send(arg), :type => :local}
+    else
+      self.__commands << {:command => arg, :type => :local}
+    end
+  end
+
 
   def execute!
     threads = []
@@ -79,30 +89,39 @@ class Task < Screwcap::Base
 
   def execute_on(server, address) 
     begin
-      log blue("\n*** BEGIN executing task #{self.__name} on server #{server.name} with address #{address}\n") unless self.__options[:silent] == true
+      log blue("\n*** BEGIN executing task #{self.__name} on #{server.name} with address #{address}\n") unless self.__options[:silent] == true
 
       server.__with_connection_for(address) do |ssh|
         error = false
         self.__commands.each do |command|
           next if error and self.__options[:stop_on_errors]
-          log green("    I: (#{address}):  #{command}\n") unless self.__options[:silent] == true
 
-            ssh.exec! command do |ch,stream,data|
-              if stream == :stderr
-                error = true
-              errorlog red("    E: #{data}")
+          if command[:type] == :remote
+            log green("    I: (#{address}):  #{command[:command]}\n") unless self.__options[:silent] == true
+
+              ssh.exec! command[:command] do |ch,stream,data|
+                if stream == :stderr
+                  error = true
+                errorlog red("    E: (#{address}): #{data}")
+              else
+                log green("    O: (#{address}):  #{data}") unless self.__options[:silent] == true
+              end
+            end # ssh.exec
+          elsif command[:type] == :local
+            if system(command[:command])
+              log blue("    L: (local):  #{command[:command]}\n") unless self.__options[:silent] == true
             else
-              log green("    O: (#{address}):  #{data}") unless self.__options[:silent] == true
+              errorlog red("    L: (local):  #{command[:command]}\n") unless self.__options[:silent] == true
             end
-          end # ssh.exec
+          end
         end # commands.each
       end # net.ssh start
     rescue Net::SSH::AuthenticationFailed => e
       raise Net::SSH::AuthenticationFailed, "Authentication failed for server named #{server.name}.  Please check your authentication credentials."
     rescue Exception => e
-      errorlog red("    F: #{e}")
+      errorlog red("    F: (#{address}): #{e}")
     ensure
-      log blue("*** END executing task #{self.__name} on server #{server.name} with address #{address}\n\n") unless self.__options[:silent] == true
+      log blue("*** END executing task #{self.__name} on #{server.name} with address #{address}\n\n") unless self.__options[:silent] == true
     end
   end
 
