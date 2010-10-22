@@ -1,3 +1,4 @@
+.bundle/config
 Gemfile
 Gemfile.lock
 History.txt
@@ -24,6 +25,7 @@ spec/spec_helper.rb
 spec/task_spec.rb
 tasks/rspec.rake
 test/config/command_sets.rb
+test/config/expect.rb
 test/config/gateway.rb
 test/config/no_server.rb
 test/config/rails_tasks.rb
@@ -32,5 +34,5 @@ test/config/undefined_command_set.rb
 test/config/undefined_item.rb
 test/config/undefined_server.rb
 test/config/unknown_use.rb
+test/config/upload.rb
 test/config/use.rb
-test/test_command_set.rb
