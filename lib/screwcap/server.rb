@@ -32,7 +32,7 @@ class Server < Screwcap::Base
   end
 
   def __upload_to!(address, local, remote)
-    Net::SCP.upload!(address, self.__user, local, remote, options_for_net_ssh)
+    self.__with_connection_for(address) {|ssh| ssh.scp.upload! local, remote }
   end
 
   protected

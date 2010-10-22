@@ -124,7 +124,7 @@ class Task < Screwcap::Base
             end
           elsif command[:type] == :scp
             server.__upload_to!(address, command[:local], command[:remote])
-            log green("    I: (#{address}): SCP #{command[:local]} to #{server.__user}@#{address}:#{command[:remote]}")
+            log green("    I: (#{address}): SCP #{command[:local]} to #{server.__user}@#{address}:#{command[:remote]}\n")
           end
         end # commands.each
       end # net.ssh start
