@@ -9,7 +9,6 @@ bin/screwcap
 lib/exts.rb
 lib/screwcap.rb
 lib/screwcap/base.rb
-lib/screwcap/command_set.rb
 lib/screwcap/deployer.rb
 lib/screwcap/sequence.rb
 lib/screwcap/server.rb
