@@ -11,6 +11,8 @@ GEM
     linecache (0.43)
     mocha (0.9.8)
       rake
+    net-scp (1.0.4)
+      net-ssh (>= 1.99.1)
     net-ssh (2.0.23)
     net-ssh-gateway (1.0.1)
       net-ssh (>= 1.99.1)
@@ -39,6 +41,7 @@ PLATFORMS
 DEPENDENCIES
   hoe
   mocha
+  net-scp
   net-ssh
   net-ssh-gateway
   newgem

@@ -13,6 +13,7 @@ describe "Tasks" do
 
   before(:all) do
     Net::SSH.stubs(:start).yields(SSHObject.new(:return_stream => :stdout, :return_data => "hostname = asdf\n"))
+    Net::SCP.stubs(:upload!).returns(nil)
   end
 
   it "should be able to create variables" do
@@ -65,5 +66,10 @@ describe "Tasks" do
 
   it "should be able to run local commands" do 
     lambda { @deployer.run! :task3 }.should_not raise_error
+  end
+
+  it "should be able to upload files using the scp command" do
+    deployer = Deployer.new(:recipe_file => "./test/config/upload.rb", :silent => true)
+    deployer.run! :upload
   end
 end

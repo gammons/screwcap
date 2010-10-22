@@ -22,7 +22,7 @@ end
 
 task_for :task3, :servers => [:test, :test2] do
   run "ls"
-  local "" #empty in tests so it doesn't pollute
+  local "ls" #empty in tests so it doesn't pollute
 end
 
 task_for :seq1, :server => :test do

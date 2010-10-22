@@ -26,6 +26,10 @@ class Task < Screwcap::Base
     end
   end
 
+  def scp options = {}
+    self.__commands << options.merge({:type => :scp})
+  end
+
   # run a command. basically just pass it a string containing the command you want to run.
   def local arg, options = {}
     if arg.class == Symbol
@@ -97,22 +101,28 @@ class Task < Screwcap::Base
           next if error and self.__options[:stop_on_errors]
 
           if command[:type] == :remote
-            log green("    I: (#{address}):  #{command[:command]}\n") unless self.__options[:silent] == true
+            log green("    I: (#{address}):  #{command[:command]}\n")
 
               ssh.exec! command[:command] do |ch,stream,data|
                 if stream == :stderr
                   error = true
                 errorlog red("    E: (#{address}): #{data}")
               else
-                log green("    O: (#{address}):  #{data}") unless self.__options[:silent] == true
+                log green("    O: (#{address}):  #{data}")
               end
             end # ssh.exec
           elsif command[:type] == :local
-            if system(command[:command])
-              log blue("    L: (local):  #{command[:command]}\n") unless self.__options[:silent] == true
+            ret = `#{command[:command]}`
+            if $?.to_i == 0
+              log blue("    I: (local):  #{command[:command]}\n")
+              log blue("    O: (local):  #{ret}\n")
             else
-              errorlog red("    L: (local):  #{command[:command]}\n") unless self.__options[:silent] == true
+              log blue("    I: (local):  #{command[:command]}\n")
+              errorlog red("    O: (local):  #{ret}\n")
             end
+          elsif command[:type] == :scp
+            server.__upload_to!(address, command[:local], command[:remote])
+            log green("    I: (#{address}): SCP #{command[:local]} to #{server.__user}@#{address}:#{command[:remote]}")
           end
         end # commands.each
       end # net.ssh start

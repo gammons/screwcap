@@ -12,11 +12,11 @@ module Screwcap
     end
 
     def log(msg, options = {})
-      $stdout << msg
+      $stdout << msg unless self.__options[:silent] == true
     end
 
     def errorlog(msg)
-      $stderr << msg
+      $stderr << msg unless self.__options[:silent] == true
     end
 
     def bluebold(msg, options = {:clear => true})
