@@ -48,4 +48,10 @@ describe "Command sets" do
     task.__command_sets.first.instance_eval(&task.__command_sets.first.__block)
     task.__commands.map {|c| c[:command]}.should == %w(birdo nested birdo task)
   end
+
+  it "should be able to call scp just like a task" do
+    task = @deployer.__tasks.find {|t| t.__name == :task_use_scp}
+    task.__command_sets.first.instance_eval(&task.__command_sets.first.__block)
+    task.__commands.map {|c| c[:command]}.should == [nil]
+  end
 end

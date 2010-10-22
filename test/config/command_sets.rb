@@ -47,6 +47,10 @@ command_set :nested_outside_with_var do
   run :nested_var
 end
 
+command_set :use_scp do
+  scp :local => "/tmp/test", :remote => "/tmp/test"
+end
+
 
 task_for :use_command_set_no_override, :server => :test do
   push_to_thang
@@ -84,4 +88,8 @@ task_for :nested_scoping, :server => :test do
   set :nested_var, "task"
   nested_outside_with_var
   run :nested_var
+end
+
+task_for :task_use_scp, :server => :test do
+  use_scp
 end

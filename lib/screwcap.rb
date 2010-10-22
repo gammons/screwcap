@@ -9,7 +9,6 @@ require 'logger'
 
 require 'exts'
 require 'screwcap/base'
-require 'screwcap/command_set'
 require 'screwcap/task'
 require 'screwcap/server'
 require 'screwcap/sequence'
