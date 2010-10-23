@@ -1,4 +1,6 @@
 class Task < Screwcap::Base
+  include MessageLogger
+
   def initialize(opts = {}, &block)
     super
     self.__name = opts[:name]

@@ -66,9 +66,9 @@ class Deployer < Screwcap::Base
     tasks.each do |t| 
       sequence = self.__sequences.find {|s| s.__name == t }
       if sequence
-        sequence.__task_names.each {|task_name| Runner.execute! self.__tasks.find {|task| task.__name == task_name }}
+        sequence.__task_names.each {|task_name| Runner.execute! self.__tasks.find {|task| task.__name == task_name }, self.__options}
       else
-        Runner.execute! self.__tasks.select {|task| task.name.to_s == t.to_s }.first
+        Runner.execute! self.__tasks.select {|task| task.name.to_s == t.to_s }.first, self.__options
       end
     end
     $stdout << "\033[0m"

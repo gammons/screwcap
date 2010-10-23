@@ -8,6 +8,7 @@ require 'ostruct'
 require 'logger'
 
 require 'exts'
+require 'screwcap/message_logger'
 require 'screwcap/base'
 require 'screwcap/task'
 require 'screwcap/server'

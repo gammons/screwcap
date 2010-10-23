@@ -4,11 +4,8 @@ describe "Servers" do
   before(:each) do
     @stdout = []
     @stderr = []
-    Task.any_instance.stubs(:log).with() { |msg, opts| @stdout <<  msg }
-    Task.any_instance.stubs(:errorlog).with() { |msg, opts| @stderr <<  msg }
-    Deployer.any_instance.stubs(:log).with() { |msg, opts| @stdout <<  msg }
-    Deployer.any_instance.stubs(:errorlog).with() { |msg, opts| @stderr <<  msg }
-
+    Runner.stubs(:log).with() { |msg,opts| @stdout <<  msg }
+    Runner.stubs(:errorlog).with() { |msg,opts| @stderr <<  msg }
     Net::SSH::Gateway.stubs(:new).returns(SSHObject.new)
   end
 
