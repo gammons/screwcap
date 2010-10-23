@@ -25,6 +25,6 @@ command_set :success do
 end
 
 task_for :expect, :server => :test do 
-  run "ls", :onfail => :fail, :onsuccess => :success
+  run "ls", :onfailure => :fail, :onsuccess => :success
 end
 

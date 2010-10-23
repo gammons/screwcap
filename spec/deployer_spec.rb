@@ -51,7 +51,7 @@ describe "Deployers" do
 
   it "should be able to define sequences" do
     deployer = Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => true)
-    deployer.should have (1).__sequences
+    deployer.should have(1).__sequences
   end
 
   it "should be able to run a single task" do

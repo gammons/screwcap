@@ -4,10 +4,10 @@ describe "Tasks" do
   before(:each) do
     @stdout = []
     @stderr = []
-    Task.any_instance.stubs(:log).with() { |msg| @stdout <<  msg }
-    Task.any_instance.stubs(:errorlog).with() { |msg| @stderr <<  msg }
-    Deployer.any_instance.stubs(:log).with() { |msg| @stdout <<  msg }
-    Deployer.any_instance.stubs(:errorlog).with() { |msg| @stderr <<  msg }
+    Task.any_instance.stubs(:log).with() { |msg,opts| @stdout <<  msg }
+    Task.any_instance.stubs(:errorlog).with() { |msg,opts| @stderr <<  msg }
+    Deployer.any_instance.stubs(:log).with() { |msg,opts| @stdout <<  msg }
+    Deployer.any_instance.stubs(:errorlog).with() { |msg,opts| @stderr <<  msg }
     @deployer = Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => false)
   end
 
@@ -28,7 +28,7 @@ describe "Tasks" do
 
   it "should be able to execute statements on a remote server" do
     task = @deployer.__tasks.find {|t| t.name == :task1 }
-    task.execute!
+    Runner.execute! task
     @stderr.should == []
     @stdout.size.should == 29
   end

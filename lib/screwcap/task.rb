@@ -41,21 +41,6 @@ class Task < Screwcap::Base
     end
   end
 
-
-  def execute!
-    threads = []
-    self.__servers.each do |_server|
-      _server.__addresses.each do |_address|
-        if self.__options[:parallel] == false
-          execute_on(_server, _address)
-        else
-          threads << Thread.new(_server, _address) { |server, address| execute_on(server, address) }
-        end
-      end
-    end
-    threads.each {|t| t.join }
-  end
-
   protected
 
   def method_missing(m, *args)
@@ -91,50 +76,6 @@ class Task < Screwcap::Base
 
     # finally map the actual server objects via name
     self.__servers = self.__server_names.map {|name| servers.find {|s| s.name == name } }
-  end
-
-  def execute_on(server, address) 
-    begin
-      log blue("\n*** BEGIN executing task #{self.__name} on #{server.name} with address #{address}\n") unless self.__options[:silent] == true
-
-      server.__with_connection_for(address) do |ssh|
-        error = false
-        self.__commands.each do |command|
-          next if error and self.__options[:stop_on_errors]
-
-          if command[:type] == :remote
-            log green("    I: (#{address}):  #{command[:command]}\n")
-
-              ssh.exec! command[:command] do |ch,stream,data|
-                if stream == :stderr
-                  error = true
-                errorlog red("    E: (#{address}): #{data}")
-              else
-                log green("    O: (#{address}):  #{data}")
-              end
-            end # ssh.exec
-          elsif command[:type] == :local
-            ret = `#{command[:command]}`
-            if $?.to_i == 0
-              log blue("    I: (local):  #{command[:command]}\n")
-              log blue("    O: (local):  #{ret}\n")
-            else
-              log blue("    I: (local):  #{command[:command]}\n")
-              errorlog red("    O: (local):  #{ret}\n")
-            end
-          elsif command[:type] == :scp
-            server.__upload_to!(address, command[:local], command[:remote])
-            log green("    I: (#{address}): SCP #{command[:local]} to #{server.__user}@#{address}:#{command[:remote]}\n")
-          end
-        end # commands.each
-      end # net.ssh start
-    rescue Net::SSH::AuthenticationFailed => e
-      raise Net::SSH::AuthenticationFailed, "Authentication failed for server named #{server.name}.  Please check your authentication credentials."
-    rescue Exception => e
-      errorlog red("    F: (#{address}): #{e}")
-    ensure
-      log blue("*** END executing task #{self.__name} on #{server.name} with address #{address}\n\n") unless self.__options[:silent] == true
-    end
   end
 
 end

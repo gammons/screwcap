@@ -11,6 +11,7 @@ require 'exts'
 require 'screwcap/base'
 require 'screwcap/task'
 require 'screwcap/server'
+require 'screwcap/runner'
 require 'screwcap/sequence'
 require 'screwcap/deployer'
 
