@@ -10,8 +10,11 @@ p = Trollop::Parser.new do
   opt :nocolor, "Do not color output"
   opt :debug, "Turn on debugger.  Will print full stacktrace if an exeception was raised"
   opt :help, "Show this message"
+  version <<-EOF 
+    Screwcap #{Screwcap::VERSION} by Grant Ammons (grant@pipelinedeals.com)
+    More info at http://gammons.github.com/screwcap
+  EOF
   banner <<-EOF 
-
     Usage: screwcap [options] file task_name [[task_name2], [task_name3], ...]
     Example: screwcap config/deploy.rb deploy_to_staging
   EOF
@@ -23,6 +26,7 @@ opts = Trollop::with_standard_exception_handling p do
     require 'ruby-debug'
     Debugger.start
   end
+
   raise Trollop::HelpNeeded if ARGV.size < 2
   recipe_file = ARGV.shift
   begin
