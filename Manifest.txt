@@ -5,11 +5,14 @@ History.txt
 Manifest.txt
 README.rdoc
 Rakefile
+TODO
 bin/screwcap
 lib/exts.rb
 lib/screwcap.rb
 lib/screwcap/base.rb
 lib/screwcap/deployer.rb
+lib/screwcap/message_logger.rb
+lib/screwcap/runner.rb
 lib/screwcap/sequence.rb
 lib/screwcap/server.rb
 lib/screwcap/task.rb
@@ -28,6 +31,7 @@ test/config/expect.rb
 test/config/gateway.rb
 test/config/no_server.rb
 test/config/rails_tasks.rb
+test/config/real_world_recipe.rb
 test/config/simple_recipe.rb
 test/config/undefined_command_set.rb
 test/config/undefined_item.rb
