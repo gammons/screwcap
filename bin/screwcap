@@ -10,6 +10,7 @@ p = Trollop::Parser.new do
   opt :nocolor, "Do not color output"
   opt :debug, "Turn on debugger.  Will print full stacktrace if an exeception was raised"
   opt :help, "Show this message"
+  opt :tasks, "Display available tasks in recipe file"
   version <<-EOF 
     Screwcap #{Screwcap::VERSION} by Grant Ammons (grant@pipelinedeals.com)
     More info at http://gammons.github.com/screwcap
@@ -25,6 +26,16 @@ opts = Trollop::with_standard_exception_handling p do
   if opts[:debug] == true
     require 'ruby-debug'
     Debugger.start
+  end
+
+  if opts[:tasks] == true
+    recipe_file = ARGV.shift
+    deployer = Deployer.new(opts.merge(:recipe_file => recipe_file))
+    $stdout << "Tasks Available:\n" if deployer.__tasks.size > 0
+    deployer.__tasks.map {|t| t.__name }.each {|name| $stdout << "  #{name}\n" }
+    $stdout << "Sequences Available:\n" if deployer.__sequences.size > 0
+    deployer.__sequences.map {|t| t.__name }.each {|name| $stdout << "  #{name}\n" }
+    exit
   end
 
   raise Trollop::HelpNeeded if ARGV.size < 2
