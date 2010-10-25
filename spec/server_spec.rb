@@ -31,7 +31,7 @@ describe "Servers" do
   end
 
   it "should provide a connection to the server with a gateway" do
-    @deployer = Deployer.new(:recipe_file => "./test/config/gateway.rb", :silent => false)
+    @deployer = Deployer.new(:recipe_file => "./test/config/gateway.rb", :silent => true)
     server = @deployer.__servers.find {|s| s.__name == :test}
     gateway = @deployer.__servers.find {|s| s.__name == :gateway1}
 

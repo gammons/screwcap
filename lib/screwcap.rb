@@ -26,5 +26,6 @@ module Screwcap
   class IncludeFileNotFound < Exception; end
   class InvalidServer < Exception; end
   class CommandSetDependencyError < Exception; end
+  class CommandError < Exception; end
 end
 

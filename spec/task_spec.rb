@@ -6,12 +6,13 @@ describe "Tasks" do
     @stderr = []
     Runner.stubs(:log).with() { |msg,opts| @stdout <<  msg }
     Runner.stubs(:errorlog).with() { |msg,opts| @stderr <<  msg }
-    @deployer = Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => false)
+    @deployer = Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => true)
   end
 
   before(:all) do
     Net::SSH.stubs(:start).yields(SSHObject.new(:return_stream => :stdout, :return_data => "hostname = asdf\n"))
     Net::SCP.stubs(:upload!).returns(nil)
+    Runner.stubs(:ssh_exec!).returns(["ok","",0,nil])
   end
 
   it "should be able to create variables" do
@@ -28,7 +29,7 @@ describe "Tasks" do
     task = @deployer.__tasks.find {|t| t.name == :task1 }
     Runner.execute! task, @deployer.__options
     @stderr.should == []
-    @stdout.size.should == 28
+    @stdout.size.should == 26
   end
 
   it "should be able to use variables in the run statement" do
@@ -50,11 +51,11 @@ describe "Tasks" do
   end
 
   it "should complain if you do not pass the task a server argument" do
-    lambda { Deployer.new(:recipe_file => "./test/config/no_server.rb", :silent => false)}.should raise_error(Screwcap::ConfigurationError)
+    lambda { Deployer.new(:recipe_file => "./test/config/no_server.rb", :silent => true)}.should raise_error(Screwcap::ConfigurationError)
   end
 
   it "should complain if you pass a server that is not defined" do
-    lambda { Deployer.new(:recipe_file => "./test/config/undefined_server.rb", :silent => false)}.should raise_error(Screwcap::ConfigurationError)
+    lambda { Deployer.new(:recipe_file => "./test/config/undefined_server.rb", :silent => true)}.should raise_error(Screwcap::ConfigurationError)
   end
 
   it "should be able to disable parallel running" do
@@ -69,5 +70,13 @@ describe "Tasks" do
   it "should be able to upload files using the scp command" do
     deployer = Deployer.new(:recipe_file => "./test/config/upload.rb", :silent => true)
     deployer.run! :upload
+  end
+
+  it "should respond to onfailure" do
+    deployer = Deployer.new(:recipe_file => "./test/config/expect.rb", :silent => true)
+    t = deployer.__tasks.find {|t| t.__name == :expect }
+    Runner.stubs(:ssh_exec!).returns(["","fail",1,nil]).then.returns(["ok","",0,nil])
+    Runner.execute! t, deployer.__options
+    t.__commands.map {|c| [c[:command], c[:from]] }.first.should == ["echo 'we failed'", :failover]
   end
 end

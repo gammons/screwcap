@@ -3,6 +3,7 @@ require 'spec_helper'
 describe "Sequences" do
   before(:all) do
     Net::SSH.stubs(:start).yields(SSHObject.new(:return_stream => :stdout, :return_data => "hostname = asdf\n"))
+    Runner.stubs(:ssh_exec!).returns(["ok","",0,nil])
   end
   before(:each) do
     @stdout = []

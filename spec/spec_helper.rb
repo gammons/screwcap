@@ -7,19 +7,33 @@ require 'mocha'
 require 'ruby-debug' rescue nil
 require 'net/ssh'
 
-class SSHObject
+class SSHObject < OpenStruct
   attr_accessor :options
 
   def initialize(options = {})
-    @options = {:return_stream => :stdout}
-    @options = options
   end
 
-  def exec!(cmd, &block)
-    yield nil, @options[:return_stream], @options[:return_data]
+  def on_data
+    yield SSHObject.new, ""
   end
 
-  def ssh(address, user, options = {}, &block)
-    yield nil
+  def on_extended_data
+    yield SSHObject.new, "", ""
+  end
+
+  def read_long
+    ""
+  end
+
+  def upload!(from, to)
+    nil
+  end
+
+  def scp
+    SSHObject.new
+  end
+
+  def on_request(item)
+    yield SSHObject.new, SSHObject.new
   end
 end

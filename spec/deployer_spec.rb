@@ -3,6 +3,7 @@ require 'spec_helper'
 describe "Deployers" do
   before(:all) do
     Net::SSH.stubs(:start).yields(SSHObject.new(:return_stream => :stdout, :return_data => "hostname = asdf\n"))
+    Runner.stubs(:ssh_exec!).returns(["ok","",0,nil])
   end
 
   it "should complain if no server was defined" do
@@ -56,7 +57,8 @@ describe "Deployers" do
 
   it "should be able to run a single task" do
     deployer = Deployer.new(:recipe_file => "./test/config/simple_recipe.rb", :silent => true)
-    lambda { deployer.run! :task1 }.should_not raise_error
+    deployer.run! :task1
+    #lambda { deployer.run! :task1 }.should_not raise_error
   end
 
   it "should be able to run multiple tasks" do

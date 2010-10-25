@@ -2,6 +2,7 @@
 #
 # The deployer can be thought of as the "global scope" of your tasks file.
 class Deployer < Screwcap::Base
+  include MessageLogger
 
   # create a new deployer.
   def initialize(opts = {})
@@ -16,7 +17,7 @@ class Deployer < Screwcap::Base
     # ensure that deployer options will not be passed to tasks
     opts.each_key {|k| self.delete_field(k) }
 
-    log "Reading #{self.__options[:recipe_file]}\n" unless self.__options[:silent] == true
+    Deployer.log "Reading #{self.__options[:recipe_file]}\n" unless self.__options[:silent] == true
 
     file = File.open(File.expand_path("./#{self.__options[:recipe_file]}"))
     data = file.read

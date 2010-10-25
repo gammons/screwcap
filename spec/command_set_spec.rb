@@ -4,7 +4,7 @@ describe "Command sets" do
   before(:all) do
     @stdout = []
     Deployer.any_instance.stubs(:log).with() { |msg| @stdout << msg}
-    @deployer = Deployer.new(:recipe_file => "./test/config/command_sets.rb", :silent => false)
+    @deployer = Deployer.new(:recipe_file => "./test/config/command_sets.rb", :silent => true)
   end
 
   it "should be able to define a generic list of commands" do

@@ -24,9 +24,9 @@ class Task < Screwcap::Base
   def run arg, options = {}
 
     if arg.class == Symbol
-      self.__commands << {:command => self.send(arg), :type => :remote}
+      self.__commands << options.merge({:command => self.send(arg), :type => :remote, :from => self.__name})
     else
-      self.__commands << {:command => arg, :type => :remote}
+      self.__commands << options.merge({:command => arg, :type => :remote, :from => self.__name})
     end
   end
 
@@ -37,9 +37,14 @@ class Task < Screwcap::Base
   # run a command. basically just pass it a string containing the command you want to run.
   def local arg, options = {}
     if arg.class == Symbol
-      self.__commands << {:command => self.send(arg), :type => :local}
+      self.__commands << options.merge({:command => self.send(arg), :type => :local, :from => self.__name})
     else
-      self.__commands << {:command => arg, :type => :local}
+      self.__commands << options.merge({:command => arg, :type => :local, :from => self.__name})
+    end
+    if failure_cmd = self.__commands.last[:onfailure]
+      unless self.__command_sets.find {|cs| cs.__name == failure_cmd }
+        raise ScrewCap::ConfigurationError, "Could not find failure command set named '#{failure_cmd}' for task '#{self.__name}'"
+      end
     end
   end
 
