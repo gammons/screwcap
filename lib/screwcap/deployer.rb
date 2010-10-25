@@ -19,7 +19,7 @@ class Deployer < Screwcap::Base
 
     Deployer.log "Reading #{self.__options[:recipe_file]}\n" unless self.__options[:silent] == true
 
-    file = File.open(File.expand_path("./#{self.__options[:recipe_file]}"))
+    file = File.open(self.__options[:recipe_file])
     data = file.read
 
     instance_eval(data)
