@@ -3,34 +3,48 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-	<title>gammons/screwcap @ GitHub</title>
+  <title>Screwcap: Easy remote task management</title>
+  <link href='http://fonts.googleapis.com/css?family=Lobster&subset=latin' rel='stylesheet' type='text/css'>
 	
-	<style type="text/css">
-		body {
-  		margin-top: 1.0em;
-  		background-color: #526205;
-		  font-family: "Helvetica,Arial,FreeSans";
-  		color: #ffffff;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-		h1 { font-size: 3.8em; color: #ad9dfa; margin-bottom: 3px; }
-		h1 .small { font-size: 0.4em; }
-		h1 a { text-decoration: none }
-		h2 { font-size: 1.5em; color: #ad9dfa; }
-    h3 { text-align: center; color: #ad9dfa; }
-    a { color: #ad9dfa; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-		pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-	</style>
-	
+<style type="text/css">
+  body {
+    margin-top: 1.0em;
+    background: url("corkscrew.jpg") no-repeat scroll 0 0 #fff;
+    font-family: "Helvetica,Arial,FreeSans";
+    color: #733;
+  }
+
+  #container {
+    margin: 0 auto;
+    width: 1200px;
+  }
+  h1 { font-size: 4.8em; color: #733; margin-bottom: 3px; }
+  .lobster { font-family: 'Lobster', arial, serif; }
+  h1 a { text-decoration: none }
+  h2 { font-size: 1.5em; color: #733; }
+  h3 { text-align: center; color: #733; }
+  a { color: #ad9dfa; }
+  .download { float: right; }
+  li {
+    padding-bottom: 5px;
+  }
+  pre {
+    font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif;
+    background-color: #eee;
+    padding: 5px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  code {
+    font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif;
+    background-color: #eee;
+  }
+  hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
+  .footer { text-align:center; padding-top:30px; font-style: italic; }
+</style>
+
 </head>
 
 <body>
@@ -38,46 +52,25 @@
 
   <div id="container">
 
-    <div class="download">
-      <a href="http://github.com/gammons/screwcap/zipball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
-      <a href="http://github.com/gammons/screwcap/tarball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
-    </div>
-
-    <h1><a href="http://github.com/gammons/screwcap">screwcap</a>
-      <span class="small">by <a href="http://github.com/gammons">gammons</a></span></h1>
+    <h1 class="lobster">Screwcap</h1>
 
     <div class="description">
-      Screwcap is a Net::SSH wrapper that makes it easier to perform actions on remote servers.
+      Screwcap is a Net::SSH wrapper that makes it easier to perform actions on remote servers.  Whether you are deploying a rails applicaiton or just clearing out a temporary directory, screwcap makes these tasks easy.
     </div>
 
-    <h2>Dependencies</h2>
-<p>Net::SSH
-Net::SSH::Gateway</p>
-<h2>Install</h2>
-<p>gem install screwcap</p>
-<h2>Authors</h2>
-<p>Grant Ammons (grant@pipelinedealsco.com)<br/><br/>      </p>
-<h2>Contact</h2>
-<p>Grant Ammons (grant@pipelinedealsco.com)<br/>      </p>
 
+    <h2>Rationale</h2>
+    <ul>
+      <li>Unlike Capistrano, screwcap is "dumb".  It makes no assumptions about the tasks you are running on remote machines, and it's not opinionated. You are free to create your own roles and workflows.</li>
+      <li>Unlike vlad, screwcap is not directly tied to rake, although it can be.</li>
+      <li>Rails deployment methodologies change.  App servers change.  Things change.  Because of that, there is nothing rails-deployment-specific about screwcap.  Sure, screwcap can easily be used for deploying rails applications, but it's not a one-trick pony.</li>
+      <li>There are main keywords: <code>server</code> to declare your remote servers, <code>set</code> to set variables, and <code>task_for</code> to write a task to run on those servers.</li>
+    </ul>
 
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="http://github.com/gammons/screwcap/zipball/master">zip</a> or
-      <a href="http://github.com/gammons/screwcap/tarball/master">tar</a> formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/gammons/screwcap</pre>
-    </p>
+    <h2>Example Recipe</h2>
+    <script src="http://gist.github.com/649852.js?file=gistfile1.rb"></script>
 
-    <div class="footer">
-      get the source code on GitHub : <a href="http://github.com/gammons/screwcap">gammons/screwcap</a>
-    </div>
-
+    <h2>Use in Rails</h2>
   </div>
 
   
