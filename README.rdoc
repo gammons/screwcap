@@ -1,6 +1,6 @@
-= screwcap
+= Screwcap
 
-* http://github.com/#{github_username}/#{project_name}
+* http://gammons.github.com/screwcap
 
 == DESCRIPTION:
 
@@ -8,17 +8,13 @@ Screwcap is a library that wraps Net::SSH and makes it easy to perform actions o
 
 The most obvious task you could use screwcap for is deploying rails applications to remote servers.
 
-== FEATURES/PROBLEMS:
+== FEATURES:
 
-* Screwcap is currently not ready for production use as it is under active development.
+* 
 
 == SYNOPSIS:
 
   FIX (code sample of usage)
-
-== REQUIREMENTS:
-
-* FIX (list of requirements)
 
 == INSTALL:
 
@@ -28,7 +24,7 @@ The most obvious task you could use screwcap for is deploying rails applications
 
 (The MIT License)
 
-Copyright (c) 2010 Grant Ammons
+Copyright (c) 2010 Grant Ammons (grant@pipelinedeals.com)
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

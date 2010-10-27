@@ -20,7 +20,31 @@ class Task < Screwcap::Base
     validate(opts[:deployment_servers]) unless opts[:validate] == false
   end
 
-  # run a command. basically just pass it a string containing the command you want to run.
+  # Run a command.  This can either be a string, or a symbol that is the name of a command set to run.
+  #
+  #
+  #     command_set :list_of_tasks do
+  #       run "do_this"
+  #       run "do_that"
+  #     end
+  #  
+  #     task_for :item, :servers => :server do
+  #      run "ls -l"
+  #      list_of_tasks
+  #     end 
+  #
+  # Run also takes a list of *options*, notably :onfailure.  If :onfailure is given, and the command specified by run 
+  # returns a non-zero status, screwcap will then abort the task and run the command set specified by :onfailure.
+  #
+  #
+  #   command_set :rollback do
+  #     run "rollback_this"
+  #     run "rollback_that"
+  #   end
+  #
+  #   task_for :item, :servers => :server do
+  #    run "ls -l", :onfailure => :rollback
+  #   end 
   def run arg, options = {}
 
     if arg.class == Symbol
@@ -30,11 +54,30 @@ class Task < Screwcap::Base
     end
   end
 
+  # SCP a file from your local drive to a remote machine.
+  #   task_for :item, :servers => :server do
+  #     scp :local => "/tmp/pirate_booty", :remote => "/mnt/app/config/booty.yml"
+  #   end 
   def scp options = {}
     self.__commands << options.merge({:type => :scp})
   end
 
-  # run a command. basically just pass it a string containing the command you want to run.
+  # Run a command locally.  This can either be a string, or a symbol that is the name of a command set to run.
+  #
+  #     task_for :item, :servers => :server do
+  #      local "prepare_the_cats"
+  #     end 
+  #
+  # local also takes a hash of *options*, notably :onfailure.  If :onfailure is given, and the command specified by run 
+  # returns a non-zero status, screwcap will then abort the task and run the command set specified by :onfailure.
+  #
+  #   command_set :rollback do
+  #     run "rollback_this"
+  #   end
+  #
+  #   task_for :item, :servers => :server do
+  #    local "herd_cats", :onfailure => :rollback
+  #   end 
   def local arg, options = {}
     if arg.class == Symbol
       self.__commands << options.merge({:command => self.send(arg), :type => :local, :from => self.__name})
@@ -50,7 +93,7 @@ class Task < Screwcap::Base
 
   protected
 
-  def method_missing(m, *args)
+  def method_missing(m, *args) # :nodoc
     if m.to_s[0..1] == "__" or [:run].include?(m) or m.to_s.reverse[0..0] == "="
       super(m, args.first) 
     else

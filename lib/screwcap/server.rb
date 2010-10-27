@@ -1,4 +1,16 @@
 class Server < Screwcap::Base
+
+  # ====A *server* is the address(es) that you run a *:task* on.
+  #   server :myserver, :address => "abc.com", :password => "xxx"
+  #   server :app_servers, :addresses => ["abc.com","def.com"], :keys => "~/.ssh/my_key"
+  #
+  # ==== Options
+  # * A server must have a *:user*.
+  # * Specify *:address* or *:addresses*
+  # * A *:gateway*.  See the section about gateways for more info.
+  # * All Other options will be passed directly to Net::SSH.
+  #   * *:keys* can be used to specify the key to use to connect to the server
+  #   * *:password* specify the password to connect with.  Not recommended.  Use keys.
   def initialize(opts = {})
     super
     self.__options = opts

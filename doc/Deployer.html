@@ -1,0 +1,795 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+
+	<title>Class: Deployer</title>
+
+	<link rel="stylesheet" href="./rdoc.css" type="text/css" media="screen" />
+
+	<script src="./js/jquery.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="./js/thickbox-compressed.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="./js/quicksearch.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="./js/darkfish.js" type="text/javascript"
+		charset="utf-8"></script>
+
+</head>
+<body class="class">
+
+	<div id="metadata">
+		<div id="home-metadata">
+			<div id="home-section" class="section">
+        <h3 class="section-header">
+          <a href="./index.html">Home</a>
+          <a href="./index.html#classes">Classes</a>
+          <a href="./index.html#methods">Methods</a>
+        </h3>
+			</div>
+		</div>
+
+		<div id="file-metadata">
+			<div id="file-list-section" class="section">
+				<h3 class="section-header">In Files</h3>
+				<div class="section-body">
+					<ul>
+					
+						<li><a href="./lib/screwcap/deployer_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="lib/screwcap/deployer.rb">lib/screwcap/deployer.rb</a></li>
+					
+					</ul>
+				</div>
+			</div>
+
+			
+		</div>
+
+		<div id="class-metadata">
+
+			<!-- Parent Class -->
+			
+			<div id="parent-class-section" class="section">
+				<h3 class="section-header">Parent</h3>
+				
+				<p class="link"><a href="Screwcap/Base.html">Screwcap::Base</a></p>
+				
+			</div>
+			
+
+			<!-- Namespace Contents -->
+			
+
+			<!-- Method Quickref -->
+			
+			<div id="method-list-section" class="section">
+				<h3 class="section-header">Methods</h3>
+				<ul class="link-list">
+					
+					<li><a href="#method-c-new">::new</a></li>
+					
+					<li><a href="#method-i-clone_table_for">#clone_table_for</a></li>
+					
+					<li><a href="#method-i-command_set">#command_set</a></li>
+					
+					<li><a href="#method-i-gateway">#gateway</a></li>
+					
+					<li><a href="#method-i-run%21">#run!</a></li>
+					
+					<li><a href="#method-i-sequence">#sequence</a></li>
+					
+					<li><a href="#method-i-server">#server</a></li>
+					
+					<li><a href="#method-i-task_for">#task_for</a></li>
+					
+					<li><a href="#method-i-use">#use</a></li>
+					
+				</ul>
+			</div>
+			
+
+			<!-- Included Modules -->
+			
+			<div id="includes-section" class="section">
+				<h3 class="section-header">Included Modules</h3>
+				<ul class="link-list">
+				
+				
+					<li><span class="include">MessageLogger</span></li>
+				
+				
+				</ul>
+			</div>
+			
+		</div>
+
+		<div id="project-metadata">
+			
+			
+			<div id="fileindex-section" class="section project-section">
+				<h3 class="section-header">Files</h3>
+				<ul>
+				
+					<li class="file"><a href="./Gemfile.html">Gemfile</a></li>
+				
+					<li class="file"><a href="./History_txt.html">History.txt</a></li>
+				
+					<li class="file"><a href="./Manifest_txt.html">Manifest.txt</a></li>
+				
+					<li class="file"><a href="./README_rdoc.html">README.rdoc</a></li>
+				
+					<li class="file"><a href="./Rakefile.html">Rakefile</a></li>
+				
+					<li class="file"><a href="./TODO.html">TODO</a></li>
+				
+				</ul>
+			</div>
+			
+
+			<div id="classindex-section" class="section project-section">
+				<h3 class="section-header">Class Index
+					<span class="search-toggle"><img src="./images/find.png"
+						height="16" width="16" alt="[+]"
+						title="show/hide quicksearch" /></span></h3>
+				<form action="#" method="get" accept-charset="utf-8" class="initially-hidden">
+				<fieldset>
+					<legend>Quicksearch</legend>
+					<input type="text" name="quicksearch" value=""
+						class="quicksearch-field" />
+				</fieldset>
+				</form>
+
+				<ul class="link-list">
+				
+					<li><a href="./Screwcap.html">Screwcap</a></li>
+				
+					<li><a href="./Screwcap/Base.html">Screwcap::Base</a></li>
+				
+					<li><a href="./Screwcap/CommandError.html">Screwcap::CommandError</a></li>
+				
+					<li><a href="./Screwcap/CommandSetDependencyError.html">Screwcap::CommandSetDependencyError</a></li>
+				
+					<li><a href="./Screwcap/ConfigurationError.html">Screwcap::ConfigurationError</a></li>
+				
+					<li><a href="./Screwcap/IncludeFileNotFound.html">Screwcap::IncludeFileNotFound</a></li>
+				
+					<li><a href="./Screwcap/InvalidServer.html">Screwcap::InvalidServer</a></li>
+				
+					<li><a href="./Screwcap/NoServerSelected.html">Screwcap::NoServerSelected</a></li>
+				
+					<li><a href="./Screwcap/NoServersDefined.html">Screwcap::NoServersDefined</a></li>
+				
+					<li><a href="./Screwcap/TaskNotFound.html">Screwcap::TaskNotFound</a></li>
+				
+					<li><a href="./Deployer.html">Deployer</a></li>
+				
+					<li><a href="./Object.html">Object</a></li>
+				
+					<li><a href="./Sequence.html">Sequence</a></li>
+				
+					<li><a href="./Server.html">Server</a></li>
+				
+					<li><a href="./Task.html">Task</a></li>
+				
+				</ul>
+				<div id="no-class-search-results" style="display: none;">No matching classes.</div>
+			</div>
+
+			
+		</div>
+	</div>
+
+	<div id="documentation">
+		<h1 class="class">Deployer</h1>
+
+		<div id="description">
+			<p>
+The deployer is the class that holds the overall params from the screwcap
+tasks file, and it is also in charge of running the requested task.
+</p>
+<p>
+The deployer can be thought of as the &#8220;global scope&#8221; of your
+tasks file.
+</p>
+
+		</div>
+
+		<!-- Constants -->
+		
+
+		<!-- Attributes -->
+		
+
+		<!-- Methods -->
+		
+		<div id="public-class-method-details" class="method-section section">
+			<h3 class="section-header">Public Class Methods</h3>
+
+		
+			<div id="new-method" class="method-detail ">
+				<a name="method-c-new"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">new</span><span
+						class="method-args">(opts = {})</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+create a new deployer.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="new-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/screwcap/deployer.rb, line 8</span>
+ 8:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">opts</span> = {})
+ 9:     <span class="ruby-identifier">opts</span> = {<span class="ruby-value">:recipe_file</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-value str">&quot;./config/recipe.rb&quot;</span>)}.<span class="ruby-identifier">merge</span> <span class="ruby-identifier">opts</span>
+10:     <span class="ruby-keyword kw">super</span>
+11:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__options</span> = <span class="ruby-identifier">opts</span>
+12:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__tasks</span> = []
+13:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__servers</span> = []
+14:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__command_sets</span> = []
+15:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__sequences</span> = []
+16: 
+17:     <span class="ruby-comment cmt"># ensure that deployer options will not be passed to tasks</span>
+18:     <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">each_key</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">k</span><span class="ruby-operator">|</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">delete_field</span>(<span class="ruby-identifier">k</span>) }
+19: 
+20:     <span class="ruby-constant">Deployer</span>.<span class="ruby-identifier">log</span> <span class="ruby-node">&quot;Reading #{self.__options[:recipe_file]}\n&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__options</span>[<span class="ruby-value">:silent</span>] <span class="ruby-operator">==</span> <span class="ruby-keyword kw">true</span>
+21: 
+22:     <span class="ruby-identifier">file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__options</span>[<span class="ruby-value">:recipe_file</span>])
+23:     <span class="ruby-identifier">data</span> = <span class="ruby-identifier">file</span>.<span class="ruby-identifier">read</span>
+24: 
+25:     <span class="ruby-identifier">instance_eval</span>(<span class="ruby-identifier">data</span>)
+26:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+		<div id="public-instance-method-details" class="method-section section">
+			<h3 class="section-header">Public Instance Methods</h3>
+
+		
+			<div id="command-set-method" class="method-detail ">
+				<a name="method-i-command_set"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">command_set</span><span
+						class="method-args">(name,options = {},&block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<h4>A *command set* is like a generic set of tasks that you intend to use in multiple tasks.</h4>
+<pre>
+    command_set :redundant_task do
+      run &quot;redundant_task&quot;
+    end
+
+    task_for :pet_pig, :server =&gt; :s1 do
+      redundant_task
+    end
+
+    task_for :pet_horse, :server =&gt; s2 do
+      redundant_task
+    end
+</pre>
+<h4>You can also nest command sets within other command sets.</h4>
+<pre>
+    command_set :other_task do
+      run &quot;other_task&quot;
+    end
+
+    command_set :redundant_task do
+      other_task
+    end
+
+    task_for :pet_horse, :server =&gt; s2 do
+      redundant_task
+    end</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="command-set-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/screwcap/deployer.rb, line 126</span>
+126:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">command_set</span>(<span class="ruby-identifier">name</span>,<span class="ruby-identifier">options</span> = {},&amp;<span class="ruby-identifier">block</span>)
+127:     <span class="ruby-identifier">t</span> = <span class="ruby-constant">Task</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>, <span class="ruby-value">:validate</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>, <span class="ruby-value">:command_set</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span>, <span class="ruby-value">:command_sets</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__command_sets</span>), &amp;<span class="ruby-identifier">block</span>)
+128:     <span class="ruby-identifier">clone_table_for</span>(<span class="ruby-identifier">t</span>)
+129:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__command_sets</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">t</span>
+130:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="gateway-method" class="method-detail ">
+				<a name="method-i-gateway"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">gateway</span><span
+						class="method-args">(name, options = {}, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<h4>A <b>Gateway</b> is an intermediary computer between you and a <b>:server</b>.</h4>
+<pre>
+  gateway :mygateway, :address =&gt; &quot;abc.com&quot;, :keys =&gt; &quot;~/.ssh/key&quot;
+  server :myserver, :address =&gt; &quot;192.168.1.2&quot;, :password =&gt; &quot;xxx&quot;, :gateway =&gt; :mygateway
+</pre>
+<ul>
+<li><p>
+Gateways have the same option as a <b>:server</b>.
+</p>
+</li>
+<li><p>
+You can specify :gateway => :mygateway in the <b>:server</b> definition.
+</p>
+</li>
+</ul>
+					
+
+					
+					<div class="method-source-code"
+						id="gateway-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/screwcap/deployer.rb, line 154</span>
+154:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">gateway</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span> = {}, &amp;<span class="ruby-identifier">block</span>)
+155:     <span class="ruby-identifier">server</span> = <span class="ruby-constant">Server</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>, <span class="ruby-value">:is_gateway</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span>))
+156:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__servers</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">server</span>
+157:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="run--method" class="method-detail ">
+				<a name="method-i-run%21"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">run!</span><span
+						class="method-args">(*tasks)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<h4>Run one or more tasks or sequences.</h4>
+<ul>
+<li><p>
+:tasks - the list of tasks to run, as an array of symbols.
+</p>
+</li>
+</ul>
+					
+
+					
+					<div class="method-source-code"
+						id="run--source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/screwcap/deployer.rb, line 184</span>
+184:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">run!</span>(*<span class="ruby-identifier">tasks</span>)
+185:     <span class="ruby-identifier">tasks</span>.<span class="ruby-identifier">flatten!</span>
+186:     <span class="ruby-comment cmt"># sanity check each task</span>
+187: 
+188:     <span class="ruby-identifier">tasks_and_sequences</span> = (<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__sequences</span>.<span class="ruby-identifier">map</span>(&amp;<span class="ruby-value">:__name</span>) <span class="ruby-operator">+</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__tasks</span>.<span class="ruby-identifier">map</span>(&amp;<span class="ruby-value">:__name</span>))
+189:     <span class="ruby-identifier">tasks</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">task_to_run</span><span class="ruby-operator">|</span>
+190:       <span class="ruby-identifier">raise</span>(<span class="ruby-constant">Screwcap</span><span class="ruby-operator">::</span><span class="ruby-constant">TaskNotFound</span>, <span class="ruby-node">&quot;Could not find task or sequence '#{task_to_run}' in recipe file #{self.__options[:recipe_file]}&quot;</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">tasks_and_sequences</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">task_to_run</span>
+191:     <span class="ruby-keyword kw">end</span>
+192: 
+193:     <span class="ruby-identifier">tasks</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">t</span><span class="ruby-operator">|</span> 
+194:       <span class="ruby-identifier">sequence</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__sequences</span>.<span class="ruby-identifier">find</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">s</span><span class="ruby-operator">|</span> <span class="ruby-identifier">s</span>.<span class="ruby-identifier">__name</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">t</span> }
+195:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">sequence</span>
+196:         <span class="ruby-identifier">sequence</span>.<span class="ruby-identifier">__task_names</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">task_name</span><span class="ruby-operator">|</span> <span class="ruby-constant">Runner</span>.<span class="ruby-identifier">execute!</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__tasks</span>.<span class="ruby-identifier">find</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">task</span><span class="ruby-operator">|</span> <span class="ruby-identifier">task</span>.<span class="ruby-identifier">__name</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">task_name</span> }, <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__options</span>}
+197:       <span class="ruby-keyword kw">else</span>
+198:         <span class="ruby-constant">Runner</span>.<span class="ruby-identifier">execute!</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__tasks</span>.<span class="ruby-identifier">select</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">task</span><span class="ruby-operator">|</span> <span class="ruby-identifier">task</span>.<span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">t</span>.<span class="ruby-identifier">to_s</span> }.<span class="ruby-identifier">first</span>, <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__options</span>
+199:       <span class="ruby-keyword kw">end</span>
+200:     <span class="ruby-keyword kw">end</span>
+201:     <span class="ruby-identifier">$stdout</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;\0033[0m&quot;</span>
+202:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="sequence-method" class="method-detail ">
+				<a name="method-i-sequence"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">sequence</span><span
+						class="method-args">(name, options = {}, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<h4>A <b>Sequence</b> will run a set of tasks in order.</h4>
+<pre>
+  task_for :do_this, :server =&gt; :myserver
+    ...
+  end
+
+  task_for :do_that, :server =&gt; :myserver
+    ...
+  end
+
+  task_for :do_the_other_thing, :server =&gt; :myserver
+    ...
+  end
+
+  sequence :do_them_all, :tasks =&gt; [:do_this, :do_that, :do_the_other_thing]
+</pre>
+<h4>Sequences can be called just like tasks.</h4>
+<h4>Options</h4>
+<ul>
+<li><p>
+:tasks - the list of tasks to run, as an array of symbols.
+</p>
+</li>
+</ul>
+					
+
+					
+					<div class="method-source-code"
+						id="sequence-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/screwcap/deployer.rb, line 178</span>
+178:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">sequence</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span> = {}, &amp;<span class="ruby-identifier">block</span>)
+179:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__sequences</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">Sequence</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>, <span class="ruby-value">:deployment_task_names</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__tasks</span>.<span class="ruby-identifier">map</span>(&amp;<span class="ruby-value">:name</span>)))
+180:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="server-method" class="method-detail ">
+				<a name="method-i-server"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">server</span><span
+						class="method-args">(name, options = {}, &block)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<h4>A <b>server</b> is the address(es) that you run a <b>:task</b> on.</h4>
+<pre>
+  server :myserver, :address =&gt; &quot;abc.com&quot;, :password =&gt; &quot;xxx&quot;
+  server :app_servers, :addresses =&gt; [&quot;abc.com&quot;,&quot;def.com&quot;], :keys =&gt; &quot;~/.ssh/my_key&quot;
+</pre>
+<h4>Options</h4>
+<ul>
+<li><p>
+A server must have a <b>:user</b>.
+</p>
+</li>
+<li><p>
+Specify <b>:address</b> or <b>:addresses</b>
+</p>
+</li>
+<li><p>
+A <b>:gateway</b>.  See the section about gateways for more info.
+</p>
+</li>
+<li><p>
+All Other options will be passed directly to Net::SSH.
+</p>
+<ul>
+<li><p>
+<b>:keys</b> can be used to specify the key to use to connect to the server
+</p>
+</li>
+</ul>
+<ul>
+<li><p>
+<b>:password</b> specify the password to connect with.  Not recommended. 
+Use keys.
+</p>
+</li>
+</ul>
+</li>
+</ul>
+					
+
+					
+					<div class="method-source-code"
+						id="server-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/screwcap/deployer.rb, line 143</span>
+143:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">server</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span> = {}, &amp;<span class="ruby-identifier">block</span>)
+144:     <span class="ruby-identifier">server</span> = <span class="ruby-constant">Server</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>, <span class="ruby-value">:servers</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__servers</span>, <span class="ruby-value">:silent</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__options</span>[<span class="ruby-value">:silent</span>]))
+145:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__servers</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">server</span>
+146:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="task-for-method" class="method-detail ">
+				<a name="method-i-task_for"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">task_for</span><span
+						class="method-args">(name, options = {})</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+create a task.  Minimally, a task needs a :server specified to run the task
+on.
+</p>
+<pre>
+  task_for :herd_the_cats, :server =&gt; :cat_server do
+    ...
+  end
+
+  task_for :herd_both, :servers =&gt; [:cat_server, :dog_server] do
+    ...
+  end
+</pre>
+<p>
+The only other option that <a
+href="Deployer.html#method-i-task_for">task_for</a> accepts is
+<b>:parallel</b>.  If <b>parallel</b> => false, and a server has multiple
+addresses, then the task will be run serially, rather than all at the same
+time.
+</p>
+<pre>
+  server :pig, :address =&gt; &quot;pig.com&quot;
+  server :horse, :address =&gt; &quot;horse.com&quot;
+  server :cats_and_dogs, :addresses =&gt; [&quot;cat.com&quot;,&quot;dog.com&quot;]
+
+  task_for :one_at_a_time, :servers =&gt; [:pig, :horse], :parallel =&gt; false
+    run &quot;serial_task&quot; # this will be run on the pig server first, then on the horse server.
+  end
+
+  task_for :one_at_a_time_2, :server =&gt; :cats_and_dogs, :parallel =&gt; false do
+    run &quot;serial_task&quot; # this will be run on cat.com first, then on dog.com
+  end
+
+  task_for :all_together_now, :servers =&gt; [:pig, :horse, :cats_and_dogs] do
+    run &quot;parallel_task&quot;  # this task will be executed on all the addresses specified by the servers at the same time.
+  end
+</pre>
+<h3>A note about variable scope</h3>
+<h4>Any variables you declare within a task are scoped to that task.</h4>
+<pre>
+    # in your deployment recipe...
+    set :animal, &quot;donkey&quot;
+
+    task_for :thing, :server =&gt; :server do
+      set :animal, &quot;pig&quot;
+      run &quot;pet #{animal}&quot; # will run 'pet pig'
+    end
+</pre>
+<h4>A command set that is called by a task will inherit all the variables set by the task.</h4>
+<pre>
+  
+    command_set :pet_the_animal do
+      run &quot;pet #{animal}&quot;
+    end
+
+    task_for :pet_pig do
+      set :animal, &quot;pig&quot;
+      pet_the_animal
+    end
+
+    task_for :pet_horse do
+      set :animal, &quot;horse&quot;
+      pet_the_animal
+    end
+</pre>
+<h4>Of course, you can also set variables within the command set as well, that are scoped only to that command set.</h4>
+<pre>
+  
+    command_set :pet_the_donkey do
+      set :animal, &quot;donkey&quot;
+      run &quot;pet #{donkey}&quot;
+    end
+</pre>
+<h4>Any command sets that are nested within another command set will inerit all the variables from the parent command set.</h4>
+					
+
+					
+					<div class="method-source-code"
+						id="task-for-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/screwcap/deployer.rb, line 91</span>
+91:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">task_for</span> <span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span> = {}, &amp;<span class="ruby-identifier">block</span>
+92:     <span class="ruby-identifier">t</span> = <span class="ruby-constant">Task</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>, <span class="ruby-value">:nocolor</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__options</span>[<span class="ruby-value">:nocolor</span>], <span class="ruby-value">:silent</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__options</span>[<span class="ruby-value">:silent</span>], <span class="ruby-value">:deployment_servers</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__servers</span>, <span class="ruby-value">:command_sets</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__command_sets</span>), &amp;<span class="ruby-identifier">block</span>)
+93:     <span class="ruby-identifier">clone_table_for</span>(<span class="ruby-identifier">t</span>)
+94:     <span class="ruby-identifier">t</span>.<span class="ruby-identifier">instance_eval</span>(&amp;<span class="ruby-identifier">block</span>)
+95:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__tasks</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">t</span>
+96:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="use-method" class="method-detail ">
+				<a name="method-i-use"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">use</span><span
+						class="method-args">(arg)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<h4>Use will dynamically include another file into an existing configuration file.</h4>
+<p>
+<a href="Screwcap.html">Screwcap</a> currently looks in the same directory
+as the current recipe file.
+</p>
+<p>
+if you have my_deployment_tasks.rb in the same directory as your recipe
+file... and my deployment_tasks includes more tasks, servers, sequences,
+etc.
+</p>
+<pre>
+  use :my_deployment_tasks</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="use-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/screwcap/deployer.rb, line 210</span>
+210:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">use</span> <span class="ruby-identifier">arg</span>
+211:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">Symbol</span>
+212:       <span class="ruby-keyword kw">begin</span>
+213:         <span class="ruby-identifier">dirname</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">dirname</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__options</span>[<span class="ruby-value">:recipe_file</span>])
+214:         <span class="ruby-identifier">instance_eval</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">dirname</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__options</span>[<span class="ruby-value">:recipe_file</span>])) <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;/&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;.rb&quot;</span>).<span class="ruby-identifier">read</span>)
+215:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">ENOENT</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+216:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">Screwcap</span><span class="ruby-operator">::</span><span class="ruby-constant">IncludeFileNotFound</span>, <span class="ruby-node">&quot;Could not find #{File.expand_path(&quot;./&quot;+arg.to_s + &quot;.rb&quot;)}! If the file is elsewhere, call it by using 'use '/path/to/file.rb'&quot;</span>
+217:       <span class="ruby-keyword kw">end</span>
+218:     <span class="ruby-keyword kw">else</span>
+219:       <span class="ruby-keyword kw">begin</span>
+220:         <span class="ruby-identifier">instance_eval</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">dirname</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__options</span>[<span class="ruby-value">:recipe_file</span>])) <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;/&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">arg</span>).<span class="ruby-identifier">read</span>)
+221:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">ENOENT</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+222:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">Screwcap</span><span class="ruby-operator">::</span><span class="ruby-constant">IncludeFileNotFound</span>, <span class="ruby-node">&quot;Could not find #{File.expand_path(arg)}! If the file is elsewhere, call it by using 'use '/path/to/file.rb'&quot;</span>
+223:       <span class="ruby-keyword kw">end</span>
+224:     <span class="ruby-keyword kw">end</span>
+225:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+		<div id="private-instance-method-details" class="method-section section">
+			<h3 class="section-header">Private Instance Methods</h3>
+
+		
+			<div id="clone-table-for-method" class="method-detail ">
+				<a name="method-i-clone_table_for"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">clone_table_for</span><span
+						class="method-args">(object)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="clone-table-for-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/screwcap/deployer.rb, line 230</span>
+230:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">clone_table_for</span>(<span class="ruby-identifier">object</span>)
+231:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">table</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">v</span><span class="ruby-operator">|</span>
+232:       <span class="ruby-identifier">object</span>.<span class="ruby-identifier">set</span>(<span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span>) <span class="ruby-keyword kw">unless</span> [<span class="ruby-value">:__options</span>, <span class="ruby-value">:__tasks</span>, <span class="ruby-value">:__servers</span>, <span class="ruby-value">:__command_sets</span>].<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">k</span>)
+233:     <span class="ruby-keyword kw">end</span>
+234:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+
+	</div>
+
+
+	<div id="rdoc-debugging-section-dump" class="debugging-section">
+	
+		<p>Disabled; run with --debug to generate this.</p>
+	
+	</div>
+
+	<div id="validator-badges">
+		<p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+		<p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+			Rdoc Generator</a> 1.1.6</small>.</p>
+	</div>
+
+</body>
+</html>
+
