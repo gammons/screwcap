@@ -15,6 +15,7 @@ lib/screwcap/sequence.rb
 lib/screwcap/server.rb
 lib/screwcap/task.rb
 lib/trollop.rb
+recipes/setup_rails.rb
 screwcap.gemspec
 spec/command_set_spec.rb
 spec/deployer_spec.rb
@@ -27,6 +28,7 @@ tasks/rspec.rake
 test/config/command_sets.rb
 test/config/expect.rb
 test/config/gateway.rb
+test/config/local_task.rb
 test/config/no_server.rb
 test/config/rails_tasks.rb
 test/config/simple_recipe.rb
