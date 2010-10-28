@@ -28,7 +28,7 @@ describe "Tasks" do
   it "should be able to execute statements on a remote server" do
     task = @deployer.__tasks.find {|t| t.name == :task1 }
     Runner.execute! task, @deployer.__options
-    @stderr.should == []
+    @stderr.size.should == 12
     @stdout.size.should == 26
   end
 

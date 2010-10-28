@@ -7,7 +7,6 @@ require 'net/ssh/gateway'
 require 'ostruct'
 require 'logger'
 
-require 'exts'
 require 'screwcap/message_logger'
 require 'screwcap/base'
 require 'screwcap/task'
@@ -17,7 +16,7 @@ require 'screwcap/sequence'
 require 'screwcap/deployer'
 
 module Screwcap
-  VERSION='0.3.2'
+  VERSION='0.3.3'
 
   class TaskNotFound < RuntimeError; end
   class NoServersDefined < Exception; end

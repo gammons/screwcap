@@ -80,8 +80,8 @@ class Runner
     if command[:type] == :remote
       log "    I: (#{address}):  #{command[:command]}\n", :color => :green
       stdout, stderr, exit_code, exit_signal = ssh_exec! ssh, command[:command]
-      log("    O: (#{address}):  #{stdout}", :color => :green) unless stdout.blank?
-      errorlog("    O: (#{address}):  #{stderr}", :color => :red) unless stderr.blank?
+      log("    O: (#{address}):  #{stdout}", :color => :green) unless stdout.nil?
+      errorlog("    O: (#{address}):  #{stderr}", :color => :red) unless stderr.nil?
       errorlog("    E: (#{address}): #{command[:command]} return exit code: #{exit_code}\n", :color => :red) if exit_code != 0
       return exit_code
     elsif command[:type] == :local
