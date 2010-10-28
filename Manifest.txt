@@ -6,7 +6,6 @@ README.rdoc
 Rakefile
 TODO
 bin/screwcap
-lib/exts.rb
 lib/screwcap.rb
 lib/screwcap/base.rb
 lib/screwcap/deployer.rb

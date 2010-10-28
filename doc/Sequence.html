@@ -38,6 +38,9 @@
 				<div class="section-body">
 					<ul>
 					
+						<li><a href="./pkg/screwcap-0_3_3/lib/screwcap/sequence_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="pkg/screwcap-0.3.3/lib/screwcap/sequence.rb">pkg/screwcap-0.3.3/lib/screwcap/sequence.rb</a></li>
+					
 						<li><a href="./lib/screwcap/sequence_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
 							class="thickbox" title="lib/screwcap/sequence.rb">lib/screwcap/sequence.rb</a></li>
 					
@@ -71,6 +74,10 @@
 					
 					<li><a href="#method-c-new">::new</a></li>
 					
+					<li><a href="#method-c-new">::new</a></li>
+					
+					<li><a href="#method-i-validate">#validate</a></li>
+					
 					<li><a href="#method-i-validate">#validate</a></li>
 					
 				</ul>
@@ -99,6 +106,20 @@
 					<li class="file"><a href="./Rakefile.html">Rakefile</a></li>
 				
 					<li class="file"><a href="./TODO.html">TODO</a></li>
+				
+					<li class="file"><a href="./pkg/screwcap-0_3_3/Gemfile.html">Gemfile</a></li>
+				
+					<li class="file"><a href="./pkg/screwcap-0_3_3/History_txt.html">History.txt</a></li>
+				
+					<li class="file"><a href="./pkg/screwcap-0_3_3/Manifest_txt.html">Manifest.txt</a></li>
+				
+					<li class="file"><a href="./pkg/screwcap-0_3_3/README_rdoc.html">README.rdoc</a></li>
+				
+					<li class="file"><a href="./pkg/screwcap-0_3_3/Rakefile.html">Rakefile</a></li>
+				
+					<li class="file"><a href="./pkg/screwcap-0_3_3/TODO.html">TODO</a></li>
+				
+					<li class="file"><a href="./runrdoc.html">runrdoc</a></li>
 				
 				</ul>
 			</div>
@@ -140,8 +161,6 @@
 					<li><a href="./Screwcap/TaskNotFound.html">Screwcap::TaskNotFound</a></li>
 				
 					<li><a href="./Deployer.html">Deployer</a></li>
-				
-					<li><a href="./Object.html">Object</a></li>
 				
 					<li><a href="./Sequence.html">Sequence</a></li>
 				
@@ -219,6 +238,68 @@
 					<div class="method-source-code"
 						id="new-source">
 <pre>
+    <span class="ruby-comment cmt"># File pkg/screwcap-0.3.3/lib/screwcap/sequence.rb, line 22</span>
+22:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">opts</span> = {})
+23:     <span class="ruby-keyword kw">super</span>
+24:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__options</span> = <span class="ruby-identifier">opts</span>
+25:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__name</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-value">:name</span>]
+26:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__deployment_task_names</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-value">:deployment_task_names</span>]
+27:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__task_names</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-value">:tasks</span>]
+28:     <span class="ruby-identifier">validate</span>
+29:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="new-method" class="method-detail ">
+				<a name="method-c-new"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">new</span><span
+						class="method-args">(opts = {})</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<h4>A <b>Sequence</b> will run a set of tasks in order.</h4>
+<pre>
+  task_for :do_this, :server =&gt; :myserver
+    ...
+  end
+
+  task_for :do_that, :server =&gt; :myserver
+    ...
+  end
+
+  task_for :do_the_other_thing, :server =&gt; :myserver
+    ...
+  end
+
+  sequence :do_them_all, :tasks =&gt; [:do_this, :do_that, :do_the_other_thing]
+</pre>
+<h4>Sequences can be called just like tasks.</h4>
+<h4>Options</h4>
+<ul>
+<li><p>
+:tasks - the list of tasks to run, as an array of symbols.
+</p>
+</li>
+</ul>
+					
+
+					
+					<div class="method-source-code"
+						id="new-source">
+<pre>
     <span class="ruby-comment cmt"># File lib/screwcap/sequence.rb, line 22</span>
 22:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">opts</span> = {})
 23:     <span class="ruby-keyword kw">super</span>
@@ -242,6 +323,42 @@
 	
 		<div id="private-instance-method-details" class="method-section section">
 			<h3 class="section-header">Private Instance Methods</h3>
+
+		
+			<div id="validate-method" class="method-detail ">
+				<a name="method-i-validate"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">validate</span><span
+						class="method-args">()</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="validate-source">
+<pre>
+    <span class="ruby-comment cmt"># File pkg/screwcap-0.3.3/lib/screwcap/sequence.rb, line 33</span>
+33:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">validate</span>
+34:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__task_names</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">tn</span><span class="ruby-operator">|</span>
+35:       <span class="ruby-identifier">raise</span>(<span class="ruby-constant">Screwcap</span><span class="ruby-operator">::</span><span class="ruby-constant">ConfigurationError</span>, <span class="ruby-node">&quot;Could not find task #{tn} in the deployment recipe.&quot;</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__deployment_task_names</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">tn</span>)
+36:     <span class="ruby-keyword kw">end</span>
+37:   <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
 
 		
 			<div id="validate-method" class="method-detail ">

@@ -38,6 +38,9 @@
 				<div class="section-body">
 					<ul>
 					
+						<li><a href="../pkg/screwcap-0_3_3/lib/screwcap/base_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="pkg/screwcap-0.3.3/lib/screwcap/base.rb">pkg/screwcap-0.3.3/lib/screwcap/base.rb</a></li>
+					
 						<li><a href="../lib/screwcap/base_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
 							class="thickbox" title="lib/screwcap/base.rb">lib/screwcap/base.rb</a></li>
 					
@@ -71,6 +74,8 @@
 					
 					<li><a href="#method-i-set">#set</a></li>
 					
+					<li><a href="#method-i-set">#set</a></li>
+					
 				</ul>
 			</div>
 			
@@ -97,6 +102,20 @@
 					<li class="file"><a href="../Rakefile.html">Rakefile</a></li>
 				
 					<li class="file"><a href="../TODO.html">TODO</a></li>
+				
+					<li class="file"><a href="../pkg/screwcap-0_3_3/Gemfile.html">Gemfile</a></li>
+				
+					<li class="file"><a href="../pkg/screwcap-0_3_3/History_txt.html">History.txt</a></li>
+				
+					<li class="file"><a href="../pkg/screwcap-0_3_3/Manifest_txt.html">Manifest.txt</a></li>
+				
+					<li class="file"><a href="../pkg/screwcap-0_3_3/README_rdoc.html">README.rdoc</a></li>
+				
+					<li class="file"><a href="../pkg/screwcap-0_3_3/Rakefile.html">Rakefile</a></li>
+				
+					<li class="file"><a href="../pkg/screwcap-0_3_3/TODO.html">TODO</a></li>
+				
+					<li class="file"><a href="../runrdoc.html">runrdoc</a></li>
 				
 				</ul>
 			</div>
@@ -138,8 +157,6 @@
 					<li><a href="../Screwcap/TaskNotFound.html">Screwcap::TaskNotFound</a></li>
 				
 					<li><a href="../Deployer.html">Deployer</a></li>
-				
-					<li><a href="../Object.html">Object</a></li>
 				
 					<li><a href="../Sequence.html">Sequence</a></li>
 				
@@ -187,29 +204,51 @@
 
 				<div class="method-description">
 					
-					<pre>
- for debugging purposes only
-</pre>
-<p>
-def method_missing(m, *args, &amp;block)
-</p>
-<pre>
-  $stdout &lt;&lt; &quot;For #{self.class.to_s}: calling #{m}\n&quot;
-  super(m, args.first)
-</pre>
-<p>
-end
-</p>
+					
 					
 
 					
 					<div class="method-source-code"
 						id="set-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/screwcap/base.rb, line 10</span>
-10:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">set</span>(<span class="ruby-identifier">var</span>, *<span class="ruby-identifier">args</span>)
-11:       <span class="ruby-identifier">method_missing</span>((<span class="ruby-identifier">var</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;=&quot;</span>).<span class="ruby-identifier">to_sym</span>, <span class="ruby-identifier">args</span>.<span class="ruby-identifier">first</span>)
-12:     <span class="ruby-keyword kw">end</span></pre>
+   <span class="ruby-comment cmt"># File pkg/screwcap-0.3.3/lib/screwcap/base.rb, line 3</span>
+3:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">set</span>(<span class="ruby-identifier">var</span>, *<span class="ruby-identifier">args</span>)
+4:       <span class="ruby-identifier">method_missing</span>((<span class="ruby-identifier">var</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;=&quot;</span>).<span class="ruby-identifier">to_sym</span>, <span class="ruby-identifier">args</span>.<span class="ruby-identifier">first</span>)
+5:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="set-method" class="method-detail ">
+				<a name="method-i-set"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">set</span><span
+						class="method-args">(var, *args)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="set-source">
+<pre>
+   <span class="ruby-comment cmt"># File lib/screwcap/base.rb, line 3</span>
+3:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">set</span>(<span class="ruby-identifier">var</span>, *<span class="ruby-identifier">args</span>)
+4:       <span class="ruby-identifier">method_missing</span>((<span class="ruby-identifier">var</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;=&quot;</span>).<span class="ruby-identifier">to_sym</span>, <span class="ruby-identifier">args</span>.<span class="ruby-identifier">first</span>)
+5:     <span class="ruby-keyword kw">end</span></pre>
 					</div>
 					
 				</div>

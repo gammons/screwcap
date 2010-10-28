@@ -4,17 +4,17 @@
 
 == DESCRIPTION:
 
-Screwcap is a library that wraps Net::SSH and makes it easy to perform actions on remote servers.  It's not smart and does not make any assumptions about your setup.  
-
-The most obvious task you could use screwcap for is deploying rails applications to remote servers.
+Screwcap is a library that wraps Net::SSH and makes it easy to perform actions on remote servers.
 
 == FEATURES:
 
-* 
+* Dead-simple DSL for remote task management.
+* Screwcap is not opinionated.  In fact, the only opinion screwcap has is that rails deployment tasks should not be baked into the screwcap core.
+* Screwcap is very light on magic and unicorns.  
+* Screwcap is not tied into rake, although it easily can be.
+* Screwcap can *easily* be used to deploy rails applications.  
 
-== SYNOPSIS:
-
-  FIX (code sample of usage)
+For more info, see the main screwcap page at http://gammons.github.com/screwcap
 
 == INSTALL:
 
