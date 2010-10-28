@@ -101,7 +101,6 @@
       <li><code>Run</code> Run a command.  
       <ul>
         <li><code>:onfailure</code> If the command returns a non-zero status, the task will abort and run the referenced command set.</li>
-        <li><code>:onfailure</code> If the command returns a non-zero status, the task will abort and run the referenced command set.</li>
       </ul>
       <li><code>scp</code> a file.
       <ul>
@@ -125,7 +124,7 @@
     <p>Then you have your main recipe file.</p>
     <script src="http://gist.github.com/652061.js?file=recipe.rb"></script>
     <p>All the items from commands.rb will be fully ingrained and ready to use in your recipe file.</p>
-    <strong>command sets and the use keyword is how screwcap is able to decouple itself from doing specific tasks, like deploying a rails application.</strong>
+    <strong>command sets and the use keyword are how screwcap is able to decouple itself from doing specific tasks, like deploying a rails application.</strong>
 
     <h2>Variables</h2>
     <p>You can declare variables with the <code>set</code> command anywhere in the deployment recipe.  Variables can be overridden in tasks and command sets.  Variables inherit the scope of the calling task or command set.</p>
@@ -139,17 +138,18 @@
       <li>Sequences take a single argument, <code>:tasks</code>, which is a list of tasks to run.</li>
     </ul>
     <script src="http://gist.github.com/652022.js?file=sequences.rb"></script>
+    <p>You can run a sequence in the same way you run a task.</p>
 
-    <h2>How to use screwcap</h2>
-    <p>Screwcap comes with a binary called <code>screwcap</code>.  You can run one or more tasks using the binary.</p>
-    <script src="http://gist.github.com/652048.js?file=gistfile1.sh"></script>
-    <h3>Use in a rakefile</h3>
-    <p>An example generic rakefile exists <a href="http://github.com/gammons/screwcap_recipes/blob/master/rails/screwcap.rake">here</a>.</p>
     <h2>Using Screwcap with Rails</h2>
     <p>Screwcap is a great choice to deploy rails applications, because the actual deployment implementation is decoupled from the screwcap base, thus the recipe file can be updated continually.</p>
+    <p>Before you begin, be sure to add <code>gem 'screwcap'</code> to your Gemfile's :development section.</p>
     <p>Setting up screwcap to use rails is trivial. In your Rails.root, simply run <code>screwcap --setup-rails</code></p>
     <p>This sets up a sample recipe file located in <code>config/screwcap/recipe.rb</code>. In the same directory you also get the newest <a href="http://github.com/gammons/screwcap_recipes/blob/master/rails/rails_tasks.rb">rails tasks file</a>.</p>
     <p>Edit that file, then run <code>rake -T remote</code> to see your recipes listed and ready to run!</p>
+
+    <h2>Using screwcap for other things</h2>
+    <p>Screwcap comes with a binary called <code>screwcap</code>.  You can run one or more tasks using the binary.</p>
+    <script src="http://gist.github.com/652048.js?file=gistfile1.sh"></script>
 
     <h2>Recipe Database</h2>
     <p>I started a new repository called <a href="http://github.com/gammons/screwcap_recipes">screwcap_recipes</a> that contains all the latest and greatest recipes that fellow screwcappers have to offer.  Feel free to write your own and contribute!</p>
