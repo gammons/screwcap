@@ -4,12 +4,28 @@ class Runner
   def self.execute! task, options
     @task = task; @options = options
     threads = []
-    @task.__servers.each do |_server|
-      _server.__addresses.each do |_address|
-        if task.__options[:parallel] == false
-          execute_on(_server, _address)
+    if @task.__options[:local] == true
+      log "\n*** BEGIN executing local task #{@task.__name}\n", :color => :blue
+      @task.__commands.each do |command|
+        ret = `#{command[:command]}`
+        if $?.to_i == 0
+          log "    I: (local):  #{command[:command]}\n", :color => :blue
+          log("    O: (local):  #{ret}\n", :color => :blue) unless ret.nil? or ret == ""
         else
-          threads << Thread.new(_server, _address) { |server, address| execute_on(server, address) }
+          log "    I: (local):  #{command[:command]}\n", :color => :blue
+          errorlog("    O: (local):  #{ret}\n", :color => :red) unless ret.nil? or ret == ""
+          errorlog("    E: (local): #{command[:command]} return exit code: #{$?}\n", :color => :red) if $? != 0
+        end
+      end
+      log "\n*** END executing local task #{@task.__name}\n", :color => :blue
+    else
+      @task.__servers.each do |_server|
+        _server.__addresses.each do |_address|
+          if task.__options[:parallel] == false
+            execute_on(_server, _address)
+          else
+            threads << Thread.new(_server, _address) { |server, address| execute_on(server, address) }
+          end
         end
       end
     end
@@ -38,10 +54,10 @@ class Runner
       end
     rescue Net::SSH::AuthenticationFailed => e
       raise Net::SSH::AuthenticationFailed, "Authentication failed for server named #{server.name}.  Please check your authentication credentials."
-    #rescue Exception => e
-    #  errorlog "    F: (#{address}): #{e}", :color => :red
-    #ensure
-    #  log "*** END executing task #{@task.__name} on #{server.name} with address #{address}\n\n", :color => :blue
+    rescue Exception => e
+      errorlog "    F: (#{address}): #{e}", :color => :red
+    ensure
+      log "*** END executing task #{@task.__name} on #{server.name} with address #{address}\n\n", :color => :blue
     end
   end
 

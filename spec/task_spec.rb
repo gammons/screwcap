@@ -29,7 +29,7 @@ describe "Tasks" do
     task = @deployer.__tasks.find {|t| t.name == :task1 }
     Runner.execute! task, @deployer.__options
     @stderr.size.should == 0
-    @stdout.size.should == 26
+    @stdout.size.should == 28
   end
 
   it "should be able to use variables in the run statement" do
@@ -78,5 +78,10 @@ describe "Tasks" do
     Runner.stubs(:ssh_exec!).returns(["","fail",1,nil]).then.returns(["ok","",0,nil])
     Runner.execute! t, deployer.__options
     t.__commands.map {|c| [c[:command], c[:from]] }.first.should == ["echo 'we failed'", :failover]
+  end
+
+  it "should be able to create local tasks" do
+    # TODO better testing on this
+    lambda { Deployer.new(:recipe_file => "./test/config/local_task.rb", :silent => true).run! :local }.should_not raise_error
   end
 end

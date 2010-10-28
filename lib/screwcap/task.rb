@@ -17,7 +17,7 @@ class Task < Screwcap::Base
       self.__server_names = opts[:servers]
     end
 
-    validate(opts[:deployment_servers]) unless opts[:validate] == false
+    validate(opts[:deployment_servers]) unless opts[:validate] == false or opts[:local] == true
   end
 
   # Run a command.  This can either be a string, or a symbol that is the name of a command set to run.

@@ -88,12 +88,13 @@ class Deployer < Screwcap::Base
   #
   # ====Any command sets that are nested within another command set will inerit all the variables from the parent command set.
   #
-  def task_for name, options = {}, &block
+  def task name, options = {}, &block
     t = Task.new(options.merge(:name => name, :nocolor => self.__options[:nocolor], :silent => self.__options[:silent], :deployment_servers => self.__servers, :command_sets => self.__command_sets), &block)
     clone_table_for(t)
     t.instance_eval(&block)
     self.__tasks << t
   end
+  alias :task_for :task
 
   # ====A *command set* is like a generic set of tasks that you intend to use in multiple tasks.
   #

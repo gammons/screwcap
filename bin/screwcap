@@ -11,6 +11,7 @@ p = Trollop::Parser.new do
   opt :debug, "Turn on debugger.  Will print full stacktrace if an exeception was raised"
   opt :help, "Show this message"
   opt :tasks, "Display available tasks in recipe file"
+  opt :setup_rails, "Setup a rails app to use screwcap"
   version <<-EOF 
     Screwcap #{Screwcap::VERSION} by Grant Ammons (grant@pipelinedeals.com)
     More info at http://gammons.github.com/screwcap
@@ -35,6 +36,15 @@ opts = Trollop::with_standard_exception_handling p do
     deployer.__tasks.map {|t| t.__name }.each {|name| $stdout << "  #{name}\n" }
     $stdout << "Sequences Available:\n" if deployer.__sequences.size > 0
     deployer.__sequences.map {|t| t.__name }.each {|name| $stdout << "  #{name}\n" }
+    exit
+  end
+
+  if opts[:setup_rails] == true
+    Deployer.new(:recipe_file => File.expand_path(File.dirname(__FILE__) + "/../recipes/setup_rails.rb")).run! :setup_rails
+    $stdout << "\nYour rails app now has a sample recipe, ready for the editing, in config/screwcap/recipe.rb\n"
+    $stdout << "Your recipes will be automatically available in rake.  Screwcap uses the :remote namespace.\n"
+    $stdout << "To see what recipes you can run, type 'rake -T remote'.\n"
+    $stdout << "Please visit http://gammons.github.com/screwcap for help.\n"
     exit
   end
 
