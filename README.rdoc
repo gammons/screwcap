@@ -10,7 +10,7 @@ Screwcap is a library that wraps Net::SSH and makes it easy to perform actions o
 
 * Dead-simple DSL for remote task management.
 * Screwcap is not opinionated.  In fact, the only opinion screwcap has is that rails deployment tasks should not be baked into the screwcap core.
-* Screwcap is very light on magic and unicorns.  
+* Screwcap is very light on magic and unicorns.  Screwcap recipes are basically only a collection of servers and tasks.  It does not know how to do things unless you tell it how to do things.
 * Screwcap is not tied into rake, although it easily can be.
 * Screwcap can *easily* be used to deploy rails applications.  
 
