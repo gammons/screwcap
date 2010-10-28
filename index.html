@@ -26,7 +26,7 @@
   h1 a { text-decoration: none }
   h2 { text-decoration: underline; font-size: 1.7em; color: #733; }
   h3 { font-size: 1.5em; color: #733; }
-  a { color: #ad9dfa; }
+  a { color: #0055aa; }
   .download { float: right; }
   li {
     padding-bottom: 10px;
@@ -100,8 +100,8 @@
     <ul>
       <li><code>Run</code> Run a command.  
       <ul>
-        <li><code>:onfailure</code> If the command returns a non-zero status, the task will abort and run the referenced <a href="#command_sets">command set</a>.</li>
-        <li><code>:onfailure</code> If the command returns a non-zero status, the task will abort and run the referenced <a href="#command_sets">command set</a>.</li>
+        <li><code>:onfailure</code> If the command returns a non-zero status, the task will abort and run the referenced command set.</li>
+        <li><code>:onfailure</code> If the command returns a non-zero status, the task will abort and run the referenced command set.</li>
       </ul>
       <li><code>scp</code> a file.
       <ul>
@@ -145,14 +145,20 @@
     <script src="http://gist.github.com/652048.js?file=gistfile1.sh"></script>
     <h3>Use in a rakefile</h3>
     <p>An example generic rakefile exists <a href="http://github.com/gammons/screwcap_recipes/blob/master/rails/screwcap.rake">here</a>.</p>
-    <h3>Deploying Rails applications</h3>
+    <h2>Using Screwcap with Rails</h2>
     <p>Screwcap is a great choice to deploy rails applications, because the actual deployment implementation is decoupled from the screwcap base, thus the recipe file can be updated continually.</p>
-
-
-    <p>An example generic rakefile exists <a href="http://github.com/gammons/screwcap_recipes/blob/master/rails/screwcap.rake">here</a>.</p>
+    <p>Setting up screwcap to use rails is trivial. In your Rails.root, simply run <code>screwcap --setup-rails</code></p>
+    <p>This sets up a sample recipe file located in <code>config/screwcap/recipe.rb</code>. In the same directory you also get the newest <a href="http://github.com/gammons/screwcap_recipes/blob/master/rails/rails_tasks.rb">rails tasks file</a>.</p>
+    <p>Edit that file, then run <code>rake -T remote</code> to see your recipes listed and ready to run!</p>
 
     <h2>Recipe Database</h2>
     <p>I started a new repository called <a href="http://github.com/gammons/screwcap_recipes">screwcap_recipes</a> that contains all the latest and greatest recipes that fellow screwcappers have to offer.  Feel free to write your own and contribute!</p>
+    <h2>Author, Credits, and License</h2>
+    <p>(MIT License)</p>
+    <p>Copyright © 2010 <a href="http://gammons.github.com">Grant Ammons</a> (grant@pipelinedeals.com) </p>
+    <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the ‘Software’), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: </p>
+    <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. </p>
+    <p>THE SOFTWARE IS PROVIDED ‘AS IS’, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. </p>
   </div>
 </body>
 </html>
