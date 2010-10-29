@@ -72,6 +72,10 @@
       <li>Rails deployment methodologies change.  App servers change.  Things change.  Because of that, there is nothing rails-deployment-specific about screwcap.  Sure, screwcap can easily be used for deploying rails applications, but it's not a one-trick pony.</li>
     </ul>
 
+    <h2>Installation</h2>
+    <p>Installation is as easy as running <code>gem install screwcap</code>.
+    <p>Setting up screwcap to use rails is trivial. In your Rails.root, simply run <code>screwcap --setup-rails</code> <a href="#rails">See this section for more info.</a></p>
+
     <h2>Example Recipe</h2>
     <script src="http://gist.github.com/649852.js?file=recipe.rb"></script>
     <p>To execute the above recipe, run the following:</p>
@@ -140,6 +144,7 @@
     <script src="http://gist.github.com/652022.js?file=sequences.rb"></script>
     <p>You can run a sequence in the same way you run a task.</p>
 
+    <a name="rails"></a>
     <h2>Using Screwcap with Rails</h2>
     <p>Screwcap is a great choice to deploy rails applications, because the actual deployment implementation is decoupled from the screwcap base, thus the recipe file can be updated continually.</p>
     <p>Before you begin, be sure to add <code>gem 'screwcap'</code> to your Gemfile's :development section.</p>
