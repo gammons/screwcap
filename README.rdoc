@@ -20,6 +20,17 @@ For more info, see the main screwcap page at http://gammons.github.com/screwcap
 
 * gem install screwcap
 
+== TODO:
+ * Explore removing the 'use' keyword, favoring require or load
+ * add --dry-run to screwcap
+
+== RECIPES:
+
+=== I need help writing rails recipes!  Please help contribute some nice rock-solid rails recipes to the following repo:
+
+http://github.com/gammons/screwcap_recipes
+
+
 == LICENSE:
 
 (The MIT License)
