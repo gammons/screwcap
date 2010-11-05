@@ -21,8 +21,11 @@
     margin: 0 auto;
     width: 900px;
   }
-  h1 { font-size: 4.8em; color: #733; margin-bottom: 3px; }
+  h1 { font-size: 2.8em; color: #733; margin-bottom: 3px; }
   .lobster { font-family: 'Lobster', arial, serif; }
+  .big { 
+    font-size: 68px !important;
+  }
   h1 a { text-decoration: none }
   h2 { text-decoration: underline; font-size: 1.7em; color: #733; }
   h3 { font-size: 1.5em; color: #733; }
@@ -55,7 +58,7 @@
 
   <div id="container">
 
-    <h1 class="lobster">Screwcap</h1>
+    <h1 class="lobster big">Screwcap</h1>
 
     <div class="description">
       Screwcap is a Net::SSH wrapper that makes it easier to perform actions on remote servers.  Whether you are deploying a rails applicaiton or just clearing out a temporary directory, screwcap makes these tasks easy.
@@ -81,6 +84,12 @@
     <p>To execute the above recipe, run the following:</p>
     <p><code>screwcap recipe.rb restart_server</code></p>
 
+    <h2>Recipe Book</h2>
+
+    <p>Screwcap has a growing list of supported recipes, that includes different rails deployment strategies, and other recipes for various tasks!</p>
+    <a href="http://github.com/gammons/screwcap_recipes">Check out the recipe database</a>
+
+    <h1 class="lobster">Documentation</h1>
     <h2>Servers</h2>
     <p>Servers contain the address(es) you would like to run your tasks on.</p>
     <strong>Options</strong>
