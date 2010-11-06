@@ -4,14 +4,14 @@ require 'rubygems'
 require File.expand_path(File.dirname(__FILE__) + '/../lib/screwcap')
 require File.expand_path(File.dirname(__FILE__) + '/../lib/trollop')
 
-
 p = Trollop::Parser.new do
-  opt :silent, "Be silent"
+  opt :silent, "Be silent", :short => "s"
   opt :nocolor, "Do not color output"
-  opt :debug, "Turn on debugger.  Will print full stacktrace if an exeception was raised"
-  opt :help, "Show this message"
-  opt :tasks, "Display available tasks in recipe file"
-  opt :setup_rails, "Setup a rails app to use screwcap"
+  opt :debug, "Turn on debugger.  Will print full stacktrace if an exeception was raised", :short => "d"
+  opt :help, "Show this message", :short => "h"
+  opt :tasks, "Display available tasks in recipe file", :short => "t"
+  opt :setup_rails, "Setup a rails app to use screwcap", :short => "r"
+  opt :dry_run, "Setup a rails app to use screwcap", :short => "n"
   version <<-EOF 
     Screwcap #{Screwcap::VERSION} by Grant Ammons (grant@pipelinedeals.com)
     More info at http://gammons.github.com/screwcap
@@ -36,6 +36,21 @@ opts = Trollop::with_standard_exception_handling p do
     deployer.__tasks.map {|t| t.__name }.each {|name| $stdout << "  #{name}\n" }
     $stdout << "Sequences Available:\n" if deployer.__sequences.size > 0
     deployer.__sequences.map {|t| t.__name }.each {|name| $stdout << "  #{name}\n" }
+    exit
+  end
+
+  if opts[:dry_run] == true
+    recipe_file = ARGV.shift
+    deployer = Deployer.new(opts.merge(:recipe_file => recipe_file))
+    ARGV.map {|a| a.to_sym }.each do |tname|
+      task = deployer.__tasks.find {|t| t.__name == tname }
+      raise(Screwcap::TaskNotFound, "Could not find task named '#{tname}' in the recipe file.") if task.nil?
+      $stdout << "\n*** BEGIN dry-run task #{task.__name}\n"
+      task.__commands.each do |cmd|
+        $stdout << "    I: (dry-run):  #{cmd[:command]}\n"
+      end
+      $stdout << "*** END dry-run task #{task.__name}\n"
+    end
     exit
   end
 

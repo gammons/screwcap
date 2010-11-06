@@ -21,8 +21,10 @@ For more info, see the main screwcap page at http://gammons.github.com/screwcap
 * gem install screwcap
 
 == TODO:
- * Explore removing the 'use' keyword, favoring require or load
- * add --dry-run to screwcap
+* Explore removing the 'use' keyword, favoring require or load
+* Add ability to parse user input
+* Add ability to parse user input
+* DONE add --dry-run to screwcap
 
 == RECIPES:
 
