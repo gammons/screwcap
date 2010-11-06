@@ -96,12 +96,15 @@ class Runner
     if command[:type] == :remote
       log "    I: (#{address}):  #{command[:command]}\n", :color => :green
       stdout, stderr, exit_code, exit_signal = ssh_exec! ssh, command[:command]
+      command[:stdout] = stdout
+      command[:stderr] = stderr
       log("    O: (#{address}):  #{stdout}", :color => :green) unless stdout.nil? or stdout == ""
       errorlog("    O: (#{address}):  #{stderr}", :color => :red) unless stderr.nil? or stderr == ""
       errorlog("    E: (#{address}): #{command[:command]} return exit code: #{exit_code}\n", :color => :red) if exit_code != 0
       return exit_code
     elsif command[:type] == :local
       ret = `#{command[:command]}`
+      command[:stdout] = ret
       if $?.to_i == 0
         log "    I: (local):  #{command[:command]}\n", :color => :blue
         log "    O: (local):  #{ret}\n", :color => :blue
@@ -118,6 +121,5 @@ class Runner
       # this will need to be improved to allow for :onfailure
       return 0
     end
-
   end
 end
