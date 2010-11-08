@@ -14,3 +14,8 @@ task_for :expect, :server => :test do
   run "ls"
 end
 
+task :abort_test, :server => :test do
+  run "this will fail", :onfailure => :failover, :abort => true
+  run "ls"
+end
+

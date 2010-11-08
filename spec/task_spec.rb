@@ -77,8 +77,41 @@ describe "Tasks" do
     t = deployer.__tasks.find {|t| t.__name == :expect }
     Runner.stubs(:ssh_exec!).returns(["","fail",1,nil]).then.returns(["ok","",0,nil])
     Runner.execute! t, deployer.__options
-    t.__commands.map {|c| [c[:command], c[:from]] }.first.should == ["echo 'we failed'", :failover]
+    @stdout[1].should == "    I: (abc.com):  this will fail\n"
+    @stderr[0].should == "    O: (abc.com):  fail"
+    @stdout[2].should == "    I: (abc.com):  echo 'we failed'\n"
+    @stdout[3].should == "    O: (abc.com):  ok"
+    @stdout[4].should == "    I: (abc.com):  ls\n"
+    @stdout[5].should == "    O: (abc.com):  ok"
   end
+
+  it "should abort if we use :abort => true" do
+    deployer = Deployer.new(:recipe_file => "./test/config/expect.rb", :silent => true)
+    t = deployer.__tasks.find {|t| t.__name == :abort_test }
+    Runner.stubs(:ssh_exec!).returns(["","fail",1,nil]).then.returns(["ok","",0,nil])
+    Runner.execute! t, deployer.__options
+    @stdout.size.should == 5
+    @stdout[1].should == "    I: (abc.com):  this will fail\n"
+    @stderr[0].should == "    O: (abc.com):  fail"
+    @stdout[2].should == "    I: (abc.com):  echo 'we failed'\n"
+    @stdout[3].should == "    O: (abc.com):  ok"
+    @stdout[4].should == "*** END executing task abort_test on test with address abc.com\n\n"
+    @stdout[5].should == nil
+  end
+
+  #it "should execute :ask and run the appropriate :yes or :no commands" do
+  #  deployer = Deployer.new(:recipe_file => "./test/config/ask.rb", :silent => true)
+  #  t = deployer.__tasks.find {|t| t.__name == :ask_test }
+  #  Runner.execute! t, deployer.__options
+  #end
+
+  #it "can prompt for user input and store the input" do
+  #  deployer = Deployer.new(:recipe_file => "./test/config/ask.rb", :silent => true)
+  #  t = deployer.__tasks.find {|t| t.__name == :prompt_test }
+  #  Runner.stubs(:get_input).with("darth vader")
+  #  Runner.execute! t, deployer.__options
+  #end
+
 
   it "should be able to create local tasks" do
     # TODO better testing on this

@@ -46,7 +46,6 @@ class Task < Screwcap::Base
   #    run "ls -l", :onfailure => :rollback
   #   end 
   def run arg, options = {}
-
     if arg.class == Symbol
       self.__commands << options.merge({:command => self.send(arg), :type => :remote, :from => self.__name})
     else
@@ -89,6 +88,27 @@ class Task < Screwcap::Base
         raise ScrewCap::ConfigurationError, "Could not find failure command set named '#{failure_cmd}' for task '#{self.__name}'"
       end
     end
+  end
+
+  # not yet
+  #def ask question, options = {}
+  #  # if we are asking for user input, the task cannot be run in parallel.
+  #  self.__options[:parallel] = false
+  #  self.__commands << options.merge({:command => question, :type => :ask, :from => self.__name})
+  #end
+
+  #def prompt question, options = {}
+  #  # if we are asking for user input, the task cannot be run in parallel.
+  #  self.__options[:parallel] = false
+  #  self.__commands << options.merge({:command => question, :type => :prompt, :from => self.__name})
+  #end
+
+
+  def __commands_for(name)
+    cs = self.__command_sets.find {|cs| cs.__name == name}
+    clone_table_for(cs)
+    cs.instance_eval(&cs.__block)
+    cs.__commands
   end
 
   protected
