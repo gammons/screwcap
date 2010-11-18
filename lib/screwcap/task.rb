@@ -7,7 +7,6 @@ class Task < Screwcap::Base
     self.__options = opts
     self.__commands = []
     self.__block = block
-    validate if self.__options[:validate] == true
   end
 
   # Run a command.  This can either be a string, or a symbol that is the name of a command set to run.

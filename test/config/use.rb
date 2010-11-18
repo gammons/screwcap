@@ -1,1 +1,1 @@
-use :simple_recipe
+use :super_simple_recipe
