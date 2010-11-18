@@ -1,7 +1,7 @@
 # The deployer is the class that holds the overall params from the screwcap tasks file, and it is also in charge of running the requested task.
 #
 # The deployer can be thought of as the "global scope" of your tasks file.
-class Deployer < Screwcap::Base
+class TaskManager < Screwcap::Base
   include MessageLogger
 
   # create a new deployer.
@@ -89,9 +89,8 @@ class Deployer < Screwcap::Base
   # ====Any command sets that are nested within another command set will inerit all the variables from the parent command set.
   #
   def task name, options = {}, &block
-    t = Task.new(options.merge(:name => name, :nocolor => self.__options[:nocolor], :silent => self.__options[:silent], :deployment_servers => self.__servers, :command_sets => self.__command_sets), &block)
-    clone_table_for(t)
-    t.instance_eval(&block)
+    t = Task.new(options.merge(:name => name), &block)
+    t.clone_from(self)
     self.__tasks << t
   end
   alias :task_for :task
@@ -125,8 +124,8 @@ class Deployer < Screwcap::Base
 
 
   def command_set(name,options = {},&block)
-    t = Task.new(options.merge(:name => name, :validate => false, :command_set => true, :command_sets => self.__command_sets), &block)
-    clone_table_for(t)
+    t = Task.new(options.merge(:name => name, :validate => false, :command_set => true), &block)
+    t.clone_from(self)
     self.__command_sets << t
   end
 
@@ -182,23 +181,24 @@ class Deployer < Screwcap::Base
 
   # ====Run one or more tasks or sequences.
   # * :tasks - the list of tasks to run, as an array of symbols.
-  def run!(*tasks)
-    tasks.flatten!
+  def run!(*tasks_to_run)
+    tasks_to_run.flatten!
     # sanity check each task
 
-    tasks_and_sequences = (self.__sequences.map(&:__name) + self.__tasks.map(&:__name))
-    tasks.each do |task_to_run|
-      raise(Screwcap::TaskNotFound, "Could not find task or sequence '#{task_to_run}' in recipe file #{self.__options[:recipe_file]}") unless tasks_and_sequences.include? task_to_run
+
+    tasks_to_run.each do |task_name|
+      task = self.__tasks.find {|task| task.name.to_s == task_name }
+      next unless task
+
+
+      commands = task.__build_commands(self.__command_sets)
+
+      Runner.execute! commands
+
+
+      Runner.execute! self.__tasks.select {|task| task.name.to_s == t.to_s }.first, self.__options
     end
 
-    tasks.each do |t| 
-      sequence = self.__sequences.find {|s| s.__name == t }
-      if sequence
-        sequence.__task_names.each {|task_name| Runner.execute! self.__tasks.find {|task| task.__name == task_name }, self.__options}
-      else
-        Runner.execute! self.__tasks.select {|task| task.name.to_s == t.to_s }.first, self.__options
-      end
-    end
     $stdout << "\033[0m"
   end
 
@@ -222,15 +222,6 @@ class Deployer < Screwcap::Base
       rescue Errno::ENOENT => e
         raise Screwcap::IncludeFileNotFound, "Could not find #{File.expand_path(arg)}! If the file is elsewhere, call it by using 'use '/path/to/file.rb'"
       end
-    end
-  end
-
-
-  private
-
-  def clone_table_for(object)
-    self.table.each do |k,v|
-      object.set(k, v) unless [:__options, :__tasks, :__servers, :__command_sets].include?(k)
     end
   end
 end

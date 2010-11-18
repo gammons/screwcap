@@ -6,18 +6,8 @@ class Task < Screwcap::Base
     self.__name = opts[:name]
     self.__options = opts
     self.__commands = []
-    self.__command_sets = opts[:command_sets] || []
-    self.__server_names = []
-    self.__block = block if opts[:command_set] == true
-
-
-    if opts[:server] and opts[:servers].nil?
-      self.__server_names << opts[:server]
-    else
-      self.__server_names = opts[:servers]
-    end
-
-    validate(opts[:deployment_servers]) unless opts[:validate] == false or opts[:local] == true
+    self.__block = block
+    validate if self.__options[:validate] == true
   end
 
   # Run a command.  This can either be a string, or a symbol that is the name of a command set to run.
@@ -45,18 +35,16 @@ class Task < Screwcap::Base
   #   task_for :item, :servers => :server do
   #    run "ls -l", :onfailure => :rollback
   #   end 
+  
   def run arg, options = {}
-    if arg.class == Symbol
-      self.__commands << options.merge({:command => self.send(arg), :type => :remote, :from => self.__name})
-    else
-      self.__commands << options.merge({:command => arg, :type => :remote, :from => self.__name})
-    end
+    self.__commands << options.merge({:command => arg, :type => :remote, :from => self.__name})
   end
 
   # SCP a file from your local drive to a remote machine.
   #   task_for :item, :servers => :server do
   #     scp :local => "/tmp/pirate_booty", :remote => "/mnt/app/config/booty.yml"
   #   end 
+  
   def scp options = {}
     self.__commands << options.merge({:type => :scp})
   end
@@ -77,75 +65,64 @@ class Task < Screwcap::Base
   #   task_for :item, :servers => :server do
   #    local "herd_cats", :onfailure => :rollback
   #   end 
+  
   def local arg, options = {}
-    if arg.class == Symbol
-      self.__commands << options.merge({:command => self.send(arg), :type => :local, :from => self.__name})
-    else
-      self.__commands << options.merge({:command => arg, :type => :local, :from => self.__name})
-    end
-    if failure_cmd = self.__commands.last[:onfailure]
-      unless self.__command_sets.find {|cs| cs.__name == failure_cmd }
-        raise ScrewCap::ConfigurationError, "Could not find failure command set named '#{failure_cmd}' for task '#{self.__name}'"
-      end
-    end
+    self.__commands << options.merge({:command => arg, :type => :local, :from => self.__name})
   end
 
-  # not yet
-  #def ask question, options = {}
-  #  # if we are asking for user input, the task cannot be run in parallel.
-  #  self.__options[:parallel] = false
-  #  self.__commands << options.merge({:command => question, :type => :ask, :from => self.__name})
-  #end
+  def __build_commands(command_sets = [])
+    commands = []
 
-  #def prompt question, options = {}
-  #  # if we are asking for user input, the task cannot be run in parallel.
-  #  self.__options[:parallel] = false
-  #  self.__commands << options.merge({:command => question, :type => :prompt, :from => self.__name})
-  #end
+    self.instance_eval(&self.__block)
 
+    # :before for before_ callback
+    if before = command_sets.find {|cs| cs.__name.to_s == "before_#{self.__name}" or cs.__name == self.__options[:before] } and before != self
+      before.clone_from(self)
+      commands << before.__build_commands(command_sets)
+    end
 
-  def __commands_for(name)
-    cs = self.__command_sets.find {|cs| cs.__name == name}
-    clone_table_for(cs)
-    cs.instance_eval(&cs.__block)
-    cs.__commands
-  end
-
-  protected
-
-  def method_missing(m, *args) # :nodoc
-    if m.to_s[0..1] == "__" or [:run].include?(m) or m.to_s.reverse[0..0] == "="
-      super(m, args.first) 
-    else
-      if cs = self.__command_sets.find {|cs| cs.__name == m }
-        # eval what is in the block
-        clone_table_for(cs)
-        cs.__commands = []
-        cs.instance_eval(&cs.__block)
-        self.__commands += cs.__commands
+    self.__commands.each do |command|
+      if command[:type] == :unknown
+        if cs = command_sets.find {|cs| cs.__name == command[:command] }
+          cs.clone_from(self)
+          commands << cs.__build_commands(command_sets)
+        else
+          raise(NoMethodError, "Cannot find task, command set, or other method named '#{command[:command]}'")
+        end
       else
-        raise NoMethodError, "Undefined method '#{m.to_s}' for task :#{self.name.to_s}"
+        commands << command
       end
+    end
+
+    # :after for after_ callback
+    if after = command_sets.find {|cs| cs.__name.to_s == "after_#{self.__name}" or cs.__name == self.__options[:after] } and after != self
+      after.clone_from(self)
+      commands << after.__build_commands(command_sets)
+    end
+
+    commands.flatten
+  end
+
+  def validate(servers)
+    raise Screwcap::ConfigurationError, "Could not find a server to run this task on.  Please specify :server => :servername or :servers => [:server1, :server2] in the task_for directive." if servers == [] or servers.nil?
+
+    # marshal :server into :servers
+    self.__options[:servers] = [self.__options.delete(:server)] if self.__options[:server]
+    self.__options[:servers] = [self.__options[:servers]] if self.__options[:servers].class != Array
+
+    server_names = servers.map {|s| s.__name }
+    self.__options[:servers].each do |server_name|
+      raise Screwcap::ConfigurationError, "Could not find a server to run this task on.  Please specify :server => :servername or :servers => [:server1, :server2] in the task_for directive." unless server_names.include?(server_name)
     end
   end
 
   private
 
-  def clone_table_for(object)
-    self.table.each do |k,v|
-      object.set(k, v) unless [:__block, :__tasks, :__name, :__command_sets, :__commands, :__options].include?(k)
+  def method_missing(m, *args) # :nodoc
+    if m.to_s[0..1] == "__" or [:run].include?(m) or m.to_s.reverse[0..0] == "="
+      super(m, args.first) 
+    else
+      self.__commands << {:command => m, :type => :unknown, :from => self.__name}
     end
   end
-
-  def validate(servers)
-    raise Screwcap::ConfigurationError, "Could not find a server to run this task on.  Please specify :server => :servername or :servers => [:server1, :server2] in the task_for directive." if self.__server_names.nil? or self.__server_names == []
-
-    self.__server_names.each do |server_name|
-      raise Screwcap::ConfigurationError, "Could not find a server to run this task on.  Please specify :server => :servername or :servers => [:server1, :server2] in the task_for directive." unless servers.map(&:name).include?(server_name)
-    end
-
-    # finally map the actual server objects via name
-    self.__servers = self.__server_names.map {|name| servers.find {|s| s.name == name } }
-  end
-
 end
