@@ -8,7 +8,7 @@ task :setup_rails, :local => true do
     then
       echo "config/screwcap/rails_tasks.rb already exists!"; exit 1
     else
-      curl -s http://github.com/gammons/screwcap_recipes/raw/master/rails/rails_tasks.rb > config/screwcap/rails_tasks.rb
+      curl -s https://github.com/gammons/screwcap_recipes/raw/master/rails/rails_tasks.rb > config/screwcap/rails_tasks.rb
     fi
   EOF
 
@@ -17,7 +17,7 @@ task :setup_rails, :local => true do
     then
       echo "lib/tasks/screwcap.rake already exists!"; exit 1
     else
-      curl -s http://github.com/gammons/screwcap_recipes/raw/master/rails/screwcap.rake > lib/tasks/screwcap.rake
+      curl -s https://github.com/gammons/screwcap_recipes/raw/master/rails/screwcap.rake > lib/tasks/screwcap.rake
     fi
   EOF
    
@@ -26,7 +26,7 @@ task :setup_rails, :local => true do
     then
       echo "config/screwcap/recipe.rb already exists!"; exit 1
     else
-      curl -s http://github.com/gammons/screwcap_recipes/raw/master/rails/recipe.rb > config/screwcap/recipe.rb
+      curl -s https://github.com/gammons/screwcap_recipes/raw/master/rails/recipe.rb > config/screwcap/recipe.rb
     fi
   EOF
 end
