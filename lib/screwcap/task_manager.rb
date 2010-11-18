@@ -1,12 +1,11 @@
-# The deployer is the class that holds the overall params from the screwcap tasks file, and it is also in charge of running the requested task.
+# The task manager is the class that holds the overall params from the screwcap tasks file, and it is also in charge of running the requested task.
 #
-# The deployer can be thought of as the "global scope" of your tasks file.
+# The task manager can be thought of as the "global scope" of your tasks file.
 class TaskManager < Screwcap::Base
   include MessageLogger
 
-  # create a new deployer.
+  # create a new task manager.
   def initialize(opts = {})
-    opts = {:recipe_file => File.expand_path("./config/recipe.rb")}.merge opts
     super
     self.__options = opts
     self.__tasks = []
@@ -14,15 +13,7 @@ class TaskManager < Screwcap::Base
     self.__command_sets = []
     self.__sequences = []
 
-    # ensure that deployer options will not be passed to tasks
-    opts.each_key {|k| self.delete_field(k) }
-
-    Deployer.log "Reading #{self.__options[:recipe_file]}\n" unless self.__options[:silent] == true
-
-    file = File.open(self.__options[:recipe_file])
-    data = file.read
-
-    instance_eval(data)
+    instance_eval(File.read(self.__options[:recipe_file])) if self.__options[:recipe_file]
   end
 
 
@@ -91,6 +82,7 @@ class TaskManager < Screwcap::Base
   def task name, options = {}, &block
     t = Task.new(options.merge(:name => name), &block)
     t.clone_from(self)
+    t.validate(self.__servers)
     self.__tasks << t
   end
   alias :task_for :task
@@ -122,9 +114,8 @@ class TaskManager < Screwcap::Base
   #       redundant_task
   #     end
 
-
   def command_set(name,options = {},&block)
-    t = Task.new(options.merge(:name => name, :validate => false, :command_set => true), &block)
+    t = Task.new(options.merge(:name => name), &block)
     t.clone_from(self)
     self.__command_sets << t
   end
@@ -141,7 +132,7 @@ class TaskManager < Screwcap::Base
   #   * *:keys* can be used to specify the key to use to connect to the server
   #   * *:password* specify the password to connect with.  Not recommended.  Use keys.
   def server(name, options = {}, &block)
-    server = Server.new(options.merge(:name => name, :servers => self.__servers, :silent => self.__options[:silent]))
+    server = Server.new(options.merge(:name => name))
     self.__servers << server
   end
 
@@ -183,23 +174,26 @@ class TaskManager < Screwcap::Base
   # * :tasks - the list of tasks to run, as an array of symbols.
   def run!(*tasks_to_run)
     tasks_to_run.flatten!
-    # sanity check each task
 
-
+    ret = []
     tasks_to_run.each do |task_name|
-      task = self.__tasks.find {|task| task.name.to_s == task_name }
-      next unless task
-
-
-      commands = task.__build_commands(self.__command_sets)
-
-      Runner.execute! commands
-
-
-      Runner.execute! self.__tasks.select {|task| task.name.to_s == t.to_s }.first, self.__options
+      seq = self.__sequences.find {|s| s.__name == task_name }
+      if seq
+        seq.__task_names.each do |seq_task_name|
+          task = self.__tasks.find {|t| t.__name == seq_task_name }
+          next unless task
+          commands = task.__build_commands(self.__command_sets)
+          Runner.execute! commands
+          ret << commands
+        end
+      elsif task = self.__tasks.find {|t| t.__name == task_name }
+        commands =  task.__build_commands(self.__command_sets)
+        Runner.execute! commands
+        ret << commands
+      end
     end
-
     $stdout << "\033[0m"
+    ret.flatten
   end
 
   # ====Use will dynamically include another file into an existing configuration file.
@@ -211,14 +205,14 @@ class TaskManager < Screwcap::Base
   def use arg
     if arg.is_a? Symbol
       begin
-        dirname = File.dirname(self.__options[:recipe_file])
-        instance_eval(File.open(File.dirname(File.expand_path(self.__options[:recipe_file])) + "/" + arg.to_s + ".rb").read)
+        dirname = File.expand_path(File.dirname(self.__options[:recipe_file]))
+        instance_eval File.read("#{dirname}/#{arg.to_s}.rb")
       rescue Errno::ENOENT => e
         raise Screwcap::IncludeFileNotFound, "Could not find #{File.expand_path("./"+arg.to_s + ".rb")}! If the file is elsewhere, call it by using 'use '/path/to/file.rb'"
       end
     else
       begin
-        instance_eval(File.open(File.dirname(File.expand_path(self.__options[:recipe_file])) + "/" + arg).read)
+        instance_eval(File.read(arg))
       rescue Errno::ENOENT => e
         raise Screwcap::IncludeFileNotFound, "Could not find #{File.expand_path(arg)}! If the file is elsewhere, call it by using 'use '/path/to/file.rb'"
       end
