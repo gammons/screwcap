@@ -25,7 +25,11 @@ task_for :task3, :servers => [:test, :test2] do
   local "ls" #empty in tests so it doesn't pollute
 end
 
-task_for :seq1, :server => :test do
+task :before_seq1 do
+  run "before"
+end
+
+task_for :seq1, :server => :test, :before => :before_seq1 do
   run "1"
 end
 

@@ -13,7 +13,7 @@ require 'screwcap/task'
 require 'screwcap/server'
 require 'screwcap/runner'
 require 'screwcap/sequence'
-require 'screwcap/deployer'
+require 'screwcap/task_manager'
 
 module Screwcap
   VERSION='0.3.5'
