@@ -154,6 +154,12 @@
     <script src="http://gist.github.com/652022.js?file=sequences.rb"></script>
     <p>You can run a sequence in the same way you run a task.</p>
 
+    <h2>Callbacks</h2>
+    <p>Screwcap supports both :before and :after callbacks for tasks, in 2 different ways.</p>
+    <p>The first way is to add a <code>:before => :do_this</code> To your task spec.</p> 
+    <p>The second way is to declare a task named <code>before_task</code> where <code>task</code> is the name of the task.</p>
+    <script src="https://gist.github.com/707078.js?file=callbacks.rb"></script>
+
     <a name="rails"></a>
     <h2>Using Screwcap with Rails</h2>
     <p>Screwcap is a great choice to deploy rails applications, because the actual deployment implementation is decoupled from the screwcap base, thus the recipe file can be updated continually.</p>
