@@ -3,9 +3,10 @@ class Task < Screwcap::Base
 
   def initialize(opts = {}, &block)
     super
-    self.__name = opts[:name]
+    self.__name = opts.delete(:name)
     self.__options = opts
     self.__commands = []
+    self.__servers  = opts.delete(:servers)
     self.__block = block
   end
 
@@ -106,11 +107,11 @@ class Task < Screwcap::Base
     raise Screwcap::ConfigurationError, "Could not find a server to run this task on.  Please specify :server => :servername or :servers => [:server1, :server2] in the task_for directive." if servers == [] or servers.nil?
 
     # marshal :server into :servers
-    self.__options[:servers] = [self.__options.delete(:server)] if self.__options[:server]
-    self.__options[:servers] = [self.__options[:servers]] if self.__options[:servers].class != Array
+    self.__servers = [self.__options.delete(:server)] if self.__options[:server]
+    self.__servers = [self.__servers] if self.__servers.class != Array
 
     server_names = servers.map {|s| s.__name }
-    self.__options[:servers].each do |server_name|
+    self.__servers.each do |server_name|
       raise Screwcap::ConfigurationError, "Could not find a server to run this task on.  Please specify :server => :servername or :servers => [:server1, :server2] in the task_for directive." unless server_names.include?(server_name)
     end
   end

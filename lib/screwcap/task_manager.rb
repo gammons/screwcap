@@ -175,23 +175,47 @@ class TaskManager < Screwcap::Base
   def run!(*tasks_to_run)
     tasks_to_run.flatten!
 
-    ret = []
-    tasks_to_run.each do |task_name|
-      seq = self.__sequences.find {|s| s.__name == task_name }
-      if seq
-        seq.__task_names.each do |seq_task_name|
-          task = self.__tasks.find {|t| t.__name == seq_task_name }
-          next unless task
-          commands = task.__build_commands(self.__command_sets)
-          Runner.execute! commands
-          ret << commands
-        end
-      elsif task = self.__tasks.find {|t| t.__name == task_name }
-        commands =  task.__build_commands(self.__command_sets)
-        Runner.execute! commands
-        ret << commands
+    tasks_to_run.map! do |ttr| 
+      unless ret = self.__tasks.find {|t| t.__name == ttr } 
+        seq = self.__sequences.find {|t| t.__name == ttr }
+        ret = seq.__task_names.map {|tn| self.__tasks.find {|t| t.__name == tn }}.compact if seq
       end
+      ret
     end
+    tasks_to_run.flatten!
+    tasks_to_run.compact!
+
+    ret = []
+    tasks_to_run.each do |task|
+      commands =  task.__build_commands(self.__command_sets)
+      if task.__options[:local] == true
+        Runner.execute_locally! commands, :silent => self.__options[:silent]
+      else
+        threads = []
+        self.__servers.select {|s| task.__servers.include? s.__name }.each do |server|
+          server.__addresses.each do |address|
+            if task.__options[:parallel] == false
+              Runner.execute!(:name => task.__name, 
+                              :commands => commands, 
+                              :address => address, 
+                              :server => server, 
+                              :silent => self.__options[:silent])
+            else
+              threads << Thread.new(server,address) do |server, address| 
+                Runner.execute!(:name => task.__name, 
+                                :commands => commands, 
+                                :address => address, 
+                                :server => server,
+                                :silent => self.__options[:silent]) 
+              end
+            end
+          end
+        end
+        threads.each {|t| t.join }
+      end
+      ret << commands
+    end
+
     $stdout << "\033[0m"
     ret.flatten
   end

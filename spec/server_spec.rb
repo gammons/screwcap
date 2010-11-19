@@ -29,13 +29,4 @@ describe "Servers" do
     server = Server.new(:name => :test, :user => :root, :address => "abc.com")
     server.should respond_to(:__with_connection_for)
   end
-
-  it "should provide a connection to the server with a gateway" do
-    @deployer = Deployer.new(:recipe_file => "./test/config/gateway.rb", :silent => true)
-    server = @deployer.__servers.find {|s| s.__name == :test}
-    gateway = @deployer.__servers.find {|s| s.__name == :gateway1}
-
-    output = []
-    lambda { server.__with_connection {} }.should_not raise_error 
-  end
 end
