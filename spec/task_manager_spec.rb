@@ -1,8 +1,13 @@
 require 'spec_helper'
 
 describe "Task Managers" do
+  before(:all) do
+    Net::SSH.stubs(:start).yields(SSHObject.new(:return_stream => :stdout, :return_data => "ok\n"))
+    Runner.stubs(:ssh_exec!).returns(["ok\n","",0,nil])
+  end
+
   before(:each) do
-    @tm = TaskManager.new
+    @tm = TaskManager.new :silent => true
   end
 
   it "can have tasks and servers" do
@@ -52,7 +57,6 @@ describe "Task Managers" do
   end
 
   it "should be able to execute a recipe" do
-    Runner.stubs(:execute!)
     @tm.pie_type = "moon pie"
     @tm.server :server, :address => "test", :user => "root"
     @tm.task :deploy, :server => :server do

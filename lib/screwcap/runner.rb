@@ -1,120 +1,78 @@
 class Runner
   include MessageLogger
+  @@silent = false
 
-  def self.execute! task, options
-    @task = task; @options = options
-    threads = []
-    if @task.__options[:local] == true
-      log "\n*** BEGIN executing local task #{@task.__name}\n", :color => :blue
-      @task.__commands.each do |command|
-        ret = `#{command[:command]}`
-        if $?.to_i == 0
-          log "    I: (local):  #{command[:command]}\n", :color => :blue
-          log("    O: (local):  #{ret}\n", :color => :blue) unless ret.nil? or ret == ""
-        else
-          log "    I: (local):  #{command[:command]}\n", :color => :blue
-          errorlog("    O: (local):  #{ret}\n", :color => :red) unless ret.nil? or ret == ""
-          errorlog("    E: (local): #{command[:command]} return exit code: #{$?}\n", :color => :red) if $? != 0
-        end
-      end
-      log "\n*** END executing local task #{@task.__name}\n", :color => :blue
-    else
-      @task.__servers.each do |_server|
-        _server.__addresses.each do |_address|
-          if task.__options[:parallel] == false
-            run_commands_on(_server, _address)
-          else
-            threads << Thread.new(_server, _address) { |server, address| run_commands_on(server, address) }
-          end
-        end
-      end
-    end
-    threads.each {|t| t.join }
-  end
-
-  private
-
-  def self.run_commands_on(server, address) 
+  def self.execute! options
+    @@silent = options[:silent]
     begin
-      log "\n*** BEGIN executing task #{@task.__name} on #{server.name} with address #{address}\n", :color => :blue
-      server.__with_connection_for(address) do |ssh|
-        execute_commands(@task.__commands, :ssh => ssh, :address => address, :server => server)
+      _log "\n*** BEGIN executing task #{options[:name]} on #{options[:server].name} with address #{options[:address]}\n", :color => :blue unless options[:silent] == true
+      options[:server].__with_connection_for(options[:address]) do |ssh|
+        options[:commands].each do |command|
+          ret = run_command(command, options)
+          break if ret != 0 and command[:abort_on_fail] == true
+        end
       end
     rescue Net::SSH::AuthenticationFailed => e
       raise Net::SSH::AuthenticationFailed, "Authentication failed for server named #{server.name}.  Please check your authentication credentials."
     rescue Exception => e
-      errorlog "    F: (#{address}): #{e}", :color => :red
+      _errorlog "    F: (#{options[:address]}): #{e}", :color => :red
     ensure
-      log "*** END executing task #{@task.__name} on #{server.name} with address #{address}\n\n", :color => :blue
+      _log "*** END executing task #{options[:name]} on #{options[:server].name} with address #{options[:address]}\n\n", :color => :blue
     end
+    options[:commands] # for tests
   end
 
-  def self.execute_commands(commands, options = {})
-    commands.each do |command|
-      if ret = run_command(command, options) != 0 
-        if command[:onfailure]
-          run_on_failure = @task.__command_sets.find {|cs| cs.__name == command[:onfailure] }
-          raise(ArgumentError, "Could not find :onfailure command_set named '#{command[:onfailure]}'!") if run_on_failure.nil?
-          execute_commands(@task.__commands_for(command[:onfailure]), options)
-          break if command[:abort] == true
-        elsif command[:yes] and ret == 1
-          to_run = @task.__command_sets.find {|cs| cs.__name == command[:yes] }
-          raise(ArgumentError, "Could not find :yes command_set named '#{command[:yes]}'!") if to_run.nil?
-          execute_commands(@task.__commands_for(command[:yes]), options)
-          break if command[:abort] == true
-        elsif command[:no] and ret == 2
-          to_run = @task.__command_sets.find {|cs| cs.__name == command[:no] }
-          raise(ArgumentError, "Could not find :no command_set named '#{command[:no]}'!") if to_run.blank?
-          execute_commands(@task.__commands_for(command[:no]))
-        end
+  def self.execute_locally! options
+    @@silent = options[:silent]
+    _log "\n*** BEGIN executing local task #{options[:name]}\n", :color => :blue
+    options[:commands].each do |command|
+      command[:stdout] = ret = `#{command[:command]}`
+      
+      if $?.to_i == 0
+        _log "    I: (local):  #{command[:command]}\n", :color => :blue
+        _log("    O: (local):  #{ret}\n", :color => :blue) unless ret.nil? or ret == ""
+      else
+        _log "    I: (local):  #{command[:command]}\n", :color => :blue
+        _errorlog("    O: (local):  #{ret}\n", :color => :red) unless ret.nil? or ret == ""
+        _errorlog("    E: (local): #{command[:command]} return exit code: #{$?}\n", :color => :red) if $? != 0
       end
     end
+    _log "\n*** END executing local task #{options[:name]}\n", :color => :blue
+    options[:commands]
   end
 
+  private
 
   def self.run_command(command, options)
     if command[:type] == :remote
-      log "    I: (#{options[:address]}):  #{command[:command]}\n", :color => :green
+      _log "    I: (#{options[:address]}):  #{command[:command]}\n", :color => :green
       stdout, stderr, exit_code, exit_signal = ssh_exec! options[:ssh], command[:command]
       command[:stdout] = stdout
       command[:stderr] = stderr
-      log("    O: (#{options[:address]}):  #{stdout}", :color => :green) unless stdout.nil? or stdout == ""
-      errorlog("    O: (#{options[:address]}):  #{stderr}", :color => :red) unless stderr.nil? or stderr == ""
-      errorlog("    E: (#{options[:address]}): #{command[:command]} return exit code: #{exit_code}\n", :color => :red) if exit_code != 0
+      _log("    O: (#{options[:address]}):  #{stdout}", :color => :green) unless stdout.nil? or stdout == ""
+      _errorlog("    O: (#{options[:address]}):  #{stderr}", :color => :red) unless stderr.nil? or stderr == ""
+      _errorlog("    E: (#{options[:address]}): #{command[:command]} return exit code: #{exit_code}\n", :color => :red) if exit_code != 0
       return exit_code
     elsif command[:type] == :local
       ret = `#{command[:command]}`
       command[:stdout] = ret
       if $?.to_i == 0
-        log "    I: (local):  #{command[:command]}\n", :color => :blue
-        log "    O: (local):  #{ret}\n", :color => :blue
+        _log "    I: (local):  #{command[:command]}\n", :color => :blue
+        _log "    O: (local):  #{ret}\n", :color => :blue
       else
-        log "    I: (local):  #{command[:command]}\n", :color => :blue
-        errorlog "    O: (local):  #{ret}\n", :color => :red
-        errorlog("    E: (local): #{command[:command]} return exit code: #{$?}\n", :color => :red) if $? != 0
+        _log "    I: (local):  #{command[:command]}\n", :color => :blue
+        _errorlog "    O: (local):  #{ret}\n", :color => :red
+        _errorlog("    E: (local): #{command[:command]} return exit code: #{$?}\n", :color => :red) if $? != 0
       end
       return $?
-    elsif command[:type] == :ask
-      answer = ""
-      while answer == ""
-        log (command[:command] + " (y/n) "), :color => :bluebold
-        answer = get_input
-      end
-      return 1 if command[:yes] and ["yes","y"].include? answer.downcase 
-      return 2 if command[:no] and ["no","n"].include? answer.downcase 
     elsif command[:type] == :scp
-      log "    I: (#{options[:address]}): SCP #{command[:local]} to #{options[:server].__user}@#{options[:address]}:#{command[:remote]}\n", :color => :green
+      _log "    I: (#{options[:address]}): SCP #{command[:local]} to #{options[:server].__user}@#{options[:address]}:#{command[:remote]}\n", :color => :green
       options[:server].__upload_to!(options[:address], command[:local], command[:remote])
 
       # this will need to be improved to allow for :onfailure
       return 0
     end
   end
-
-  def self.get_input
-    STDIN.gets.chomp
-  end
-
 
   # courtesy of flitzwald on stackoverflow
   # http://stackoverflow.com/questions/3386233/how-to-get-exit-status-with-rubys-netssh-library
@@ -145,5 +103,33 @@ class Runner
     ssh.loop
     [stdout_data, stderr_data, exit_code, exit_signal]
   end
+
+  def self._log(message, options)
+    return if @@silent == true
+    log(message, options)
+  end
+
+  def self._errorlog(message, options)
+    return if @@silent == true
+    errorlog(message, options)
+  end
+
+  #def self.old_execute! commands, options
+  #  @task = task; @options = options
+  #  threads = []
+  #  if @task.__options[:local] == true
+  #  else
+  #    @task.__servers.each do |_server|
+  #      _server.__addresses.each do |_address|
+  #        if task.__options[:parallel] == false
+  #          run_commands_on(_server, _address)
+  #        else
+  #          threads << Thread.new(_server, _address) { |server, address| run_commands_on(server, address) }
+  #        end
+  #      end
+  #    end
+  #  end
+  #  threads.each {|t| t.join }
+  #end
 
 end
