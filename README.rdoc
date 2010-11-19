@@ -23,7 +23,6 @@ For more info, see the main screwcap page at http://gammons.github.com/screwcap
 == TODO:
 * Explore removing the 'use' keyword, favoring require or load
 * Add ability to parse user input
-* Add ability to parse user input
 * DONE add --dry-run to screwcap
 
 == RECIPES:
