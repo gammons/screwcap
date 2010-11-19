@@ -6,8 +6,17 @@ class Task < Screwcap::Base
     self.__name = opts.delete(:name)
     self.__options = opts
     self.__commands = []
+    self.__local_before_command_sets = []
+    self.__local_after_command_sets = []
     self.__servers  = opts.delete(:servers)
     self.__block = block
+
+    if self.__options[:before] and self.__options[:before].class != Array
+      self.__options[:before] = [self.__options[:before]] 
+    end
+    if self.__options[:after] and self.__options[:after].class != Array
+      self.__options[:after] = [self.__options[:after]] 
+    end
   end
 
   # Run a command.  This can either be a string, or a symbol that is the name of a command set to run.
@@ -78,13 +87,31 @@ class Task < Screwcap::Base
     end
   end
 
+  def before name, &block
+    self.__local_before_command_sets << Task.new(:name => name, &block)
+  end
+
+  def after name, &block
+    self.__local_after_command_sets << Task.new(:name => name, &block)
+  end
+
+
   def __build_commands(command_sets = [])
     commands = []
 
     self.instance_eval(&self.__block)
 
-    # :before for before_ callback
-    if before = command_sets.find {|cs| cs.__name.to_s == "before_#{self.__name}" or cs.__name == self.__options[:before] } and before != self
+    if self.__options[:before]
+      self.__options[:before].each do |before|
+        before = command_sets.find {|cs| cs.__name.to_s == before.to_s}
+        next if before.nil? or before == self
+        before.clone_from(self)
+        commands << before.__build_commands(command_sets)
+      end
+    end
+
+    command_sets.select {|cs| cs.__name.to_s == "before_#{self.__name}"}.each do |before|
+      next if before == self
       before.clone_from(self)
       commands << before.__build_commands(command_sets)
     end
@@ -93,7 +120,23 @@ class Task < Screwcap::Base
       if command[:type] == :unknown
         if cs = command_sets.find {|cs| cs.__name == command[:command] }
           cs.clone_from(self)
+
+          self.__local_before_command_sets.each do |lcs|
+            if command[:command] == lcs.__name
+              lcs.clone_from(self)
+              commands << lcs.__build_commands(command_sets)
+            end
+          end
+
           commands << cs.__build_commands(command_sets)
+
+          self.__local_after_command_sets.each do |lcs|
+            if command[:command] == lcs.__name
+              lcs.clone_from(self)
+              commands << lcs.__build_commands(command_sets)
+            end
+          end
+
         else
           raise(NoMethodError, "Cannot find task, command set, or other method named '#{command[:command]}'")
         end
@@ -102,8 +145,17 @@ class Task < Screwcap::Base
       end
     end
 
-    # :after for after_ callback
-    if after = command_sets.find {|cs| cs.__name.to_s == "after_#{self.__name}" or cs.__name == self.__options[:after] } and after != self
+    if self.__options[:after]
+      self.__options[:after].each do |after|
+        after = command_sets.find {|cs| cs.__name.to_s == after.to_s}
+        next if after.nil? or after == self
+        after.clone_from(self)
+        commands << after.__build_commands(command_sets)
+      end
+    end
+
+    command_sets.select {|cs| cs.__name.to_s == "after_#{self.__name}"}.each do |after|
+      next if after == self
       after.clone_from(self)
       commands << after.__build_commands(command_sets)
     end

@@ -147,4 +147,85 @@ describe "Tasks" do
     task = Task.new :name => :test, :servers => [:server, :server2]
     lambda { task.validate([server,other_server]) }.should_not raise_error
   end
+
+  it "should handle before and after inside a task" do
+    do_other_task = Task.new :name => :other_task do
+      run "task"
+    end
+    task = Task.new :name => :task do
+      before :other_task do
+        run "before"
+      end
+      after :other_task do
+        run "after"
+      end
+
+      other_task
+    end
+
+    commands = task.__build_commands([do_other_task])
+    commands.map {|c| c[:command] }.should == %w(before task after)
+  end
+
+  it "before and after call blocks can call command sets just like everything else" do
+    special = Task.new :name => :run_special_command do
+      run "special"
+    end
+    other = Task.new :name => :other_task do
+      run "other"
+    end
+
+    task = Task.new :name => :task do
+      before :other_task do
+        run_special_command
+      end
+      after :other_task do
+        run "after"
+      end
+      other_task
+    end
+    commands = task.__build_commands([special, other])
+    commands.map {|c| c[:command] }.should == %w(special other after)
+  end
+
+  it "should be able to handle multiple befores inside" do
+    special = Task.new :name => :run_special_command do
+      run "special"
+    end
+    other = Task.new :name => :other_task do
+      run "other"
+    end
+
+    task = Task.new :name => :task do
+      before :other_task do
+        run_special_command
+      end
+      before :other_task do
+        run "moon_pie"
+      end
+      after :other_task do
+        run "after"
+      end
+      other_task
+    end
+    commands = task.__build_commands([special, other])
+    commands.map {|c| c[:command] }.should == %w(special moon_pie other after)
+  end
+
+  it "should be able to handle multiple befores outside" do
+    before1 = Task.new :name => :do1 do
+      run "do1"
+    end
+
+    before2 = Task.new :name => :do2 do
+      run "do2"
+    end
+
+    task = Task.new :name => :new_task, :before => [:do1, :do2] do
+      run "task"
+    end
+
+    commands = task.__build_commands([before1, before2])
+    commands.map {|c| c[:command] }.should == %w(do1 do2 task)
+  end
 end
