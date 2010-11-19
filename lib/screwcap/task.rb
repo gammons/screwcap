@@ -37,7 +37,11 @@ class Task < Screwcap::Base
   #   end 
   
   def run arg, options = {}
-    self.__commands << options.merge({:command => arg, :type => :remote, :from => self.__name})
+    if arg.class == Symbol
+      self.__commands << options.merge({:command => self.send(arg), :type => :remote, :from => self.__name})
+    else
+      self.__commands << options.merge({:command => arg, :type => :remote, :from => self.__name})
+    end
   end
 
   # SCP a file from your local drive to a remote machine.
@@ -67,7 +71,11 @@ class Task < Screwcap::Base
   #   end 
   
   def local arg, options = {}
-    self.__commands << options.merge({:command => arg, :type => :local, :from => self.__name})
+    if arg.class == Symbol
+      self.__commands << options.merge({:command => self.send(arg), :type => :local, :from => self.__name})
+    else
+      self.__commands << options.merge({:command => arg, :type => :local, :from => self.__name})
+    end
   end
 
   def __build_commands(command_sets = [])
