@@ -13,11 +13,14 @@ class Server < Screwcap::Base
   #   * *:password* specify the password to connect with.  Not recommended.  Use keys.
   def initialize(opts = {})
     super
+    self.__name = opts.delete(:name)
+    self.__user = opts.delete(:user)
+    self.__options[:keys] = [opts.delete(:key)] if opts[:key]
+
+    servers = opts.delete(:servers)
+    self.__gateway = servers.select {|s| s.__options[:is_gateway] == true }.find {|s| s.__name == opts[:gateway] } if servers
+
     self.__options = opts
-    self.__name = opts[:name]
-    self.__servers = opts[:servers]
-    self.__user = opts[:user]
-    self.__options[:keys] = [self.__options.delete(:key)] if self.__options[:key]
 
     if self.__options[:address] and self.__options[:addresses].nil?
       self.__addresses = [self.__options.delete(:address)] 
@@ -31,9 +34,8 @@ class Server < Screwcap::Base
   end
 
   def __with_connection_for(address, &block)
-    if self.__options[:gateway]
-      gateway = self.__servers.select {|s| s.__options[:is_gateway] == true }.find {|s| s.__name == self.__options[:gateway] }
-      gateway.__get_gateway_connection.ssh(address, self.__user, options_for_net_ssh) do |ssh|
+    if self.__gateway
+      __gateway.__get_gateway_connection.ssh(address, self.__user, options_for_net_ssh) do |ssh|
         yield ssh
       end
     else

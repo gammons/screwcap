@@ -14,8 +14,8 @@ class Runner
       end
     rescue Net::SSH::AuthenticationFailed => e
       raise Net::SSH::AuthenticationFailed, "Authentication failed for server named #{server.name}.  Please check your authentication credentials."
-    rescue Exception => e
-      _errorlog "    F: (#{options[:address]}): #{e}", :color => :red
+    #rescue Exception => e
+    #  _errorlog "    F: (#{options[:address]}): #{e}", :color => :red
     ensure
       _log "*** END executing task #{options[:name]} on #{options[:server].name} with address #{options[:address]}\n\n", :color => :blue
     end

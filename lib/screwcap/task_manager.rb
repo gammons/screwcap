@@ -143,7 +143,7 @@ class TaskManager < Screwcap::Base
   # * Gateways have the same option as a *:server*.
   # * You can specify :gateway => :mygateway in the *:server* definition.
   def gateway(name, options = {}, &block)
-    server = Server.new(options.merge(:name => name, :is_gateway => true))
+    server = Server.new(options.merge(:name => name, :is_gateway => true, :servers => self.__servers))
     self.__servers << server
   end
 
