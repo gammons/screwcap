@@ -82,7 +82,7 @@ class TaskManager < Screwcap::Base
   def task name, options = {}, &block
     t = Task.new(options.merge(:name => name), &block)
     t.clone_from(self)
-    t.validate(self.__servers)
+    t.validate(self.__servers) unless options[:local] == true
     self.__tasks << t
   end
   alias :task_for :task
@@ -189,7 +189,7 @@ class TaskManager < Screwcap::Base
     tasks_to_run.each do |task|
       commands =  task.__build_commands(self.__command_sets)
       if task.__options[:local] == true
-        Runner.execute_locally! commands, :silent => self.__options[:silent]
+        Runner.execute_locally! :commands => commands, :silent => self.__options[:silent]
       else
         threads = []
         self.__servers.select {|s| task.__servers.include? s.__name }.each do |server|

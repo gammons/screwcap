@@ -8,7 +8,6 @@ describe "The Runner" do
       run "one"
       run "two"
     end
-
   end
 
   it "should be able to execute commands on an address of a server" do

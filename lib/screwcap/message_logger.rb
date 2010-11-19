@@ -16,7 +16,7 @@ module MessageLogger
 
     def logmsg(msg, output, options)
       return if @options and @options[:silent] == true
-      if @options and not @options[:nocolor] == true
+      unless (@options and @options[:nocolor] == true)
         case options[:color]
         when :blue
           output << "\033[0;36m#{msg}#{"\033[0m" if options[:clear]}"

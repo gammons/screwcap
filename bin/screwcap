@@ -31,7 +31,7 @@ opts = Trollop::with_standard_exception_handling p do
 
   if opts[:tasks] == true
     recipe_file = ARGV.shift
-    deployer = Deployer.new(opts.merge(:recipe_file => recipe_file))
+    deployer = TaskManager.new(opts.merge(:recipe_file => recipe_file))
     $stdout << "Tasks Available:\n" if deployer.__tasks.size > 0
     deployer.__tasks.map {|t| t.__name }.each {|name| $stdout << "  #{name}\n" }
     $stdout << "Sequences Available:\n" if deployer.__sequences.size > 0
@@ -41,7 +41,7 @@ opts = Trollop::with_standard_exception_handling p do
 
   if opts[:dry_run] == true
     recipe_file = ARGV.shift
-    deployer = Deployer.new(opts.merge(:recipe_file => recipe_file))
+    deployer = TaskManager.new(opts.merge(:recipe_file => recipe_file))
     ARGV.map {|a| a.to_sym }.each do |tname|
       task = deployer.__tasks.find {|t| t.__name == tname }
       raise(Screwcap::TaskNotFound, "Could not find task named '#{tname}' in the recipe file.") if task.nil?
@@ -55,7 +55,7 @@ opts = Trollop::with_standard_exception_handling p do
   end
 
   if opts[:setup_rails] == true
-    Deployer.new(:recipe_file => File.expand_path(File.dirname(__FILE__) + "/../recipes/setup_rails.rb")).run! :setup_rails
+    TaskManager.new(:recipe_file => File.expand_path(File.dirname(__FILE__) + "/../recipes/setup_rails.rb")).run! :setup_rails
     $stdout << "\nYour rails app now has a sample recipe, ready for the editing, in config/screwcap/recipe.rb\n"
     $stdout << "Your recipes will be automatically available in rake.  Screwcap uses the :remote namespace.\n"
     $stdout << "To see what recipes you can run, type 'rake -T remote'.\n"
@@ -66,7 +66,7 @@ opts = Trollop::with_standard_exception_handling p do
   raise Trollop::HelpNeeded if ARGV.size < 2
   recipe_file = ARGV.shift
   begin
-    Deployer.new(opts.merge(:recipe_file => recipe_file)).run! ARGV.map {|a| a.to_sym }
+    TaskManager.new(opts.merge(:recipe_file => recipe_file)).run! ARGV.map {|a| a.to_sym }
   rescue Exception => e
     raise e if opts[:debug] == true
     $stderr << e

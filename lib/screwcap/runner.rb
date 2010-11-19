@@ -8,7 +8,7 @@ class Runner
       _log "\n*** BEGIN executing task #{options[:name]} on #{options[:server].name} with address #{options[:address]}\n", :color => :blue unless options[:silent] == true
       options[:server].__with_connection_for(options[:address]) do |ssh|
         options[:commands].each do |command|
-          ret = run_command(command, options)
+          ret = run_command(command, ssh, options)
           break if ret != 0 and command[:abort_on_fail] == true
         end
       end
@@ -43,10 +43,10 @@ class Runner
 
   private
 
-  def self.run_command(command, options)
+  def self.run_command(command, ssh, options)
     if command[:type] == :remote
       _log "    I: (#{options[:address]}):  #{command[:command]}\n", :color => :green
-      stdout, stderr, exit_code, exit_signal = ssh_exec! options[:ssh], command[:command]
+      stdout, stderr, exit_code, exit_signal = ssh_exec! ssh, command[:command]
       command[:stdout] = stdout
       command[:stderr] = stderr
       _log("    O: (#{options[:address]}):  #{stdout}", :color => :green) unless stdout.nil? or stdout == ""
@@ -113,23 +113,4 @@ class Runner
     return if @@silent == true
     errorlog(message, options)
   end
-
-  #def self.old_execute! commands, options
-  #  @task = task; @options = options
-  #  threads = []
-  #  if @task.__options[:local] == true
-  #  else
-  #    @task.__servers.each do |_server|
-  #      _server.__addresses.each do |_address|
-  #        if task.__options[:parallel] == false
-  #          run_commands_on(_server, _address)
-  #        else
-  #          threads << Thread.new(_server, _address) { |server, address| run_commands_on(server, address) }
-  #        end
-  #      end
-  #    end
-  #  end
-  #  threads.each {|t| t.join }
-  #end
-
 end
