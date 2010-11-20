@@ -97,4 +97,21 @@ describe "Task Managers" do
     commands[0][:command].should == "task1"
     commands[1][:command].should == "task2"
   end
+
+  it "command sets should retain global variables" do
+    @tm.animal = "monkey"
+    @tm.animal.should == "monkey"
+    @tm.server :server, :address => "test", :user => "root"
+    @tm.command_set(:pet_animal)  { run "pet #{animal}" }
+
+    @tm.task(:pet_donkey, :server => :server) do
+      set :animal, "donkey"
+      pet_animal
+    end
+    @tm.task(:pet_global, :server => :server) do
+      pet_animal
+    end
+
+    @tm.run!([:pet_donkey, :pet_global]).map {|c| c[:command] }.should == ["pet donkey","pet monkey"]
+  end
 end

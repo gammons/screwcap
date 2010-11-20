@@ -128,6 +128,7 @@ class Task < Screwcap::Base
   def __build_commands(command_sets = [], _self = self)
     commands = []
 
+    self.__commands = []
     self.instance_eval(&self.__block)
 
     if self.__options[:before]
