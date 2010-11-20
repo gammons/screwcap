@@ -87,14 +87,43 @@ class Task < Screwcap::Base
     end
   end
 
+  # For a task, declare a set of things to run before or after a command set. 
+  #    command_set :release_the_hounds do
+  #      run "release_the_hounds"
+  #    end
+  #
+  #    task :release do
+  #      before :release_the_hounds do
+  #        run "unlock_the_gate"
+  #      end
+  #      after :release_the_hounds do
+  #        run "find_and_gather_released_hounds"
+  #      end
+  #      release_the_hounds
+  #    end
+
   def before name, &block
     self.__local_before_command_sets << Task.new(:name => name, &block)
   end
 
+  # For a task, declare a set of things to run before or after a command set. 
+  #    command_set :release_the_hounds do
+  #      run "release_the_hounds"
+  #    end
+  #
+  #    task :release do
+  #      before :release_the_hounds do
+  #        run "unlock_the_gate"
+  #      end
+  #      after :release_the_hounds do
+  #        run "find_and_gather_released_hounds"
+  #      end
+  #      release_the_hounds
+  #    end
+
   def after name, &block
     self.__local_after_command_sets << Task.new(:name => name, &block)
   end
-
 
   def __build_commands(command_sets = [], _self = self)
     commands = []
