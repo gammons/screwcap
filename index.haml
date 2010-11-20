@@ -1,0 +1,253 @@
+!!! Strict
+%html{:lang => "en", "xml:lang" => "en", :xmlns => "http://www.w3.org/1999/xhtml"}
+  %head
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
+    %title Screwcap: Easy remote task management
+    %link{:href => "http://fonts.googleapis.com/css?family=Lobster&subset=latin", :rel => "stylesheet", :type => "text/css"}
+      :css
+        body {
+          font: 14px helvetica,arial,freesans,clean,sans-serif;
+          margin-top: 1.0em;
+          background: url("corkscrew.jpg") no-repeat scroll 0 0 #fff;
+          font-family: "Helvetica,Arial,FreeSans";
+          color: #733;
+        }
+
+        #container {
+          margin: 0 auto;
+          width: 900px;
+        }
+        h1 { font-size: 2.8em; color: #733; margin-bottom: 3px; }
+        .lobster { font-family: 'Lobster', arial, serif; }
+        .big { 
+          font-size: 68px !important;
+        }
+        h1 a { text-decoration: none }
+        h2 { text-decoration: underline; font-size: 1.7em; color: #733; }
+        h3 { font-size: 1.5em; color: #733; }
+        a { color: #0055aa; }
+        .download { float: right; }
+        li {
+          padding-bottom: 10px;
+        }
+        pre {
+          font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif;
+          background-color: #eee;
+          padding: 5px;
+          margin-bottom: 10px;
+          font-size: 14px;
+        }
+        code {
+          font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif;
+          padding: 3px;
+          background-color: #eee;
+          color: #222;
+        }
+        hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
+        .footer { text-align:center; padding-top:30px; font-style: italic; }
+  %body
+    %a{:href => "http://github.com/gammons/screwcap"}
+      %img{:alt => "Fork me on GitHub", :src => "http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png", :style => "position: absolute; top: 0; right: 0; border: 0;"}/
+    #container
+      %h1.lobster.big Screwcap
+      .description
+        Screwcap is a Net::SSH wrapper that makes it easier to perform actions on remote servers.  Whether you are deploying a rails applicaiton or just clearing out a temporary directory, screwcap makes these tasks easy.
+      %h2 Rationale
+      %ul
+        %li Dead-simple DSL for remote task management.
+        %li
+          Screwcap is not opinionated.
+          %li Screwcap is very light on magic and unicorns.  Screwcap recipes are basically only a collection of servers and tasks. It does not know how to do things unless you tell it how to do things.
+          %li Screwcap is not tied into rake, although it easily can be.
+          %li Screwcap can easily be used to deploy rails applications.
+          %li Rails deployment methodologies change.  App servers change.  Things change.  Because of that, there is nothing rails-deployment-specific about screwcap.  Sure, screwcap can easily be used for deploying rails applications, but it's not a one-trick pony.
+          %li
+            Screwcap is proven out in the wild.  Here at
+            = succeed "," do
+              %a{:href => "http://www.pipelinedeals.com"} PipelineDeals
+            we use screwcap deploy our app to over a dozen different production servers.
+      %h2 Installation
+      %p
+        Installation is as easy as running
+        = succeed "." do
+          %code gem install screwcap
+        %p
+          Setting up screwcap to use rails is trivial. In your Rails.root, simply run
+          %code screwcap --setup-rails
+          %a{:href => "#rails"} See this section for more info.
+        %h2 Example Recipe
+        %script{:src => "http://gist.github.com/649852.js?file=recipe.rb"}
+        %p To execute the above recipe, run the following:
+        %p
+          %code screwcap recipe.rb restart_server
+        %h2 Recipe Book
+        %p Screwcap has a growing list of supported recipes, that includes different rails deployment strategies, and other recipes for various tasks!
+        %a{:href => "http://github.com/gammons/screwcap_recipes"} Check out the recipe database
+        %h1.lobster Documentation
+        %h2 Servers
+        %p Servers contain the address(es) you would like to run your tasks on.
+        %strong Options
+        %ul
+          %li
+            You can specify a single
+            %code :address
+            or multiple
+            %code :addresses
+            per server.
+          %li
+            Minimally you also need a
+            %code :user
+            and either
+            %code :keys
+            or
+            %code :password
+            to ensure the server is valid.
+          %li
+            You can also specify a
+            = succeed "." do
+              %code :gateway
+            A gateway is an intermidiary computer between you and the server.
+        %strong Examples:
+        %script{:src => "http://gist.github.com/651976.js?file=servers.rb"}
+        %h2 Tasks and Command Sets
+        %p Tasks are a simple collection of commands to run on a server or servers.
+        %p Command sets are a generic package of commands that can be run by tasks.  Command sets are the main differentiator between screwcap and all other remote task management libraries.
+        %strong Options
+        %ul
+          %li
+            A
+            %code :server
+            or an array of
+            %code :servers
+            to run this task on.
+          %li
+            By default, a task will run simultaneously on all addresses provided by the servers.  You can prevent this by setting
+            %code :parallel
+            to
+            = succeed "." do
+              %code false
+        %strong Commands
+        %ul
+          %li
+            %code Run
+            Run a command.
+            %li
+              %code scp
+              a file.
+              %ul
+                %li
+                  %code :local
+                  The local file on your hard drive.
+                %li
+                  %code :remote
+                  The location to put the file on the remote server.
+              %li
+                %code local
+                \- run a command locally.
+              %li
+                %code before
+                run a set of commands or command sets before the specified command set is called.  See example below.
+              %li
+                %code after
+                run a set of commands or command sets after the specified command set is called.  See example below.
+        %strong Examples:
+        %script{:src => "http://gist.github.com/651979.js?file=task.rb"}
+        %h2 Use
+        %p
+          The
+          %code use
+          keyword will automatically import another recipe file into your main recipe file.
+        %p
+          Currently
+          %code use
+          only looks in the same directory as your recipe file.
+        %strong Examples:
+        %p You have one file, called commands.rb
+        %script{:src => "http://gist.github.com/652054.js?file=commands.rb"}
+        %p Then you have your main recipe file.
+        %script{:src => "http://gist.github.com/652061.js?file=recipe.rb"}
+        %p All the items from commands.rb will be fully ingrained and ready to use in your recipe file.
+        %strong Using command sets and the use keyword is how screwcap is able to be decoupled from tasks, like deploying a rails application.
+        %h2 Variables
+        %p
+          You can declare variables with the
+          %code set
+          command anywhere in the deployment recipe.  Variables can be overridden in tasks and command sets.  Tasks and command sets inherit the scope of the calling task or command set.
+        %strong Examples:
+        %script{:src => "http://gist.github.com/652015.js?file=variables.rb"}
+        %h2 Sequences
+        %p Sequences are a list of tasks to run.
+        %strong Options:
+        %ul
+          %li
+            Sequences take a single argument,
+            = succeed "," do
+              %code :tasks
+            which is a list of tasks to run.
+        %script{:src => "http://gist.github.com/652022.js?file=sequences.rb"}
+        %p You can run a sequence in the same way you run a task.
+        %h2 Callbacks
+        %p Screwcap supports both :before and :after callbacks for tasks, in 2 different ways.
+        %p
+          The first way is to add a
+          %code :before => :do_this
+          To your task spec.
+        %p
+          The second way is to declare a task named
+          %code before_task
+          where
+          %code task
+          is the name of the task.
+        %script{:src => "https://gist.github.com/707078.js?file=callbacks.rb"}
+        %a{:name => "rails"}
+        %h2 Using Screwcap with Rails
+        %p Screwcap is a great choice to deploy rails applications, because the actual deployment implementation is decoupled from the screwcap base, thus the recipe file can be updated continually.
+        %p
+          Before you begin, be sure to add
+          %code gem 'screwcap'
+          to your Gemfile's :development section.
+        %p
+          Setting up screwcap to use rails is trivial. In your Rails.root, simply run
+          %code screwcap --setup-rails
+        %p
+          This sets up a sample recipe file located in
+          = succeed "." do
+            %code config/screwcap/recipe.rb
+          In the same directory you also get the newest
+          = succeed "." do
+            %a{:href => "http://github.com/gammons/screwcap_recipes/blob/master/rails/rails_tasks.rb"} rails tasks file
+        %p
+          Edit that file, then run
+          %code rake -T remote
+          to see your recipes listed and ready to run!
+        %h2 Using screwcap for other things
+        %p
+          Screwcap comes with a binary called
+          = succeed "." do
+            %code screwcap
+          You can run one or more tasks using the binary.
+        %script{:src => "http://gist.github.com/652048.js?file=gistfile1.sh"}
+        %h2 Recipe Database
+        %p
+          I started a new repository called
+          %a{:href => "http://github.com/gammons/screwcap_recipes"} screwcap_recipes
+          that contains all the latest and greatest recipes that fellow screwcappers have to offer.  Feel free to write your own and contribute!
+        %h2 Author, Credits, and License
+        %p (MIT License)
+        %p
+          Copyright © 2010
+          %a{:href => "http://gammons.github.com"} Grant Ammons
+          (grant@pipelinedeals.com)
+        %p Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the ‘Software’), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+        %p The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+        %p THE SOFTWARE IS PROVIDED ‘AS IS’, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    :javascript
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-19404161-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
