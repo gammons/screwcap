@@ -96,7 +96,7 @@ class Task < Screwcap::Base
   end
 
 
-  def __build_commands(command_sets = [])
+  def __build_commands(command_sets = [], _self = self)
     commands = []
 
     self.instance_eval(&self.__block)
@@ -119,21 +119,21 @@ class Task < Screwcap::Base
     self.__commands.each do |command|
       if command[:type] == :unknown
         if cs = command_sets.find {|cs| cs.__name == command[:command] }
-          cs.clone_from(self)
+          cs.clone_from(_self)
 
-          self.__local_before_command_sets.each do |lcs|
+          _self.__local_before_command_sets.each do |lcs|
             if command[:command] == lcs.__name
-              lcs.clone_from(self)
-              commands << lcs.__build_commands(command_sets)
+              lcs.clone_from(_self)
+              commands << lcs.__build_commands(command_sets, _self)
             end
           end
 
-          commands << cs.__build_commands(command_sets)
+          commands << cs.__build_commands(command_sets, _self)
 
-          self.__local_after_command_sets.each do |lcs|
+          _self.__local_after_command_sets.each do |lcs|
             if command[:command] == lcs.__name
-              lcs.clone_from(self)
-              commands << lcs.__build_commands(command_sets)
+              lcs.clone_from(_self)
+              commands << lcs.__build_commands(command_sets, _self)
             end
           end
 
@@ -157,7 +157,7 @@ class Task < Screwcap::Base
     command_sets.select {|cs| cs.__name.to_s == "after_#{self.__name}"}.each do |after|
       next if after == self
       after.clone_from(self)
-      commands << after.__build_commands(command_sets)
+      commands << after.__build_commands(command_sets, self)
     end
 
     commands.flatten

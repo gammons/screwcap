@@ -228,4 +228,32 @@ describe "Tasks" do
     commands = task.__build_commands([before1, before2])
     commands.map {|c| c[:command] }.should == %w(do1 do2 task)
   end
+
+  it "should be able to run before on deeply nested command sets" do
+    n1 = Task.new :name => :nested do
+      inner_nested
+    end
+
+    n2 = Task.new :name => :inner_nested do
+      run "inner_nested"
+      inner_inner_nested
+    end
+
+    n3 = Task.new :name => :inner_inner_nested do
+      run "inner_inner_nested"
+    end
+
+    task = Task.new :name => :deploy do
+      before :inner_inner_nested do
+        run "before_inner_inner_nested"
+      end
+      after :inner_nested do
+        run "after_inner_nested"
+      end
+      nested
+    end
+
+    commands = task.__build_commands [n1, n2, n3]
+    commands.map {|c| c[:command] }.should == %w(inner_nested before_inner_inner_nested inner_inner_nested after_inner_nested)
+  end
 end
