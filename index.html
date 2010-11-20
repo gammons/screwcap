@@ -113,18 +113,14 @@
     <strong>Commands</strong>
     <ul>
       <li><code>Run</code> Run a command.  
-      <ul>
-        <li><code>:onfailure</code> If the command returns a non-zero status, the task will abort and run the referenced command set.</li>
-      </ul>
       <li><code>scp</code> a file.
       <ul>
         <li><code>:local</code> The local file on your hard drive.</li>
         <li><code>:remote</code> The location to put the file on the remote server.</li>
       </ul>
       <li><code>local</code> - run a command locally.</li> 
-      <ul>
-        <li><code>:onfailure</code> If the command returns a non-zero status, the task will abort and run the referenced command set.</li>
-      </ul>
+      <li><code>before</code> run a set of commands or command sets before the specified command set is called.  See example below.</li>
+      <li><code>after</code> run a set of commands or command sets after the specified command set is called.  See example below.</li>
     </ul>
     <strong>Examples:</strong>
     <script src="http://gist.github.com/651979.js?file=task.rb"></script>
