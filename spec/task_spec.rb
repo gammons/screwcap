@@ -256,4 +256,27 @@ describe "Tasks" do
     commands = task.__build_commands [n1, n2, n3]
     commands.map {|c| c[:command] }.should == %w(inner_nested before_inner_inner_nested inner_inner_nested after_inner_nested)
   end
+
+  it "before and after should be able to run command sets on their own" do
+    n1 = Task.new :name => :release_the_hounds do
+      run "release_the_hounds"
+    end
+
+    n2 = Task.new :name => :lock_the_gate do
+      run "lock_the_gate"
+    end
+
+    n3 = Task.new :name => :unlock_the_gate do
+      run "unlock_the_gate"
+    end
+
+    task = Task.new :name => :deploy_the_animals do
+      before(:release_the_hounds) { unlock_the_gate }
+      after(:release_the_hounds) { lock_the_gate }
+      release_the_hounds
+    end
+
+    commands = task.__build_commands [n1, n2, n3]
+    commands.map {|c| c[:command] }.should == %w(unlock_the_gate release_the_hounds lock_the_gate)
+  end
 end
