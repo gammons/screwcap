@@ -132,7 +132,7 @@ class TaskManager < Screwcap::Base
   #   * *:keys* can be used to specify the key to use to connect to the server
   #   * *:password* specify the password to connect with.  Not recommended.  Use keys.
   def server(name, options = {}, &block)
-    server = Server.new(options.merge(:name => name))
+    server = Server.new(options.merge(:name => name, :servers => self.__servers))
     self.__servers << server
   end
 

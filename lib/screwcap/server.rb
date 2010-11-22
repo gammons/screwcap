@@ -34,6 +34,7 @@ class Server < Screwcap::Base
   end
 
   def __with_connection_for(address, &block)
+    debugger
     if self.__gateway
       __gateway.__get_gateway_connection.ssh(address, self.__user, options_for_net_ssh) do |ssh|
         yield ssh
