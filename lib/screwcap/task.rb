@@ -9,6 +9,7 @@ class Task < Screwcap::Base
     self.__local_before_command_sets = []
     self.__local_after_command_sets = []
     self.__servers  = opts.delete(:servers)
+    self.__callback = opts.delete(:callback)
     self.__block = block
 
     if self.__options[:before] and self.__options[:before].class != Array
@@ -103,7 +104,7 @@ class Task < Screwcap::Base
   #    end
 
   def before name, &block
-    self.__local_before_command_sets << Task.new(:name => name, &block)
+    self.__local_before_command_sets << Task.new(:name => name, :callback => true, &block)
   end
 
   # For a task, declare a set of things to run before or after a command set. 
@@ -122,7 +123,7 @@ class Task < Screwcap::Base
   #    end
 
   def after name, &block
-    self.__local_after_command_sets << Task.new(:name => name, &block)
+    self.__local_after_command_sets << Task.new(:name => name, :callback => true, &block)
   end
 
   def __build_commands(command_sets = [], _self = self)
@@ -131,19 +132,21 @@ class Task < Screwcap::Base
     self.__commands = []
     self.instance_eval(&self.__block)
 
-    if self.__options[:before]
-      self.__options[:before].each do |before|
-        before = command_sets.find {|cs| cs.__name.to_s == before.to_s}
-        next if before.nil? or before == self
+    unless self.__callback == true
+      if self.__options[:before]
+        self.__options[:before].each do |before|
+          before = command_sets.find {|cs| cs.__name.to_s == before.to_s}
+          next if before.nil? or before == self
+          before.clone_from(self)
+          commands << before.__build_commands(command_sets)
+        end
+      end
+
+      command_sets.select {|cs| cs.__name.to_s == "before_#{self.__name}"}.each do |before|
+        next if before == self
         before.clone_from(self)
         commands << before.__build_commands(command_sets)
       end
-    end
-
-    command_sets.select {|cs| cs.__name.to_s == "before_#{self.__name}"}.each do |before|
-      next if before == self
-      before.clone_from(self)
-      commands << before.__build_commands(command_sets)
     end
 
     self.__commands.each do |command|
@@ -175,19 +178,21 @@ class Task < Screwcap::Base
       end
     end
 
-    if self.__options[:after]
-      self.__options[:after].each do |after|
-        after = command_sets.find {|cs| cs.__name.to_s == after.to_s}
-        next if after.nil? or after == self
-        after.clone_from(self)
-        commands << after.__build_commands(command_sets)
+    unless self.__callback == true
+      if self.__options[:after]
+        self.__options[:after].each do |after|
+          after = command_sets.find {|cs| cs.__name.to_s == after.to_s}
+          next if after.nil? or after == self
+          after.clone_from(self)
+          commands << after.__build_commands(command_sets)
+        end
       end
-    end
 
-    command_sets.select {|cs| cs.__name.to_s == "after_#{self.__name}"}.each do |after|
-      next if after == self
-      after.clone_from(self)
-      commands << after.__build_commands(command_sets, self)
+      command_sets.select {|cs| cs.__name.to_s == "after_#{self.__name}"}.each do |after|
+        next if after == self
+        after.clone_from(self)
+        commands << after.__build_commands(command_sets, self)
+      end
     end
 
     commands.flatten

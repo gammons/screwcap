@@ -114,4 +114,20 @@ describe "Task Managers" do
 
     @tm.run!([:pet_donkey, :pet_global]).map {|c| c[:command] }.should == ["pet donkey","pet monkey"]
   end
+
+  it "should not run callback command sets twice" do
+    @tm.animal = "monkey"
+    @tm.server :server, :address => "test", :user => "root"
+    @tm.command_set(:pet_animal)  { run "pet_#{animal}" }
+    @tm.command_set(:before_pet_animal) { run "prepare_hand" }
+
+    @tm.task(:pet, :server => :server) do
+      before :pet_animal do
+        run "put_glove_on_hand"
+      end
+      pet_animal
+    end
+
+    @tm.run!(:pet).map {|c| c[:command] }.should == %w(put_glove_on_hand prepare_hand pet_monkey)
+  end
 end
