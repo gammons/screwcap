@@ -11,7 +11,7 @@ Hoe.plugin :newgem
 # Generate all the Rake tasks
 # Run 'rake -T' to see list of generated tasks (from gem root directory)
 $hoe = Hoe.spec 'screwcap' do
-  self.version  = '0.6.pre6'
+  self.version  = '0.6'
   self.developer 'Grant Ammons', 'grant@pipelinedeals.com'
   self.rubyforge_name       = self.name # TODO this is default value
   self.extra_deps         = [['net-ssh','>= 2.0.23'],['net-ssh-gateway','>=1.0.1'], ['net-scp','>=1.0.4']]
