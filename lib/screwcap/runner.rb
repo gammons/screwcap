@@ -49,6 +49,7 @@ class Runner
       stdout, stderr, exit_code, exit_signal = ssh_exec! ssh, command[:command]
       command[:stdout] = stdout
       command[:stderr] = stderr
+      command[:exit_code] = exit_code
       _log("    O: (#{options[:address]}):  #{stdout}", :color => :green) unless stdout.nil? or stdout == ""
       _errorlog("    O: (#{options[:address]}):  #{stderr}", :color => :red) unless stderr.nil? or stderr == ""
       _errorlog("    E: (#{options[:address]}): #{command[:command]} return exit code: #{exit_code}\n", :color => :red) if exit_code != 0
