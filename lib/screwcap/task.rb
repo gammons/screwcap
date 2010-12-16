@@ -216,6 +216,16 @@ class Task < Screwcap::Base
   def method_missing(m, *args) # :nodoc
     if m.to_s[0..1] == "__" or [:run].include?(m) or m.to_s.reverse[0..0] == "="
       super(m, args.first) 
+    elsif m == :to_ary
+      # In Ruby 1.9, Array#flatten calls #to_ary on each of the
+      # array's children and only if there is a NoMethodError raised
+      # does it assume the object is not an array. Compare this to
+      # 1.8.7 where Array#flatten used #respond_to? to determine
+      # if the object responded to #to_ary before calling it.
+      #
+      # Therefore we need to raise this error if someone calls #to_ary
+      # on us
+      raise NoMethodError
     else
       self.__commands << {:command => m, :type => :unknown, :from => self.__name}
     end
