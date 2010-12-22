@@ -14,7 +14,6 @@ lib/screwcap/task.rb
 lib/screwcap/task_manager.rb
 lib/trollop.rb
 recipes/setup_rails.rb
-runrdoc
 screwcap.gemspec
 spec/runner_spec.rb
 spec/sequence_spec.rb

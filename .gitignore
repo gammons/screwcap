@@ -1,2 +1,5 @@
 test/config/real_world_recipe.rb
 runrdoc
+pkg/
+.bundle
+Gemfile.lock
