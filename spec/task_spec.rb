@@ -279,4 +279,14 @@ describe "Tasks" do
     commands = task.__build_commands [n1, n2, n3]
     commands.map {|c| c[:command] }.should == %w(unlock_the_gate release_the_hounds lock_the_gate)
   end
+
+  it "has an ex command" do
+    
+    task = Task.new :name => :task do
+      @test = "asdf"
+      ex { @test = "fdsa" }
+    end
+
+    commands = task.__build_commands([task])
+  end
 end

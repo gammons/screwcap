@@ -54,6 +54,22 @@ class Task < Screwcap::Base
     end
   end
 
+  # execute a ruby command.
+  # command_set :test do
+  #   run "do this"
+  #   ex { @myvar = true }
+  #   run "do that"
+  # end
+  #
+  # this is good for calling an external service during your deployment.
+  #
+  # command_set :after_deploy do
+  #   ex { $hipchat_client.send "Deployment has finished" }
+  # end
+  def ex(&block)
+    self.__commands << {:type => :block, :from => self.__name, :block => block}
+  end
+
   # SCP a file from your local drive to a remote machine.
   #   task_for :item, :servers => :server do
   #     scp :local => "/tmp/pirate_booty", :remote => "/mnt/app/config/booty.yml"
@@ -214,7 +230,7 @@ class Task < Screwcap::Base
   private
 
   def method_missing(m, *args) # :nodoc
-    if m.to_s[0..1] == "__" or [:run].include?(m) or m.to_s.reverse[0..0] == "="
+    if m.to_s[0..1] == "__" or [:run, :ex].include?(m) or m.to_s.reverse[0..0] == "="
       super(m, args.first) 
     elsif m == :to_ary
       # In Ruby 1.9, Array#flatten calls #to_ary on each of the

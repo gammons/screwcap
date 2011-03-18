@@ -42,7 +42,8 @@ class Runner
   private
 
   def self.run_command(command, ssh, options)
-    if command[:type] == :remote
+    case command[:type]
+    when :remote
       stdout, stderr, exit_code, exit_signal = ssh_exec! ssh, command[:command]
       command[:stdout] = stdout
       command[:stderr] = stderr
@@ -53,7 +54,7 @@ class Runner
         _errorlog("\n    E: (#{options[:address]}): #{command[:command]} return exit code: #{exit_code}\n", :color => :red) if exit_code != 0
       end
       return exit_code
-    elsif command[:type] == :local
+    when :local
       ret = `#{command[:command]}`
       command[:stdout] = ret
       if $?.to_i == 0
@@ -62,12 +63,14 @@ class Runner
         _errorlog("\n    E: (local): #{command[:command]} return exit code: #{$?}\n", :color => :red) if $? != 0
       end
       return $?
-    elsif command[:type] == :scp
+    when :scp
       putc "."
       options[:server].__upload_to!(options[:address], command[:local], command[:remote])
 
       # this will need to be improved to allow for :onfailure
       return 0
+    when :block
+      command[:block].call
     end
   end
 

@@ -48,4 +48,18 @@ describe "The Runner" do
     commands = Runner.execute_locally! :name => :localtest, :commands => task.__build_commands, :silent => true
     commands[0][:stdout].should == "bongle\n"
   end
+
+  it "should be able to execute ex commands" do
+    @@testvar = :bingo
+    task = Task.new :name => :extest do
+      ex { @@testvar = :bango }
+    end
+    @@testvar.should == :bingo
+    commands = Runner.execute! :name => "test", 
+      :server => @server, 
+      :address => "fake.com", 
+      :commands => task.__build_commands, 
+      :silent => true
+    @@testvar.should == :bango
+  end
 end
