@@ -52,6 +52,7 @@
       %h1.lobster.big Screwcap
       .description
         Screwcap is a Net::SSH wrapper that makes it easier to perform actions on remote servers.  Whether you are deploying a rails applicaiton or just clearing out a temporary directory, screwcap makes these tasks easy.
+      %strong New for Screwcap v0.7 -- command sets are now just tasks.  Also the :parallel option has been dropped for deploying a task across multiple servers.
       %h2 Rationale
       %ul
         %li Dead-simple DSL for remote task management.
@@ -109,9 +110,8 @@
             A gateway is an intermidiary computer between you and the server.
         %strong Examples:
         %script{:src => "http://gist.github.com/651976.js?file=servers.rb"}
-        %h2 Tasks and Command Sets
-        %p Tasks are a simple collection of commands to run on a server or servers.
-        %p Command sets are a generic package of commands that can be run by tasks.  Command sets are the main differentiator between screwcap and all other remote task management libraries.
+        %h2 Tasks
+        %p Tasks are a simple collection of commands to run on a server or servers.  Tasks can also run other tasks.
         %strong Options
         %ul
           %li
@@ -120,12 +120,6 @@
             or an array of
             %code :servers
             to run this task on.
-          %li
-            By default, a task will run simultaneously on all addresses provided by the servers.  You can prevent this by setting
-            %code :parallel
-            to
-            = succeed "." do
-              %code false
         %strong Commands
         %ul
           %li
@@ -146,10 +140,10 @@
                 \- run a command locally.
               %li
                 %code before
-                run a set of commands or command sets before the specified command set is called.  See example below.
+                run a set of commands or tasks before the specified task is called.  See example below.
               %li
                 %code after
-                run a set of commands or command sets after the specified command set is called.  See example below.
+                run a set of commands or tasks after the specified task is called.  See example below.
         %strong Examples:
         %script{:src => "http://gist.github.com/651979.js?file=task.rb"}
         %h2 Use
@@ -167,12 +161,12 @@
         %p Then you have your main recipe file.
         %script{:src => "http://gist.github.com/652061.js?file=recipe.rb"}
         %p All the items from commands.rb will be fully ingrained and ready to use in your recipe file.
-        %strong Using command sets and the use keyword is how screwcap is able to be decoupled from tasks, like deploying a rails application.
+        %strong Using task and the use keyword is how screwcap is able to be decoupled from tasks, like deploying a rails application.
         %h2 Variables
         %p
           You can declare variables with the
           %code set
-          command anywhere in the deployment recipe.  Variables can be overridden in tasks and command sets.  Tasks and command sets inherit the scope of the calling task or command set.
+          command anywhere in the deployment recipe.  Variables can be overridden in tasks.  Tasks inherit the scope of the calling task.
         %strong Examples:
         %script{:src => "http://gist.github.com/652015.js?file=variables.rb"}
         %h2 Sequences

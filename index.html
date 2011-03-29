@@ -123,8 +123,7 @@
         <strong>Examples:</strong>
         <script src='http://gist.github.com/651976.js?file=servers.rb'></script>
         <h2>Tasks and Command Sets</h2>
-        <p>Tasks are a simple collection of commands to run on a server or servers.</p>
-        <p>Command sets are a generic package of commands that can be run by tasks.  Command sets are the main differentiator between screwcap and all other remote task management libraries.</p>
+        <p>Tasks are a simple collection of commands to run on a server or servers.  Tasks can also run other tasks.</p>
         <strong>Options</strong>
         <ul>
           <li>
@@ -133,12 +132,6 @@
             or an array of
             <code>:servers</code>
             to run this task on.
-          </li>
-          <li>
-            By default, a task will run simultaneously on all addresses provided by the servers.  You can prevent this by setting
-            <code>:parallel</code>
-            to
-            <code>false</code>.
           </li>
         </ul>
         <strong>Commands</strong>
