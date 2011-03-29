@@ -20,12 +20,6 @@ describe "Task Managers" do
     @tm.should have(1).__tasks
   end
 
-  it "should validate tasks" do
-    @tm = TaskManager.new
-    @tm.server :server, :address => "test", :user => "root"
-    lambda { @tm.task(:deploy, :server => :not_here) { run "test" } }.should raise_error(Screwcap::ConfigurationError)
-  end
-
   it "should be able to define variables" do
     @tm.moon_pie= "moon pie"
     @tm.moon_pie.should == "moon pie"
@@ -46,14 +40,13 @@ describe "Task Managers" do
       run "test"
     end
     
-    @tm.should have(1).__command_sets
+    @tm.should have(1).__tasks
   end
 
   it "should be able to load a recipe file" do
     @tm = TaskManager.new(:recipe_file => "test/config/super_simple_recipe.rb")
     @tm.pie.should == "moon pie"
-    @tm.should have(1).__command_sets
-    @tm.should have(1).__tasks
+    @tm.should have(2).__tasks
   end
 
   it "should be able to execute a recipe" do
@@ -70,13 +63,11 @@ describe "Task Managers" do
   it "should be able to include multiple recipe files in a single recipe" do
     @tm = TaskManager.new(:recipe_file => "test/config/use.rb")
     @tm.pie.should == "moon pie"
-    @tm.should have(1).__command_sets
-    @tm.should have(1).__tasks
+    @tm.should have(2).__tasks
 
     @tm = TaskManager.new(:recipe_file => "test/config/use2.rb")
     @tm.pie.should == "moon pie"
-    @tm.should have(1).__command_sets
-    @tm.should have(1).__tasks
+    @tm.should have(2).__tasks
   end
 
   it "will complain if it can't find the use file" do

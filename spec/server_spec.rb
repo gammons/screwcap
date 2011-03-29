@@ -27,6 +27,6 @@ describe "Servers" do
 
   it "should provide a connection to the server" do
     server = Server.new(:name => :test, :user => :root, :address => "abc.com")
-    server.should respond_to(:__with_connection_for)
+    server.should respond_to(:connect!)
   end
 end

@@ -19,6 +19,7 @@ class Server < Screwcap::Base
 
     servers = opts.delete(:servers)
     self.__gateway = servers.select {|s| s.__options[:is_gateway] == true }.find {|s| s.__name == opts[:gateway] } if servers
+    self.__connections = []
 
     self.__options = opts
 
@@ -33,20 +34,21 @@ class Server < Screwcap::Base
     self
   end
 
-  def __with_connection_for(address, &block)
-    if self.__gateway
-      __gateway.__get_gateway_connection.ssh(address, self.__user, options_for_net_ssh) do |ssh|
-        yield ssh
-      end
-    else
-      Net::SSH.start(address, self.__user, options_for_net_ssh) do |ssh|
-        yield ssh
+  def connect!
+    self.__addresses.each  do |address|
+      if self.__gateway
+        self.__connections << __gateway.__get_gateway_connection.ssh(address, self.__user, options_for_net_ssh)
+      else
+        self.__connections << Net::SSH.start(address, self.__user, options_for_net_ssh)
       end
     end
+    self.__connections
   end
 
-  def __upload_to!(address, local, remote)
-    self.__with_connection_for(address) {|ssh| ssh.scp.upload! local, remote }
+  def upload! (local, remote)
+    self.__connections.each do |conn|
+      conn.scp.upload! local, remote
+    end
   end
 
   protected

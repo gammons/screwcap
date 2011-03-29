@@ -11,6 +11,7 @@ class Task < Screwcap::Base
     self.__servers  = opts.delete(:servers)
     self.__callback = opts.delete(:callback)
     self.__block = block
+    self.__built_commands = []
 
     if self.__options[:before] and self.__options[:before].class != Array
       self.__options[:before] = [self.__options[:before]] 
@@ -211,20 +212,13 @@ class Task < Screwcap::Base
       end
     end
 
-    commands.flatten
+    commands.flatten!
+    self.__built_commands = commands
   end
 
   def validate(servers)
-    raise Screwcap::ConfigurationError, "Could not find a server to run this task on.  Please specify :server => :servername or :servers => [:server1, :server2] in the task_for directive." if servers == [] or servers.nil?
-
-    # marshal :server into :servers
     self.__servers = [self.__options.delete(:server)] if self.__options[:server]
     self.__servers = [self.__servers] if self.__servers.class != Array
-
-    server_names = servers.map {|s| s.__name }
-    self.__servers.each do |server_name|
-      raise Screwcap::ConfigurationError, "Could not find a server to run this task on.  Please specify :server => :servername or :servers => [:server1, :server2] in the task_for directive." unless server_names.include?(server_name)
-    end
   end
 
   private

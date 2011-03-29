@@ -10,7 +10,6 @@ class TaskManager < Screwcap::Base
     self.__options = opts
     self.__tasks = []
     self.__servers = []
-    self.__command_sets = []
     self.__sequences = []
 
     instance_eval(File.read(self.__options[:recipe_file])) if self.__options[:recipe_file]
@@ -82,10 +81,11 @@ class TaskManager < Screwcap::Base
   def task name, options = {}, &block
     t = Task.new(options.merge(:name => name), &block)
     t.clone_from(self)
-    t.validate(self.__servers) unless options[:local] == true
+    t.validate(self.__servers)
     self.__tasks << t
   end
   alias :task_for :task
+  alias :command_set :task
 
   # ====A *command set* is like a generic set of tasks that you intend to use in multiple tasks.
   #
@@ -113,12 +113,6 @@ class TaskManager < Screwcap::Base
   #     task_for :pet_horse, :server => s2 do
   #       redundant_task
   #     end
-
-  def command_set(name,options = {},&block)
-    t = Task.new(options.merge(:name => name), &block)
-    t.clone_from(self)
-    self.__command_sets << t
-  end
 
   # ====A *server* is the address(es) that you run a *:task* on.
   #   server :myserver, :address => "abc.com", :password => "xxx"
@@ -187,37 +181,12 @@ class TaskManager < Screwcap::Base
 
     ret = []
     tasks_to_run.each do |task|
-      commands =  task.__build_commands(self.__command_sets)
-      if task.__options[:local] == true
-        Runner.execute_locally! :commands => commands, :silent => self.__options[:silent]
-      else
-        threads = []
-        self.__servers.select {|s| task.__servers.include? s.__name }.each do |server|
-          server.__addresses.each do |address|
-            if task.__options[:parallel] == false
-              Runner.execute!(:name => task.__name, 
-                              :commands => commands, 
-                              :address => address, 
-                              :server => server, 
-                              :silent => self.__options[:silent])
-            else
-              threads << Thread.new(server,address) do |server, address| 
-                Runner.execute!(:name => task.__name, 
-                                :commands => commands, 
-                                :address => address, 
-                                :server => server,
-                                :silent => self.__options[:silent]) 
-              end
-            end
-          end
-        end
-        threads.each {|t| t.join }
-      end
-      ret << commands
+      ret << task.__build_commands(self.__tasks)
+      Runner.execute!(:task => task, :servers => self.__servers, :silent => self.__options[:silent], :verbose => self.__options[:verbose])
     end
 
     $stdout << "\033[0m"
-    ret.flatten
+    ret.flatten # return this for tests
   end
 
   # ====Use will dynamically include another file into an existing configuration file.

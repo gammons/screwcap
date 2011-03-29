@@ -8,15 +8,16 @@ describe "The Runner" do
       run "one"
       run "two"
     end
+    @task.__build_commands
+    @task.validate([@server])
   end
 
   it "should be able to execute commands on an address of a server" do
     Runner.stubs(:ssh_exec!).returns(["ok\n","",0,nil])
 
     commands = Runner.execute! :name => "test", 
-      :server => @server, 
-      :address => "fake.com", 
-      :commands => @task.__build_commands, 
+      :servers => [@server],
+      :task => @task, 
       :silent => true
 
     commands[0][:stderr].should == ""
@@ -27,25 +28,26 @@ describe "The Runner" do
   end
 
   it "should be able to handle error commands" do
-    Runner.stubs(:ssh_exec!).returns(["ok\n","",0,nil]).then.returns(["","no\n",1,nil])
+    #Runner.stubs(:ssh_exec!).returns(["ok\n","",0,nil]).then.returns(["","no\n",1,nil])
+    Runner.stubs(:ssh_exec!).returns(["","no\n",1,nil])
     commands = Runner.execute! :name => "test", 
-      :server => @server, 
-      :address => "fake.com", 
-      :commands => @task.__build_commands, 
+      :servers => [@server], 
+      :task => @task, 
       :silent => true
 
-    commands[0][:stderr].should == ""
-    commands[0][:stdout].should == "ok\n"
+    commands[0][:stderr].should == "no\n"
+    commands[0][:stdout].should == ""
 
     commands[1][:stderr].should == "no\n"
     commands[1][:stdout].should == ""
   end
 
   it "should be able to execute local commands" do
-    task = Task.new :name => :localtest, :local => true do
-      run "echo 'bongle'"
+    task = Task.new :name => :localtest do
+      local "echo 'bongle'"
     end
-    commands = Runner.execute_locally! :name => :localtest, :commands => task.__build_commands, :silent => true
+    task.__build_commands
+    commands = Runner.execute! :name => :localtest, :task => task, :silent => true
     commands[0][:stdout].should == "bongle\n"
   end
 
@@ -54,11 +56,11 @@ describe "The Runner" do
     task = Task.new :name => :extest do
       ex { @@testvar = :bango }
     end
+    task.__build_commands
     @@testvar.should == :bingo
     commands = Runner.execute! :name => "test", 
-      :server => @server, 
-      :address => "fake.com", 
-      :commands => task.__build_commands, 
+      :servers => [@server], 
+      :task => task,
       :silent => true
     @@testvar.should == :bango
   end

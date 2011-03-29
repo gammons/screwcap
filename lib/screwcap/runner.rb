@@ -4,74 +4,80 @@ class Runner
 
   def self.execute! options
     @@silent = options[:silent]
-    begin
-      _log "\nExecuting task named #{options[:name]} on #{options[:server].name}..\n", :color => :blue
-      options[:server].__with_connection_for(options[:address]) do |ssh|
-        options[:commands].each do |command|
-          ret = run_command(command, ssh, options)
-          break if ret != 0 and command[:abort_on_fail] == true
-        end
-      end
-    rescue Net::SSH::AuthenticationFailed => e
-      raise Net::SSH::AuthenticationFailed, "Authentication failed for server named #{server.name}.  Please check your authentication credentials."
-    ensure
-      _log "\nComplete\n", :color => :blue
-    end
-    options[:commands] # for tests
-  end
+    @@verbose = options[:verbose]
+    task = options[:task]
 
-  def self.execute_locally! options
-    @@silent = options[:silent]
-    _log "\n*** BEGIN executing local task #{options[:name]}\n", :color => :blue
-    options[:commands].each do |command|
-      command[:stdout] = ret = `#{command[:command]}`
-      
-      if $?.to_i == 0
-        _log "    I: (local):  #{command[:command]}\n", :color => :blue
-        _log("    O: (local):  #{ret}\n", :color => :blue) unless ret.nil? or ret == ""
-      else
-        _log "    I: (local):  #{command[:command]}\n", :color => :blue
-        _errorlog("    O: (local):  #{ret}\n", :color => :red) unless ret.nil? or ret == ""
-        _errorlog("    E: (local): #{command[:command]} return exit code: #{$?}\n", :color => :red) if $? != 0
+    if (task.__servers.nil? or task.__servers == [] or task.__servers.compact == []) and task.__built_commands.any? {|c| c[:type] == :remote or c[:type] == :scp }
+      raise Screwcap::ConfigurationError, "The task #{task.name} includes remote commands, however no servers were defined for this task."
+    end
+
+    if options[:servers] and task.__servers
+      begin
+        servers = options[:servers].select {|s| task.__servers.include? s.__name }
+        connections = servers.map {|server| server.connect! }.flatten
+      rescue Net::SSH::AuthenticationFailed => e
+        raise Net::SSH::AuthenticationFailed, "Authentication failed for server named #{server.name}.  Please check your authentication credentials."
       end
     end
-    _log "\n*** END executing local task #{options[:name]}\n", :color => :blue
-    options[:commands]
+
+    _log "\nExecuting task #{task.name}\n", :color => :blue
+
+    task.__built_commands.each do |command|
+      ret = case command[:type]
+      when :remote
+        threads = []
+        connections.each do |connection|
+          threads << Thread.new(connection) do |conn|
+            run_remote_command(command, conn, options)
+          end
+        end
+        threads.each {|t| t.join }
+      when :local
+        ret = `#{command[:command]}`
+        command[:stdout] = ret
+        if $?.to_i == 0
+          if options[:verbose]
+            _log "    O: #{ret}\n", :color => :green
+          else
+            _log(".", :color => :green)
+          end
+        else
+          _errorlog("    E: (local): #{command[:command]} return exit code: #{$?}\n", :color => :red) if $? != 0
+        end
+        ret
+      when :scp
+        threads = []
+        servers.each do |server|
+          threads << Thread.new(server) { |_server| _server._upload! command[:local], command[:remote] }
+        end
+        thread.each {|t| t.join }
+        return 0
+      when :block
+        command[:block].call
+      end
+    end
+    _log "Complete\n", :color => :blue
+    task.__built_commands # for tests
   end
 
   private
 
-  def self.run_command(command, ssh, options)
-    case command[:type]
-    when :remote
-      stdout, stderr, exit_code, exit_signal = ssh_exec! ssh, command[:command]
-      command[:stdout] = stdout
-      command[:stderr] = stderr
-      command[:exit_code] = exit_code
-      if exit_code == 0
-        _log(".", :color => :green)
+  def self.run_remote_command(command, ssh, options)
+    stdout, stderr, exit_code, exit_signal = ssh_exec! ssh, command[:command]
+    command[:stdout] = stdout
+    command[:stderr] = stderr
+    command[:exit_code] = exit_code
+    if exit_code == 0
+      if @@verbose
+        _log("    I: #{command[:command]}\n", :color => :green)
+        _log("    O: #{command[:stdout]}\n", :color => :green)
       else
-        _errorlog("\n    E: (#{options[:address]}): #{command[:command]} return exit code: #{exit_code}\n", :color => :red) if exit_code != 0
-      end
-      return exit_code
-    when :local
-      ret = `#{command[:command]}`
-      command[:stdout] = ret
-      if $?.to_i == 0
         _log(".", :color => :green)
-      else
-        _errorlog("\n    E: (local): #{command[:command]} return exit code: #{$?}\n", :color => :red) if $? != 0
       end
-      return $?
-    when :scp
-      putc "."
-      options[:server].__upload_to!(options[:address], command[:local], command[:remote])
-
-      # this will need to be improved to allow for :onfailure
-      return 0
-    when :block
-      command[:block].call
+    else
+      _errorlog("    E: (#{options[:address]}): #{command[:command]} return exit code: #{exit_code}\n", :color => :red) if exit_code != 0
     end
+    exit_code
   end
 
   # courtesy of flitzwald on stackoverflow

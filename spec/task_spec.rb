@@ -27,6 +27,7 @@ describe "Tasks" do
     end
 
     commands = task.__build_commands([unknown])
+    task.__built_commands.should_not == []
     commands.size.should == 2
 
     commands[0][:type].should == :remote
@@ -131,21 +132,6 @@ describe "Tasks" do
 
     commands = task2.__build_commands([after2])
     commands.map {|c| c[:command] }.should == ["deploy", "after"]
-  end
-
-  it "should validate" do
-    task = Task.new :name => :test 
-    lambda { task.validate([]) }.should raise_error(Screwcap::ConfigurationError)
-
-    server = Server.new :name => :server, :address => "none", :user => "yeah"
-    other_server = Server.new :name => :server2, :address => "none", :user => "yeah"
-    task = Task.new :name => :test, :server => :server
-    lambda { task.validate([server]) }.should_not raise_error
-    lambda { task.validate([other_server]) }.should raise_error(Screwcap::ConfigurationError)
-    task = Task.new :name => :test, :servers => :server
-    lambda { task.validate([server]) }.should_not raise_error
-    task = Task.new :name => :test, :servers => [:server, :server2]
-    lambda { task.validate([server,other_server]) }.should_not raise_error
   end
 
   it "should handle before and after inside a task" do
@@ -281,12 +267,30 @@ describe "Tasks" do
   end
 
   it "has an ex command" do
-    
     task = Task.new :name => :task do
       @test = "asdf"
       ex { @test = "fdsa" }
     end
 
     commands = task.__build_commands([task])
+    commands[0][:type].should == :block
+  end
+
+  it "should be able to call other tasks" do
+    t1 = Task.new :name => :release_the_hounds do
+      run "release_the_hounds"
+    end
+
+    t2 = Task.new :name => :lock_the_gate do
+      run "lock_the_gate"
+    end
+
+    t3 = Task.new :name => :release_the_hounds_and_lock_the_gate do
+      release_the_hounds
+      lock_the_gate
+    end
+
+    commands = t3.__build_commands [t1, t2]
+    commands.map {|c| c[:command] }.should == %w(release_the_hounds lock_the_gate)
   end
 end
