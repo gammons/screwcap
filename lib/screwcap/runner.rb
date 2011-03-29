@@ -48,7 +48,7 @@ class Runner
       when :scp
         threads = []
         servers.each do |server|
-          threads << Thread.new(server) { |_server| _server._upload! command[:local], command[:remote] }
+          threads << Thread.new(server) { |_server| _server.upload! command[:local], command[:remote] }
         end
         threads.each {|t| t.join }
         return 0
