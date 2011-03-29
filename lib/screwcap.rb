@@ -16,7 +16,7 @@ require 'screwcap/sequence'
 require 'screwcap/task_manager'
 
 module Screwcap
-  VERSION='0.7.2'
+  VERSION='0.7.3'
 
   class TaskNotFound < RuntimeError; end
   class NoServersDefined < Exception; end
