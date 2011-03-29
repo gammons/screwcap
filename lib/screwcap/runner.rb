@@ -50,7 +50,7 @@ class Runner
         servers.each do |server|
           threads << Thread.new(server) { |_server| _server._upload! command[:local], command[:remote] }
         end
-        thread.each {|t| t.join }
+        threads.each {|t| t.join }
         return 0
       when :block
         command[:block].call
