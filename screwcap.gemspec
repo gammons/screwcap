@@ -6,7 +6,7 @@ require 'bundler/version'
  
 Gem::Specification.new do |s|
   s.name        = "screwcap"
-  s.version     = "0.7"
+  s.version     = "0.7.1"
   s.platform    = Gem::Platform::RUBY
   s.author     = "Grant Ammons"
   s.email       = ["grant@pipelinedealsco.com"]
