@@ -51,7 +51,6 @@ class Runner
           threads << Thread.new(server) { |_server| _server.upload! command[:local], command[:remote] }
         end
         threads.each {|t| t.join }
-        return 0
       when :block
         command[:block].call
       end
