@@ -26,12 +26,16 @@ class Runner
       ret = case command[:type]
       when :remote
         threads = []
-        connections.each do |connection|
-          threads << Thread.new(connection) do |conn|
-            run_remote_command(command, conn, options)
+        if command[:parallel] == false
+          connections.each { |connection| run_remote_command(command, connection, options) }
+        else
+          connections.each do |connection|
+            threads << Thread.new(connection) do |conn|
+              run_remote_command(command, conn, options)
+            end
           end
+          threads.each {|t| t.join }
         end
-        threads.each {|t| t.join }
       when :local
         ret = `#{command[:command]}`
         command[:stdout] = ret
@@ -55,7 +59,7 @@ class Runner
         command[:block].call
       end
     end
-    _log "Complete\n", :color => :blue
+    _log "\nComplete\n", :color => :blue
     task.__built_commands # for tests
   end
 
@@ -72,6 +76,7 @@ class Runner
         _log("    O: #{command[:stdout]}\n", :color => :green)
       else
         _log(".", :color => :green)
+        $stdout.flush
       end
     else
       _errorlog("    E: (#{options[:address]}): #{command[:command]} return exit code: #{exit_code}\n", :color => :red) if exit_code != 0
