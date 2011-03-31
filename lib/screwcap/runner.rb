@@ -27,7 +27,10 @@ class Runner
       when :remote
         threads = []
         if command[:parallel] == false
-          connections.each { |connection| run_remote_command(command, connection, options) }
+          connections.each do |connection| 
+            run_remote_command(command, connection, options)
+            command[:block].call(command) if command[:block]
+          end
         else
           connections.each do |connection|
             threads << Thread.new(connection) do |conn|
@@ -70,6 +73,7 @@ class Runner
     command[:stdout] = stdout
     command[:stderr] = stderr
     command[:exit_code] = exit_code
+
     if exit_code == 0
       if @@verbose
         _log("    I: #{command[:command]}\n", :color => :green)

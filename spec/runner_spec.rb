@@ -64,4 +64,19 @@ describe "The Runner" do
       :silent => true
     @@testvar.should == :bango
   end
+
+  it "should yield a block from run" do
+    @server = Server.new :name => :server,  :address => "fake.com", :user => "fake"
+    task = Task.new :name => :dingle, :server => :server do
+      run "ls -l" do |command|
+        command.should == {:type=>:remote, :stdout=>"", :command=>"ls -l", :stderr=>"no\n", :exit_code=>1, :from=>:dingle}
+      end
+    end
+    task.validate([@server])
+    task.__build_commands
+    commands = Runner.execute! :name => "dingle", 
+      :servers => [@server], 
+      :task => task, 
+      :silent => true
+  end
 end

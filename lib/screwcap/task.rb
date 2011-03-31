@@ -47,11 +47,11 @@ class Task < Screwcap::Base
   #    run "ls -l", :onfailure => :rollback
   #   end 
   
-  def run arg, options = {}
+  def run arg, options = {}, &block
     if arg.class == Symbol
-      self.__commands << options.merge({:command => self.send(arg), :type => :remote, :from => self.__name})
+      self.__commands << options.merge({:command => self.send(arg), :type => :remote, :from => self.__name, :block => block})
     else
-      self.__commands << options.merge({:command => arg, :type => :remote, :from => self.__name})
+      self.__commands << options.merge({:command => arg, :type => :remote, :from => self.__name, :block => block})
     end
   end
 
