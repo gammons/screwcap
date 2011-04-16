@@ -182,7 +182,7 @@ class TaskManager < Screwcap::Base
     ret = []
     tasks_to_run.each do |task|
       ret << task.__build_commands(self.__tasks)
-      Runner.execute!(:task => task, :servers => self.__servers, :silent => self.__options[:silent], :verbose => self.__options[:verbose])
+      Runner.execute!(:task => task, :tasks => self.__tasks, :servers => self.__servers, :silent => self.__options[:silent], :verbose => self.__options[:verbose])
     end
 
     $stdout << "\033[0m"

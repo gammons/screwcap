@@ -64,4 +64,38 @@ describe "The Runner" do
       :silent => true
     @@testvar.should == :bango
   end
+
+  it "should yield a run block" do
+    Runner.stubs(:ssh_exec!).returns(["ok\n","",0,nil]).then.returns(["","no\n",1,nil])
+    revert_task = Task.new :name => :revert do
+      run "revert" do |results|
+        if results.exit_code != 0
+          run "failed"
+        else
+          run "succeeded"
+        end
+      end
+    end
+    task = Task.new :name => :runblock, :server => :server do
+      run "do_something" do |results|
+        revert
+      end
+    end
+    task.__build_commands
+    task.validate([@server])
+    commands = Runner.execute! :name => :runblock, :task => task, :tasks => [task, revert_task], :servers => [@server], :silent => true
+    command_names(commands).should == %w(do_something revert failed)
+  end
+end
+
+def command_names(commands)
+  ret = []
+  commands.each do |command|
+    if command.class == Hash
+      ret << command[:command]
+    elsif command.class == Array
+      ret << command_names(command)
+    end
+  end
+  ret.flatten
 end

@@ -36,10 +36,18 @@ class Server < Screwcap::Base
 
   def connect!
     self.__addresses.each  do |address|
-      if self.__gateway
-        self.__connections << __gateway.__get_gateway_connection.ssh(address, self.__user, options_for_net_ssh)
-      else
-        self.__connections << Net::SSH.start(address, self.__user, options_for_net_ssh)
+
+      # do not re-connect.  return if we have already been connected
+      next if self.__connections.any? {|conn| conn[:address] == address }
+
+      begin
+        if self.__gateway
+          self.__connections << {:address => address, :connection => __gateway.__get_gateway_connection.ssh(address, self.__user, options_for_net_ssh) }
+        else
+          self.__connections << {:address => address, :connection => Net::SSH.start(address, self.__user, options_for_net_ssh) }
+        end
+      rescue Net::SSH::AuthenticationFailed => e
+        raise Net::SSH::AuthenticationFailed, "Authentication failed for server named #{self.name}.  Please check your authentication credentials."
       end
     end
     self.__connections

@@ -6,18 +6,15 @@ class Runner
     @@silent = options[:silent]
     @@verbose = options[:verbose]
     task = options[:task]
+    results = []
 
     if (task.__servers.nil? or task.__servers == [] or task.__servers.compact == []) and task.__built_commands.any? {|c| c[:type] == :remote or c[:type] == :scp }
       raise Screwcap::ConfigurationError, "The task #{task.name} includes remote commands, however no servers were defined for this task."
     end
 
     if options[:servers] and task.__servers
-      begin
-        servers = options[:servers].select {|s| task.__servers.include? s.__name }
-        connections = servers.map {|server| server.connect! }.flatten
-      rescue Net::SSH::AuthenticationFailed => e
-        raise Net::SSH::AuthenticationFailed, "Authentication failed for server named #{server.name}.  Please check your authentication credentials."
-      end
+      servers = options[:servers].select {|s| task.__servers.include? s.__name }
+      connections = servers.map {|server| server.connect! }.flatten
     end
 
     _log "\nExecuting task #{task.name}\n", :color => :blue
@@ -25,16 +22,33 @@ class Runner
     task.__built_commands.each do |command|
       ret = case command[:type]
       when :remote
-        threads = []
-        connections.each do |connection|
-          threads << Thread.new(connection) do |conn|
-            run_remote_command(command, conn, options)
+        if command[:parallel] == false or command[:block]
+          connections.each do |connection|
+            results << run_remote_command(command, connection[:connection], options)
+            if command[:block]
+              opts = task.__options.clone.merge(:stderr => command[:stderr], :stdout => command[:stdout], :exit_code => command[:exit_code])
+              opts[:servers] = task.__servers
+              opts[:name] = "Run results"
+
+              inner_task = Task.new(opts, &command[:block])
+              inner_task.__build_commands(options[:tasks])
+              results << self.execute!(options.merge(:task => inner_task))
+            end
           end
+        else
+          threads = []
+          connections.each do |connection|
+            threads << Thread.new(connection) do |conn|
+              results << run_remote_command(command, conn[:connection], options)
+            end
+          end
+          threads.each {|t| t.join }
         end
-        threads.each {|t| t.join }
       when :local
-        ret = `#{command[:command]}`
-        command[:stdout] = ret
+        result = {}
+        result[:stdout] = `#{command[:command]}`
+        result[:exit_code] = $?.to_i
+        results << result
         if $?.to_i == 0
           if options[:verbose]
             _log "    O: #{ret}\n", :color => :green
@@ -44,7 +58,6 @@ class Runner
         else
           _errorlog("    E: (local): #{command[:command]} return exit code: #{$?}\n", :color => :red) if $? != 0
         end
-        ret
       when :scp
         threads = []
         servers.each do |server|
@@ -56,16 +69,17 @@ class Runner
       end
     end
     _log "Complete\n", :color => :blue
-    task.__built_commands # for tests
+    results
   end
 
   private
 
   def self.run_remote_command(command, ssh, options)
     stdout, stderr, exit_code, exit_signal = ssh_exec! ssh, command[:command]
-    command[:stdout] = stdout
-    command[:stderr] = stderr
-    command[:exit_code] = exit_code
+    ret = {:command => command[:command]}
+    ret[:stdout] = command[:stdout] = stdout
+    ret[:stderr] = command[:stderr] = stderr
+    ret[:exit_code] = command[:exit_code] = exit_code
     if exit_code == 0
       if @@verbose
         _log("    I: #{command[:command]}\n", :color => :green)
@@ -74,9 +88,10 @@ class Runner
         _log(".", :color => :green)
       end
     else
-      _errorlog("    E: (#{options[:address]}): #{command[:command]} return exit code: #{exit_code}\n", :color => :red) if exit_code != 0
+      _log("    I: #{command[:command]}\n", :color => :green)
+      _errorlog("    E: (exit code: #{exit_code}) #{command[:stderr]} \n", :color => :red)
     end
-    exit_code
+    ret
   end
 
   # courtesy of flitzwald on stackoverflow

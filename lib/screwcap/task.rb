@@ -47,11 +47,11 @@ class Task < Screwcap::Base
   #    run "ls -l", :onfailure => :rollback
   #   end 
   
-  def run arg, options = {}
+  def run arg, options = {}, &block
     if arg.class == Symbol
-      self.__commands << options.merge({:command => self.send(arg), :type => :remote, :from => self.__name})
+      self.__commands << options.merge({:command => self.send(arg), :type => :remote, :from => self.__name, :block => block})
     else
-      self.__commands << options.merge({:command => arg, :type => :remote, :from => self.__name})
+      self.__commands << options.merge({:command => arg, :type => :remote, :from => self.__name, :block => block})
     end
   end
 
@@ -219,6 +219,19 @@ class Task < Screwcap::Base
   def validate(servers)
     self.__servers = [self.__options.delete(:server)] if self.__options[:server]
     self.__servers = [self.__servers] if self.__servers.class != Array
+  end
+
+  # convenience function to look at the exit status of a parent task
+  def exit_code
+    self.__options[:exit_code]
+  end
+
+  def stdout
+    self.__options[:stdout]
+  end
+
+  def stderr
+    self.__options[:stderr]
   end
 
   private
