@@ -13,6 +13,7 @@ class Server < Screwcap::Base
   #   * *:password* specify the password to connect with.  Not recommended.  Use keys.
   def initialize(opts = {})
     super
+    self.__options = opts
     self.__name = opts.delete(:name)
     self.__user = opts.delete(:user)
     self.__options[:keys] = [opts.delete(:key)] if opts[:key]
@@ -21,7 +22,6 @@ class Server < Screwcap::Base
     self.__gateway = servers.select {|s| s.__options[:is_gateway] == true }.find {|s| s.__name == opts[:gateway] } if servers
     self.__connections = []
 
-    self.__options = opts
 
     if self.__options[:address] and self.__options[:addresses].nil?
       self.__addresses = [self.__options.delete(:address)] 
@@ -55,7 +55,7 @@ class Server < Screwcap::Base
 
   def upload! (local, remote)
     self.__connections.each do |conn|
-      conn.scp.upload! local, remote
+      conn[:connection].scp.upload! local, remote
     end
   end
 
