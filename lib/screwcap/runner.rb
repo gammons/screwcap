@@ -6,18 +6,82 @@ class Runner
     @@silent = options[:silent]
     @@verbose = options[:verbose]
     task = options[:task]
-    results = []
 
     if (task.__servers.nil? or task.__servers == [] or task.__servers.compact == []) and task.__built_commands.any? {|c| c[:type] == :remote or c[:type] == :scp }
       raise Screwcap::ConfigurationError, "The task #{task.name} includes remote commands, however no servers were defined for this task."
     end
 
+    connections = []
+
+    _log "\nExecuting task #{task.name}\n", :color => :blue
+
+    if task.__options[:parallel] == false
+      run_serially(task, options)
+    else
+      run_parallel(task, options)
+    end
+  end
+
+  private
+
+  def self.run_serially(task, options)
+    results = []
+    connections = []
     if options[:servers] and task.__servers
-      servers = options[:servers].select {|s| task.__servers.include? s.__name }
+      servers = options[:servers].select {|s| task.__servers.flatten.include? s.__name }
       connections = servers.map {|server| server.connect! }.flatten
     end
 
-    _log "\nExecuting task #{task.name}\n", :color => :blue
+    connections.each do |connection|
+      task.__built_commands.each do |command|
+        ret = case command[:type]
+        when :remote
+          results << run_remote_command(command, connection[:connection], options)
+          if command[:block]
+            opts = task.__options.clone.merge(:stderr => command[:stderr], :stdout => command[:stdout], :exit_code => command[:exit_code])
+            opts[:servers] = task.__servers
+            opts[:name] = "Run results"
+
+            inner_task = Task.new(opts, &command[:block])
+            inner_task.__build_commands(options[:tasks])
+            results << self.execute!(options.merge(:task => inner_task))
+          end
+        when :local
+          result = {}
+          result[:stdout] = `#{command[:command]}`
+          result[:exit_code] = $?.to_i
+          results << result
+          if $?.to_i == 0
+            if options[:verbose]
+              _log "    O: #{ret}\n", :color => :green
+            else
+              _log(".", :color => :green)
+            end
+          else
+            _errorlog("    E: (local): #{command[:command]} return exit code: #{$?}\n", :color => :red) if $? != 0
+          end
+        when :scp
+          threads = []
+          servers.each do |server|
+            threads << Thread.new(server) { |_server| _server.upload! command[:local], command[:remote] }
+          end
+          threads.each {|t| t.join }
+        when :block
+          command[:block].call
+        end
+      end
+    end
+    _log "Complete\n", :color => :blue
+    results
+  end
+
+  def self.run_parallel(task, options)
+    results = []
+    connections = []
+    if options[:servers] and task.__servers
+      servers = options[:servers].select {|s| task.__servers.flatten.include? s.__name }
+      connections = servers.map {|server| server.connect! }.flatten
+    end
 
     task.__built_commands.each do |command|
       ret = case command[:type]
@@ -71,8 +135,6 @@ class Runner
     _log "Complete\n", :color => :blue
     results
   end
-
-  private
 
   def self.run_remote_command(command, ssh, options)
     stdout, stderr, exit_code, exit_signal = ssh_exec! ssh, command[:command]
