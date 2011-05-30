@@ -22,7 +22,7 @@ Setting up screwcap for rails is trivial. In your Rails.root, simply run `screwc
 
 The best way to learn the screwcap DSL is by example.  Here's a detailed example that exercises 95% of what screwcap can do.
 
-```Ruby
+```ruby
 server :app_servers, :addresses => ["app1.server.com","app2.server.com"], :user => "appuser", :keys => "~/.ssh/app_key"
 
 set :current_dir, "/mnt/app/current"
@@ -58,7 +58,7 @@ Running is as simple as `screwcap config/recipes.rb deploy_code`.
 
 Specify a server to run a task on.
 
-```Ruby
+```ruby
 server :myserver, :address => "abc.com", :user => "appuser", :keys => "~/.ssh/my_key"
 server :another, :addresses => ["abc.com","def.com"], :user => "appuser", :password => "xxx"
 
@@ -85,10 +85,10 @@ Tasks are a simple collection of commands to run on a server or servers. Tasks c
 
 #### Task commands
 
-##### `before and `after`
+##### `before and after`
 Register a callback either before or after a specified command to run.  These are useful if a task is calling another task.  Example:
 
-```Ruby
+```ruby
   task :deploy do
     create_directory_structure
     checkout_code
@@ -115,7 +115,7 @@ Register a callback either before or after a specified command to run.  These ar
 
 `run` will run a command on the specified remote server. Run will yield a block of results.
 
-```Ruby
+```ruby
   task :rollback do
     run "do_rollback"
   end
@@ -134,7 +134,7 @@ Register a callback either before or after a specified command to run.  These ar
 
 `ex` will execute a block of code at recipe runtime.  
 
-```Ruby
+```ruby
   task :app_deploy do
     restart_app_server
     ex { sleep 20 }
@@ -150,7 +150,8 @@ Register a callback either before or after a specified command to run.  These ar
 ##### scp
 
 `scp` a file to a remote machine.
-```Ruby
+
+```ruby
   task :add_special_file, :server => :my_server do
     scp :local => 'stats.tgz', :remote => '~/stats.tgz'
     run 'tar -zxvf ~/stats.tgz'
@@ -161,15 +162,16 @@ Register a callback either before or after a specified command to run.  These ar
 
 `local` will run a local command on your machine.
 
-```Ruby
+```ruby
   task :collect_stats, :server => :my_server do
     local 'tar -czvf stats.tgz stats/'
     scp :local => 'stats.tgz', :remote => '~/stats.tgz'
   end
+```
 
 
 #### Putting it together:
-```Ruby
+```ruby
 
 # run the multiple_restart command on multiple servers.  Do not execute this task in parallel, but rather 
 # execute one server at a time.
