@@ -6,10 +6,12 @@ module MessageLogger
   module ClassMethods
     def log(msg, options = {})
       logmsg(msg, $stdout, options)
+      $stdout.flush
     end
 
     def errorlog(msg, options = {})
       logmsg(msg, $stderr, options)
+      $stderr.flush
     end
 
     private
