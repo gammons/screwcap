@@ -3,3 +3,4 @@ runrdoc
 pkg/
 .bundle
 Gemfile.lock
+coverage/*
