@@ -3,11 +3,11 @@ require 'spec_helper'
 describe "Task Managers" do
   before(:all) do
     Net::SSH.stubs(:start).yields(SSHObject.new(:return_stream => :stdout, :return_data => "ok\n"))
-    Runner.stubs(:ssh_exec!).returns(["ok\n","",0,nil])
+    Screwcap::Runner.stubs(:ssh_exec!).returns(["ok\n","",0,nil])
   end
 
   before(:each) do
-    @tm = TaskManager.new :silent => true
+    @tm = Screwcap::TaskManager.new :silent => true
   end
 
   it "can have tasks and servers" do
@@ -44,7 +44,7 @@ describe "Task Managers" do
   end
 
   it "should be able to load a recipe file" do
-    @tm = TaskManager.new(:recipe_file => "test/config/super_simple_recipe.rb")
+    @tm = Screwcap::TaskManager.new(:recipe_file => "test/config/super_simple_recipe.rb")
     @tm.pie.should == "moon pie"
     @tm.should have(2).__tasks
   end
@@ -61,17 +61,17 @@ describe "Task Managers" do
   end
 
   it "should be able to include multiple recipe files in a single recipe" do
-    @tm = TaskManager.new(:recipe_file => "test/config/use.rb")
+    @tm = Screwcap::TaskManager.new(:recipe_file => "test/config/use.rb")
     @tm.pie.should == "moon pie"
     @tm.should have(2).__tasks
 
-    @tm = TaskManager.new(:recipe_file => "test/config/use2.rb")
+    @tm = Screwcap::TaskManager.new(:recipe_file => "test/config/use2.rb")
     @tm.pie.should == "moon pie"
     @tm.should have(2).__tasks
   end
 
   it "will complain if it can't find the use file" do
-    lambda { TaskManager.new(:recipe_file => "test/config/bad_use.rb") }.should raise_error(Screwcap::IncludeFileNotFound)
+    lambda { Screwcap::TaskManager.new(:recipe_file => "test/config/bad_use.rb") }.should raise_error(Screwcap::IncludeFileNotFound)
   end
 
   it "should be able to define gateways" do
